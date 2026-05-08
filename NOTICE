@@ -1,0 +1,29 @@
+robotframework-vibium
+Copyright © Jhoan Lopez and Committers
+
+This product contains software licensed under Apache License 2.0.
+
+---
+
+Third-party notice
+
+robotframework-vibium depends on other open-source packages that are fetched
+from PyPI and distributed separately under their own licenses and copyright
+notices.
+
+The following notable runtime dependency is expressly listed for attribution:
+
+Robot Framework
+
+  Homepage: https://robotframework.org
+  Repository: https://github.com/robotframework/robotframework
+  SPDX-License-Identifier: Apache-2.0
+
+Vibium
+
+  Repository: https://github.com/VibiumDev/vibium
+  SPDX-License-Identifier: Apache-2.0
+
+For authoritative license text, copyright notices, and any additional notices
+required by upstream projects, refer to each package as published on PyPI or in
+its source repository.
