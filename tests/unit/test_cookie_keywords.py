@@ -1,4 +1,4 @@
-from Vibium.keywords.context import CookieKeywords
+from rfvibium.keywords.context import CookieKeywords
 
 
 class DummyContext:

@@ -1,8 +1,8 @@
 import pytest
 
-from Vibium.errors import LocatorSyntaxError, VibiumLibraryError
-from Vibium.keywords import interaction as interaction_module
-from Vibium.keywords.interaction import InteractionKeywords
+from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
+from rfvibium.keywords import interaction as interaction_module
+from rfvibium.keywords.interaction import InteractionKeywords
 
 
 class _LoggerSpy:

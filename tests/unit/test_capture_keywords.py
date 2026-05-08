@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from Vibium.errors import ScreenshotError, VibiumLibraryError
-from Vibium.keywords import capture as capture_module
-from Vibium.keywords.capture import (
+from rfvibium.errors import ScreenshotError, VibiumLibraryError
+from rfvibium.keywords import capture as capture_module
+from rfvibium.keywords.capture import (
     CaptureKeywords,
     _next_auto_screenshot_path,
     _path_for_log,

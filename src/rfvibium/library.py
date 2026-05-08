@@ -16,7 +16,7 @@ from .keywords.waits import WaitKeywords
 from .browser_session import SessionPool
 
 
-@library(scope="GLOBAL", version="0.1.0", doc_format="ROBOT")
+@library(scope="GLOBAL", version="0.1.1", doc_format="ROBOT")
 class Vibium(
     NavigationKeywords,
     MouseKeywords,
@@ -178,7 +178,7 @@ class Vibium(
     """
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
-    ROBOT_LIBRARY_VERSION = "0.1.0"
+    ROBOT_LIBRARY_VERSION = "0.1.1"
 
     def __init__(self, headless: bool = False):
         self._session = SessionPool(headless=headless)

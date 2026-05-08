@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from Vibium import _patches
+from rfvibium import _patches
 
 
 @pytest.fixture

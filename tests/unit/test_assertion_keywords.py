@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from Vibium.errors import LocatorSyntaxError
-from Vibium.keywords.assertions import AssertionKeywords
+from rfvibium.errors import LocatorSyntaxError
+from rfvibium.keywords.assertions import AssertionKeywords
 
 
 class DummyWaitUntil:

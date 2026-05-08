@@ -1,5 +1,5 @@
-from Vibium.keywords import dialogs as dialogs_module
-from Vibium.keywords.dialogs import DialogKeywords
+from rfvibium.keywords import dialogs as dialogs_module
+from rfvibium.keywords.dialogs import DialogKeywords
 
 
 class _LoggerSpy:

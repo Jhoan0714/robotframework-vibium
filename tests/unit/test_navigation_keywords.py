@@ -1,7 +1,7 @@
 import pytest
 
-from Vibium.errors import BrowserSessionError
-from Vibium.keywords.navigation import NavigationKeywords
+from rfvibium.errors import BrowserSessionError
+from rfvibium.keywords.navigation import NavigationKeywords
 
 
 class DummyWaitUntil:

@@ -1,4 +1,4 @@
-from Vibium.library import Vibium
+from rfvibium.library import Vibium
 
 
 class DummySession:
