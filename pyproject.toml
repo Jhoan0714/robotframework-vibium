@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "robotframework-vibium"
+version = "0.1.0"
+description = "Robot Framework library powered by Vibium for AI-native browser automation."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [
+  { name = "Jhoan Lopez" }
+]
+keywords = [
+  "browser automation",
+  "web automation",
+  "robot framework",
+  "robotframework",
+  "ai agents",
+  "testing",
+  "vibium"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: Robot Framework :: Library",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = [
+  "robotframework>=5.0",
+  "vibium>=26.3.18",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-cov>=5.0.0",
+  "ruff>=0.8.0",
+  "black>=24.8.0",
+  "mypy>=1.11.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Jhoan0714/robotframework-vibium"
+Repository = "https://github.com/Jhoan0714/robotframework-vibium"
+Documentation = "https://jhoan0714.github.io/robotframework-vibium/VibiumLibrary.html"
+Issues = "https://github.com/Jhoan0714/robotframework-vibium/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/Vibium"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers --disable-warnings"
+testpaths = ["tests"]
