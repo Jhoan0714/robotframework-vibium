@@ -1,7 +1,7 @@
 import pytest
 
-from Vibium.errors import BrowserSessionError, VibiumLibraryError
-from Vibium.browser_session import SessionPool
+from rfvibium.errors import BrowserSessionError, VibiumLibraryError
+from rfvibium.browser_session import SessionPool
 
 
 def test_require_page_without_open_raises_browser_session_error() -> None:
@@ -63,7 +63,7 @@ class FailingBrowser(FakeBrowser):
 
 
 def _register(pool: SessionPool, browser: FakeBrowser) -> None:
-    from Vibium.browser_session import BrowserSession
+    from rfvibium.browser_session import BrowserSession
 
     sess = BrowserSession(
         browser=browser, context=browser.page().context, page=browser.page()

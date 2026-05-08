@@ -1,4 +1,4 @@
-from Vibium.utils import parse_timeout_ms
+from rfvibium.utils import parse_timeout_ms
 
 
 def test_parse_timeout_ms_with_seconds() -> None:

@@ -1,7 +1,7 @@
 import pytest
 
-from Vibium.errors import LocatorSyntaxError, VibiumLibraryError
-from Vibium.keywords.waits import WaitKeywords
+from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
+from rfvibium.keywords.waits import WaitKeywords
 
 
 class DummyWaitUntil:

@@ -1,7 +1,7 @@
 import pytest
 
-from Vibium.errors import LocatorSyntaxError, VibiumLibraryError
-from Vibium.locator import (
+from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
+from rfvibium.locator import (
     looks_like_locator,
     merge_locators,
     parse_locator,

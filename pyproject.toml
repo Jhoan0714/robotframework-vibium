@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "robotframework-vibium"
-version = "0.1.0"
+version = "0.1.1"
 description = "Robot Framework library powered by Vibium for AI-native browser automation."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -57,11 +57,12 @@ Documentation = "https://jhoan0714.github.io/robotframework-vibium/VibiumLibrary
 Issues = "https://github.com/Jhoan0714/robotframework-vibium/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/Vibium"]
+packages = ["src/rfvibium"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "LICENSE" = "LICENSE"
 "NOTICE" = "NOTICE"
+"src/Vibium.py" = "Vibium.py"
 
 [tool.pytest.ini_options]
 addopts = "-q --strict-markers --disable-warnings"

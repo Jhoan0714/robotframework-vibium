@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from Vibium.keywords import context as context_module
-from Vibium.keywords.context import StorageKeywords
+from rfvibium.keywords import context as context_module
+from rfvibium.keywords.context import StorageKeywords
 
 
 class DummyContext:

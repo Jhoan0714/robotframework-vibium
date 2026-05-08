@@ -1,7 +1,7 @@
 import pytest
 
-from Vibium.errors import VibiumLibraryError
-from Vibium.keywords.mouse import MouseKeywords
+from rfvibium.errors import VibiumLibraryError
+from rfvibium.keywords.mouse import MouseKeywords
 
 
 class DummyMouse:

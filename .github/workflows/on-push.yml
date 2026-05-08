@@ -32,7 +32,7 @@ jobs:
           python -m pip install -e .
 
       - name: Generate Libdoc HTML
-        run: python -m robot.libdoc Vibium docs/VibiumLibrary.html
+        run: python -m robot.libdoc src/Vibium.py docs/VibiumLibrary.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
