@@ -9,6 +9,9 @@ from robot.api.deco import keyword
 class DialogKeywords:
     """Keywords for browser dialogs (alert/confirm/prompt)."""
 
+    def __init__(self, library):
+        self.library = library
+
     @keyword("Dialog Accept")
     def dialog_accept(self, text: str = "") -> None:
         """Configure the next browser dialog to be accepted.
@@ -20,7 +23,7 @@ class DialogKeywords:
             | Dialog Accept
             | Dialog Accept    my value
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         prompt_text = text if text != "" else None
 
         if prompt_text is None:
@@ -42,6 +45,6 @@ class DialogKeywords:
         Example:
             | Dialog Dismiss
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         logger.info("Configuring dialog handler: dismiss.")
         page.on_dialog("dismiss")
