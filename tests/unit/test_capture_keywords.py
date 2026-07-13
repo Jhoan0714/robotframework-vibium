@@ -1,6 +1,7 @@
 """Unit tests for ``Vibium.keywords.capture`` (screenshots and PDF)."""
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -120,7 +121,7 @@ class DummySession:
 
 class TestableCapture(CaptureKeywords):
     def __init__(self, page: DummyPage) -> None:
-        self._session = DummySession(page)
+        self.library = SimpleNamespace(_session=DummySession(page))
 
 
 def test_take_screenshot_succeeds_on_first_attempt(tmp_path: Path) -> None:
