@@ -51,6 +51,9 @@ _SLEEP_MS_MAX = 30_000
 class WaitKeywords:
     """Explicit waits; see module docstring for Page vs Element mapping."""
 
+    def __init__(self, library):
+        self.library = library
+
     @keyword("Wait For Text")
     def wait_for_text(self, text: str, timeout: str = "10s") -> None:
         """Wait until text appears in the visible page body.
@@ -65,7 +68,7 @@ class WaitKeywords:
         Example:
             | Wait For Text    Welcome back    timeout=5s
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for text '{text}' on page (timeout={timeout}).")
         page.wait_until(
@@ -88,7 +91,7 @@ class WaitKeywords:
         Example:
             | Wait For Load State    complete    timeout=15s
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for load state '{state}' (timeout={timeout}).")
         page.wait_until.loaded(state=state, timeout=timeout_ms)
@@ -114,7 +117,7 @@ class WaitKeywords:
             | Wait For Element    css:#modal    state=visible    timeout=5s
             | Wait For Element    role:dialog    text:Saving    state=hidden
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         normalized = state.strip().lower()
         if normalized not in _ELEMENT_WAIT_STATES:
             raise LocatorSyntaxError(
@@ -140,7 +143,7 @@ class WaitKeywords:
         Example:
             | Wait For Url    /dashboard    timeout=15s
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for URL to contain '{pattern}' (timeout={timeout}).")
         page.wait_until.url(pattern, timeout=timeout_ms)
@@ -159,7 +162,7 @@ class WaitKeywords:
         Example:
             | Wait For Function    () => document.querySelector('.done') !== null
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         stripped = expression.strip()
         if not stripped:
             raise LocatorSyntaxError("Wait For Function: expression cannot be empty.")
@@ -180,7 +183,7 @@ class WaitKeywords:
         Example:
             | Page Wait    500
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         ms = WaitKeywords._coerce_sleep_ms(milliseconds)
         if ms < 0:
             raise VibiumLibraryError(f"Page Wait: value cannot be negative (got {ms}).")
