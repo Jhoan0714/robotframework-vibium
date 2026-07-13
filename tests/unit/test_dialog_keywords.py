@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 from rfvibium.keywords import dialogs as dialogs_module
 from rfvibium.keywords.dialogs import DialogKeywords
 
@@ -36,7 +38,7 @@ class DummyDialog:
 
 class TestableDialogs(DialogKeywords):
     def __init__(self, page) -> None:
-        self._session = DummySession(page)
+        self.library = SimpleNamespace(_session=DummySession(page))
 
 
 def test_dialog_accept_without_text_uses_accept_mode(monkeypatch) -> None:
