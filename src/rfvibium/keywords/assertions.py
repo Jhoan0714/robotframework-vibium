@@ -14,6 +14,9 @@ from ..locator import format_locators, resolve_required_locators
 class AssertionKeywords:
     """Keywords to read page state."""
 
+    def __init__(self, library):
+        self.library = library
+
     @keyword("Get Url")
     def get_url(self, scope: object = None) -> str:
         """Return the current URL from the resolved scope.
@@ -30,7 +33,7 @@ class AssertionKeywords:
                     | ${url}=    Get Url    scope=${page}
                     | Should Contain    ${url}    /dashboard
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         return page.url()
 
     @keyword("Get Title")
@@ -49,7 +52,7 @@ class AssertionKeywords:
                 | ${title}=    Get Title
                 | ${title}=    Get Title    scope=${page}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         return page.title()
 
     @keyword("Get Page Text")
@@ -68,7 +71,7 @@ class AssertionKeywords:
                     | ${text}=    Get Page Text
                     | ${frame_text}=    Get Page Text    scope=${frame}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         return page.evaluate("document.body ? document.body.innerText : ''")
 
     @keyword("Get Html")
@@ -91,7 +94,7 @@ class AssertionKeywords:
                 | ${body}=    Get Html    outer=${FALSE}
                 | ${card}=    Get Html    css:.card
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         if not locators:
             if outer:
                 return page.content()
@@ -128,7 +131,7 @@ class AssertionKeywords:
                     | @{rows}=    Find Elements    css:.row
                     | @{first2}=    Find Elements    role:listitem    limit=2
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Finding all elements '{format_locators(locators)}'.")
         elements = page.find_all(*args, **kwargs)
@@ -153,7 +156,7 @@ class AssertionKeywords:
             Example:
                 | ${count}=    Count Elements    css:.item
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Counting elements '{format_locators(locators)}'.")
         return len(page.find_all(*args, **kwargs))
@@ -173,7 +176,7 @@ class AssertionKeywords:
                 Example:
                     | ${ready}=    Evaluate JavaScript    () => document.readyState
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         logger.info("Evaluating JavaScript expression.")
         return page.evaluate(expression)
 
@@ -194,6 +197,6 @@ class AssertionKeywords:
                 | ${tree}=    Get Accessibility Tree
                 | ${full}=    Get Accessibility Tree    everything=${TRUE}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         logger.info(f"Reading accessibility tree (everything={everything}).")
         return str(page.a11y_tree(everything=everything))

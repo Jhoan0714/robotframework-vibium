@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 from rfvibium.keywords import context as context_module
 from rfvibium.keywords.context import StorageKeywords
@@ -32,7 +33,7 @@ class DummySession:
 
 class TestableStorage(StorageKeywords):
     def __init__(self, page) -> None:
-        self._session = DummySession(page)
+        self.library = SimpleNamespace(_session=DummySession(page))
 
 
 def test_export_storage_state_writes_json(tmp_path: Path) -> None:

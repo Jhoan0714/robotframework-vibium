@@ -1,6 +1,7 @@
 """Unit tests for ``Vibium.keywords.assertions`` (read-only page keywords)."""
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -119,7 +120,7 @@ class DummySession:
 
 class TestableAssertions(AssertionKeywords):
     def __init__(self, page: DummyPage) -> None:
-        self._session = DummySession(page)
+        self.library = SimpleNamespace(_session=DummySession(page))
 
 
 # ---------------------------------------------------------------------------

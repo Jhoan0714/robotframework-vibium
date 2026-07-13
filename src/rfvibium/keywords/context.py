@@ -18,6 +18,9 @@ DEFAULT_STORAGE_PATTERN = "vibium-storage-{index}.json"
 class CookieKeywords:
     """Keywords for reading and modifying cookies in the active browser context."""
 
+    def __init__(self, library):
+        self.library = library
+
     @keyword("List Cookies")
     def list_cookies(self, context: object = None) -> List[Dict[str, Any]]:
         """Return all cookies from the active browser context.
@@ -31,7 +34,7 @@ class CookieKeywords:
         Example:
             | @{cookies}=    List Cookies
         """
-        ctx = _resolve_context(self._session, context)
+        ctx = _resolve_context(self.library._session, context)
         cookies = ctx.cookies()
         logger.info(f"Listed {len(cookies)} cookie(s).")
         return list(cookies)
@@ -72,8 +75,8 @@ class CookieKeywords:
             | Set Cookie    session_id    abc123
             | Set Cookie    pref_theme    dark    domain=example.com    path=/
         """
-        ctx = _resolve_context(self._session, context)
-        page = _page_for_context(self._session, ctx)
+        ctx = _resolve_context(self.library._session, context)
+        page = _page_for_context(self.library._session, ctx)
 
         cookie: Dict[str, Any] = {
             "name": name,
@@ -102,13 +105,16 @@ class CookieKeywords:
         Example:
             | Clear Cookies
         """
-        ctx = _resolve_context(self._session, context)
+        ctx = _resolve_context(self.library._session, context)
         logger.info("Clearing all cookies.")
         ctx.clear_cookies()
 
 
 class StorageKeywords:
     """Keywords for exporting and restoring browser storage state."""
+
+    def __init__(self, library):
+        self.library = library
 
     @keyword("Export Storage State")
     def export_storage_state(
@@ -131,7 +137,7 @@ class StorageKeywords:
             | ${state}=    Export Storage State
             | ${state}=    Export Storage State    output_path=state.json
         """
-        ctx = _resolve_context(self._session, context)
+        ctx = _resolve_context(self.library._session, context)
         state = ctx.storage()
 
         path = (
@@ -158,7 +164,7 @@ class StorageKeywords:
         Example:
             | Restore Storage State    state.json
         """
-        ctx = _resolve_context(self._session, context)
+        ctx = _resolve_context(self.library._session, context)
 
         resolved = _resolve_capture_path(path)
         raw = resolved.read_text(encoding="utf-8")

@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from rfvibium.errors import VibiumLibraryError
@@ -39,7 +41,7 @@ class DummySession:
 
 class TestableMouse(MouseKeywords):
     def __init__(self, page: DummyPage) -> None:
-        self._session = DummySession(page)
+        self.library = SimpleNamespace(_session=DummySession(page))
 
 
 def test_mouse_click_invokes_page_mouse() -> None:

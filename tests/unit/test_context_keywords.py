@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 from rfvibium.keywords.context import CookieKeywords, StorageKeywords
 
 
@@ -56,12 +58,12 @@ class DummySession:
 
 class TestableCookies(CookieKeywords):
     def __init__(self, session):
-        self._session = session
+        self.library = SimpleNamespace(_session=session)
 
 
 class TestableStorage(StorageKeywords):
     def __init__(self, session):
-        self._session = session
+        self.library = SimpleNamespace(_session=session)
 
 
 def test_list_cookies_uses_explicit_context() -> None:

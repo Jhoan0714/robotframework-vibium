@@ -59,6 +59,9 @@ def _normalize_screenshot_clip(clip: object) -> Optional[Dict[str, Any]]:
 class CaptureKeywords:
     """Keywords to capture visual artifacts from the active page."""
 
+    def __init__(self, library):
+        self.library = library
+
     @keyword("Take Screenshot")
     def take_screenshot(
         self,
@@ -98,7 +101,7 @@ class CaptureKeywords:
             | ${path}=    Take Screenshot    full_page=${TRUE}
             | ${path}=    Take Screenshot    output_path=home.png    clip={"x": 0, "y": 0, "width": 800, "height": 600}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         path = (
             _next_auto_screenshot_path()
             if output_path is None
@@ -144,7 +147,7 @@ class CaptureKeywords:
             | ${path}=    Take Element Screenshot    css:.chart-card    output_path=chart.png
             | ${path}=    Take Element Screenshot    role:img    alt:Logo
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         path = (
             _next_auto_element_screenshot_path()
@@ -218,7 +221,7 @@ class CaptureKeywords:
             | ${pdf}=    Save Pdf
             | ${pdf}=    Save Pdf    output_path=report.pdf    embed=${FALSE}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         path = (
             _next_auto_pdf_path()
             if output_path is None

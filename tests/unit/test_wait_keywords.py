@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
@@ -55,7 +57,7 @@ class DummySession:
 
 class TestableWait(WaitKeywords):
     def __init__(self, page: DummyPage) -> None:
-        self._session = DummySession(page)
+        self.library = SimpleNamespace(_session=DummySession(page))
 
 
 def test_wait_for_element_resolves_and_waits() -> None:

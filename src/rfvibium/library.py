@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from robot.api import logger
 from robot.api.deco import keyword, library
+from robotlibcore import DynamicCore
 
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
@@ -17,17 +18,7 @@ from .browser_session import SessionPool
 
 
 @library(scope="GLOBAL", version="0.1.1", doc_format="ROBOT")
-class Vibium(
-    NavigationKeywords,
-    MouseKeywords,
-    InteractionKeywords,
-    AssertionKeywords,
-    CaptureKeywords,
-    CookieKeywords,
-    StorageKeywords,
-    DialogKeywords,
-    WaitKeywords,
-):
+class Vibium(DynamicCore):
     """Vibium library is a browser automation library for Robot Framework.
 
     This is the keyword documentation for Vibium. The library exposes browser
@@ -182,6 +173,18 @@ class Vibium(
 
     def __init__(self, headless: bool = False):
         self._session = SessionPool(headless=headless)
+        components = [
+            NavigationKeywords(self),
+            MouseKeywords(self),
+            InteractionKeywords(self),
+            AssertionKeywords(self),
+            CaptureKeywords(self),
+            CookieKeywords(self),
+            StorageKeywords(self),
+            DialogKeywords(self),
+            WaitKeywords(self),
+        ]
+        DynamicCore.__init__(self, components)
 
     @keyword("Open Browser")
     def open_browser(self):
