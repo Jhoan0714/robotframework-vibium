@@ -13,6 +13,9 @@ from ..errors import VibiumLibraryError
 class MouseKeywords:
     """Low-level mouse input on the active page (viewport coordinates)."""
 
+    def __init__(self, library):
+        self.library = library
+
     @staticmethod
     def _coerce_axis(name: str, value: object) -> float:
         if value is None:
@@ -105,7 +108,7 @@ class MouseKeywords:
             | Mouse Click    120    340
             | Mouse Click    10    20    button=0
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         btn = MouseKeywords._normalize_button(button)
         MouseKeywords._assert_default_button(btn)
 
@@ -128,7 +131,7 @@ class MouseKeywords:
         Example:
             | Mouse Move    100    200
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         xf = MouseKeywords._coerce_axis("x", x)
         yf = MouseKeywords._coerce_axis("y", y)
         logger.info(f"Mouse move to ({xf}, {yf}).")
@@ -152,7 +155,7 @@ class MouseKeywords:
             | Mouse Down
             | Mouse Down    button=0
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         btn = MouseKeywords._normalize_button(button)
         MouseKeywords._assert_default_button(btn)
         logger.info("Mouse button down (left).")
@@ -176,7 +179,7 @@ class MouseKeywords:
             | Mouse Up
             | Mouse Up    button=0
         """
-        page = self._session.require_page()
+        page = self.library._session.require_page()
         btn = MouseKeywords._normalize_button(button)
         MouseKeywords._assert_default_button(btn)
         logger.info("Mouse button up (left).")
