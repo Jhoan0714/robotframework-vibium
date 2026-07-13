@@ -17,7 +17,7 @@ from .keywords.waits import WaitKeywords
 from .browser_session import SessionPool
 
 
-@library(scope="GLOBAL", version="0.1.1", doc_format="ROBOT")
+@library(scope="GLOBAL", version="0.2.0", doc_format="ROBOT")
 class Vibium(DynamicCore):
     """Vibium library is a browser automation library for Robot Framework.
 
@@ -169,7 +169,7 @@ class Vibium(DynamicCore):
     """
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
-    ROBOT_LIBRARY_VERSION = "0.1.1"
+    ROBOT_LIBRARY_VERSION = "0.2.0"
 
     def __init__(self, headless: bool = False):
         self._session = SessionPool(headless=headless)
