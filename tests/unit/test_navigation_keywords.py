@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from rfvibium.errors import BrowserSessionError
@@ -293,7 +295,7 @@ class DummySession:
 
 class TestableNavigation(NavigationKeywords):
     def __init__(self, session) -> None:
-        self._session = session
+        self.library = SimpleNamespace(_session=session)
 
 
 def test_list_pages_marks_active_page() -> None:
