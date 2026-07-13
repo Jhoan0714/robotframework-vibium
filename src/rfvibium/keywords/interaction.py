@@ -42,6 +42,9 @@ _UNSET = object()
 class InteractionKeywords:
     """Keywords for user-like interactions."""
 
+    def __init__(self, library):
+        self.library = library
+
     @keyword("Map Elements")
     def map_elements(self, scope: object = None) -> str:
         """Return accessibility tree information for the resolved scope.
@@ -56,7 +59,7 @@ class InteractionKeywords:
                 | ${tree}=    Map Elements
                 | ${tree}=    Map Elements    scope=${frame}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         return str(page.a11y_tree())
 
     @keyword("Click Element")
@@ -72,7 +75,7 @@ class InteractionKeywords:
                     | Click Element    role:button    text:Log in
                     | Click Element    css:.submit
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Clicking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).click()
@@ -91,7 +94,7 @@ class InteractionKeywords:
             Example:
                 | ${el}=    Find Element    role:textbox    label:E-mail
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Finding element '{format_locators(locators)}'.")
         return repr(page.find(*args, **kwargs))
@@ -108,7 +111,7 @@ class InteractionKeywords:
                 Returns:
                     str: Element text.
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading text from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).text()
@@ -121,7 +124,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading inner text from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).inner_text()
@@ -134,7 +137,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading HTML from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).html()
@@ -147,7 +150,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single form element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading value from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).value()
@@ -167,7 +170,7 @@ class InteractionKeywords:
                 Returns:
                     str | None: Attribute value or ``None`` when attribute is absent.
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(
             f"Reading attribute '{name}' from element '{format_locators(locators)}'."
@@ -185,7 +188,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(
             f"Reading attribute '{name}' from element '{format_locators(locators)}'."
@@ -200,7 +203,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading bounds from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).bounds()
@@ -213,7 +216,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading bounding box from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).bounding_box()
@@ -226,7 +229,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Checking visibility of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).is_visible()
@@ -239,7 +242,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Checking hidden state of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).is_hidden()
@@ -252,7 +255,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Checking enabled state of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).is_enabled()
@@ -265,7 +268,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Checking checked state of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).is_checked()
@@ -278,7 +281,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(
             f"Checking editable state of element '{format_locators(locators)}'."
@@ -293,7 +296,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading role of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).role()
@@ -306,7 +309,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading label of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).label()
@@ -335,7 +338,7 @@ class InteractionKeywords:
             | Fill Element    role:textbox    label:E-mail    user@example.com
             | Fill Element    role:textbox    label:Password    value=s3cret    secret=${TRUE}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
         args, kwargs = resolve_required_locators(locator_tokens)
         display_value = "***" if secret else repr(final_value)
@@ -359,7 +362,7 @@ class InteractionKeywords:
                     | Press Key    Enter
                     | Press Key    Enter    role:textbox    label:Search
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         if locators:
             args, kwargs = resolve_required_locators(locators)
             logger.info(
@@ -379,7 +382,7 @@ class InteractionKeywords:
         | ``combo`` | Key combination string (for example ``Control+a``, ``Shift+Tab``). |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         logger.info(f"Pressing key combo '{combo}' on active page.")
         page.keyboard.press(combo)
 
@@ -391,7 +394,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Double-clicking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).dblclick()
@@ -404,7 +407,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Hovering element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).hover()
@@ -417,7 +420,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Focusing element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).focus()
@@ -430,7 +433,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Clearing element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).clear()
@@ -451,7 +454,7 @@ class InteractionKeywords:
         | ``secret`` | When ``True``, masks typed text in logs as ``***``. Default is ``False``. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         locator_tokens, final_text = self._resolve_tail_value_arguments(
             keyword_name="Type Text",
             positional=locators,
@@ -477,7 +480,7 @@ class InteractionKeywords:
         | ``value`` | Explicit option value to select. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         locator_tokens, option_value = self._resolve_tail_value_arguments(
             keyword_name="Select Option",
             positional=locators,
@@ -499,7 +502,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Checking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).check()
@@ -512,7 +515,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Unchecking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).uncheck()
@@ -525,7 +528,7 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Scrolling element into view '{format_locators(locators)}'.")
         page.find(*args, **kwargs).scroll_into_view()
@@ -554,7 +557,7 @@ class InteractionKeywords:
                 | Scroll    up    2
                 | Scroll    down    3    .panel
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         selector = self._resolve_scroll_selector(locators)
         if selector:
             logger.info(
@@ -585,7 +588,7 @@ class InteractionKeywords:
                 Raises:
                     LocatorSyntaxError: If ``event_init`` is invalid JSON/object shape.
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         init_payload = self._coerce_event_init(event_init)
         logger.info(
@@ -609,7 +612,7 @@ class InteractionKeywords:
                 | Upload Files    css:input[type='file']    files=/tmp/a.pdf
                 | Upload Files    xpath://input[@type='file']    files=@{LIST}
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         file_paths = InteractionKeywords._coerce_upload_files(files)
         args, kwargs = resolve_required_locators(locators)
         logger.info(
@@ -642,7 +645,7 @@ class InteractionKeywords:
                     | Drag And Drop    css:#src    css:#tgt
                     | Drag And Drop    source=@{SRC}    target=@{TGT}    timeout=10s
         """
-        page = self._session.resolve_scope(scope)
+        page = self.library._session.resolve_scope(scope)
         src_tokens = InteractionKeywords._coerce_locator_token_group("source", source)
         tgt_tokens = InteractionKeywords._coerce_locator_token_group("target", target)
         src_args, src_kwargs = resolve_required_locators(src_tokens)
