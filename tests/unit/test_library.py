@@ -63,3 +63,10 @@ def test_close_all_browsers_delegates_to_session() -> None:
     lib.close_all_browsers()
 
     assert session.close_all_called is True
+
+
+def test_library_version_comes_from_version_module() -> None:
+    from rfvibium.version import __version__
+
+    assert Vibium.ROBOT_LIBRARY_VERSION == __version__
+    assert __version__  # non-empty

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "robotframework-vibium"
-version = "0.2.0"
+dynamic = ["version"]
 description = "Robot Framework library powered by Vibium for AI-native browser automation."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -56,6 +56,9 @@ Homepage = "https://github.com/Jhoan0714/robotframework-vibium"
 Repository = "https://github.com/Jhoan0714/robotframework-vibium"
 Documentation = "https://jhoan0714.github.io/robotframework-vibium/VibiumLibrary.html"
 Issues = "https://github.com/Jhoan0714/robotframework-vibium/issues"
+
+[tool.hatch.version]
+path = "src/rfvibium/version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/rfvibium"]
