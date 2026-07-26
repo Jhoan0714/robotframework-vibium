@@ -38,7 +38,7 @@ classifiers = [
 ]
 dependencies = [
   "robotframework>=5.0",
-  "vibium>=26.3.18",
+  "vibium>=26.5.31",
   "robotframework-pythonlibcore>=4.4.1",
 ]
 
@@ -68,3 +68,40 @@ packages = ["src/rfvibium"]
 [tool.pytest.ini_options]
 addopts = "-q --strict-markers --disable-warnings"
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = [
+  "E501",  # line length: handled by black / long Robot docs
+]
+
+[tool.mypy]
+python_version = "3.9"
+packages = ["rfvibium"]
+warn_unused_ignores = true
+
+# Dependencies without py.typed / stubs (not bugs in this library).
+[[tool.mypy.overrides]]
+module = [
+  "robot",
+  "robot.*",
+  "robotlibcore",
+  "robotlibcore.*",
+  "vibium",
+  "vibium.*",
+]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["rfvibium"]
+omit = [
+  "*/rfvibium/types.py",  # typing aliases only; not executed at runtime
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80

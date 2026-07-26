@@ -28,11 +28,17 @@ jobs:
           python -m pip install -e .[dev]
           python -m pip install "robotframework==${{ matrix.robotframework-version }}"
 
-      - name: Lint
+      - name: Format
         run: black --check .
 
+      - name: Lint
+        run: ruff check .
+
+      - name: Type check
+        run: mypy src
+
       - name: Unit tests
-        run: pytest tests/unit
+        run: pytest tests/unit --cov=rfvibium --cov-report=term-missing
 
       # - name: Acceptance tests
       #   run: robot -v HEADLESS:True -d reports/acceptance tests/acceptance

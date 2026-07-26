@@ -32,8 +32,6 @@ and waits for DOM **lifecycle / visibility** states: ``visible``, ``hidden``,
 
 from __future__ import annotations
 
-from typing import FrozenSet
-
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -41,7 +39,7 @@ from ..errors import LocatorSyntaxError, VibiumLibraryError
 from ..locator import format_locators, resolve_required_locators
 from ..utils import parse_timeout_ms
 
-_ELEMENT_WAIT_STATES: FrozenSet[str] = frozenset(
+_ELEMENT_WAIT_STATES: frozenset[str] = frozenset(
     {"visible", "hidden", "attached", "detached"}
 )
 

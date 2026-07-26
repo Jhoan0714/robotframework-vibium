@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -111,7 +109,7 @@ class AssertionKeywords:
 
     @keyword("Find Elements")
     def find_elements(
-        self, *locators: str, limit: Optional[int] = None, scope: object = None
+        self, *locators: str, limit: int | None = None, scope: object = None
     ) -> list[str]:
         """Return ``repr`` strings for all elements matching the locator(s).
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable
 
 from robot.api import logger
 from robot.api.deco import keyword
@@ -36,7 +36,7 @@ def _is_stale_context_error(exc: BaseException) -> bool:
 _CLIP_RECT_KEYS = ("x", "y", "width", "height")
 
 
-def _normalize_screenshot_clip(clip: object) -> Optional[Dict[str, Any]]:
+def _normalize_screenshot_clip(clip: object) -> dict[str, Any] | None:
     """Return a clip dict for ``page.screenshot`` or ``None``."""
     if clip is None:
         return None
@@ -65,10 +65,10 @@ class CaptureKeywords:
     @keyword("Take Screenshot")
     def take_screenshot(
         self,
-        output_path: Optional[str] = None,
+        output_path: str | None = None,
         embed: bool = True,
         width: str = "800px",
-        full_page: Optional[bool] = None,
+        full_page: bool | None = None,
         clip: object = None,
         scope: object = None,
     ) -> str:
@@ -123,7 +123,7 @@ class CaptureKeywords:
     def take_element_screenshot(
         self,
         *locators: str,
-        output_path: Optional[str] = None,
+        output_path: str | None = None,
         embed: bool = True,
         width: str = "800px",
         scope: object = None,
@@ -175,7 +175,7 @@ class CaptureKeywords:
         width: str,
         take_bytes: Callable[[], bytes],
     ) -> str:
-        last_exc: Optional[BaseException] = None
+        last_exc: BaseException | None = None
         for attempt in range(2):
             try:
                 png_bytes = take_bytes()
@@ -198,7 +198,7 @@ class CaptureKeywords:
     @keyword("Save Pdf")
     def save_pdf(
         self,
-        output_path: Optional[str] = None,
+        output_path: str | None = None,
         embed: bool = True,
         scope: object = None,
     ) -> str:
@@ -253,7 +253,7 @@ class CaptureKeywords:
         logger.info(html, html=True)
 
 
-def _robot_output_dir() -> Optional[str]:
+def _robot_output_dir() -> str | None:
     """Return Robot Framework's ``${OUTPUT DIR}`` or ``None`` outside RF."""
     try:
         from robot.libraries.BuiltIn import BuiltIn, RobotNotRunningError

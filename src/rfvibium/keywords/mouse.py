@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional, Union
-
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -85,9 +83,9 @@ class MouseKeywords:
     @keyword("Mouse Click")
     def mouse_click(
         self,
-        x: Optional[Union[int, float, str]] = None,
-        y: Optional[Union[int, float, str]] = None,
-        button: Union[int, str] = 0,
+        x: int | float | str | None = None,
+        y: int | float | str | None = None,
+        button: int | str = 0,
     ) -> None:
         """Click at ``(x, y)`` viewport coordinates.
 
@@ -118,7 +116,7 @@ class MouseKeywords:
         page.mouse.click(xf, yf)
 
     @keyword("Mouse Move")
-    def mouse_move(self, x: Union[int, float, str], y: Union[int, float, str]) -> None:
+    def mouse_move(self, x: int | float | str, y: int | float | str) -> None:
         """Move mouse pointer to ``(x, y)`` viewport coordinates.
 
         | =Argument= | =Description= |
@@ -138,7 +136,7 @@ class MouseKeywords:
         page.mouse.move(xf, yf)
 
     @keyword("Mouse Down")
-    def mouse_down(self, button: Union[int, str] = 0) -> None:
+    def mouse_down(self, button: int | str = 0) -> None:
         """Press mouse button down.
 
         | =Argument= | =Description= |
@@ -162,7 +160,7 @@ class MouseKeywords:
         page.mouse.down()
 
     @keyword("Mouse Up")
-    def mouse_up(self, button: Union[int, str] = 0) -> None:
+    def mouse_up(self, button: int | str = 0) -> None:
         """Release mouse button.
 
         | =Argument= | =Description= |

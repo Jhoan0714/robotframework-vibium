@@ -59,9 +59,8 @@ successful mutation unless there is a very strong reason not to.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
-from . import _patches
 from .errors import BrowserSessionError
 
 
@@ -102,19 +101,18 @@ class BrowserSession:
     """
 
     browser: Any
-    context: Optional[Any] = None
-    page: Optional[Any] = None
-    _contexts: List[Any] = field(default_factory=list, init=False, repr=False)
-    _active_page_by_context: Dict[int, Any] = field(
+    context: Any | None = None
+    page: Any | None = None
+    _contexts: list[Any] = field(default_factory=list, init=False, repr=False)
+    _active_page_by_context: dict[int, Any] = field(
         default_factory=dict, init=False, repr=False
     )
     _context_obj_ids: set = field(default_factory=set, init=False, repr=False)
     _context_str_ids: set = field(default_factory=set, init=False, repr=False)
 
     @classmethod
-    def create(cls, *, headless: bool = False) -> "BrowserSession":
+    def create(cls, *, headless: bool = False) -> BrowserSession:
         """Start one Vibium browser, wrap it in a ``BrowserSession``, bind default page."""
-        _patches.apply_once()
         from vibium import browser as vibium_browser
 
         browser = vibium_browser.start(headless=headless)
@@ -168,7 +166,7 @@ class BrowserSession:
             )
         return page
 
-    def resolve_context(self, context: Optional[Any] = None) -> Any:
+    def resolve_context(self, context: Any | None = None) -> Any:
         """Resolve ``None`` as active context, or validate a handle belongs here."""
 
         if context is None:
@@ -196,7 +194,7 @@ class BrowserSession:
         self.page = None
         return context
 
-    def new_page(self, context: Optional[Any] = None) -> Any:
+    def new_page(self, context: Any | None = None) -> Any:
         """Open a new tab inside ``context``, or inside the browser default stack when omitted."""
 
         if context is not None:
@@ -207,7 +205,7 @@ class BrowserSession:
         self._bind_active_page(page)
         return page
 
-    def close_page(self, page: Optional[Any] = None) -> None:
+    def close_page(self, page: Any | None = None) -> None:
         """Resolve page to close, ask Vibium to close it, then repair active tab state."""
 
         target = self.require_page() if page is None else page
@@ -232,12 +230,12 @@ class BrowserSession:
             if self.context is target_context:
                 self.page = None
 
-    def contexts(self) -> List[Any]:
+    def contexts(self) -> list[Any]:
         """Return context objects registered on this session (library view, not full remote dump)."""
 
         return list(self._contexts)
 
-    def pages(self) -> List[Any]:
+    def pages(self) -> list[Any]:
         """Return all open pages according to Vibium (RPC); thin wrapper over ``browser.pages()``."""
 
         return list(self.browser.pages())
@@ -249,7 +247,7 @@ class BrowserSession:
         self.context = target
         self.page = self._active_page_by_context.get(id(target))
 
-    def close_context(self, context: Optional[Any] = None) -> None:
+    def close_context(self, context: Any | None = None) -> None:
         """Close a user context remotely and reconcile local bookkeeping."""
 
         target = self.resolve_context(context=context)
@@ -319,25 +317,25 @@ class SessionPool:
     """
 
     headless: bool = False
-    browser: Optional[Any] = None
-    context: Optional[Any] = None
-    page: Optional[Any] = None
-    _sessions: List[BrowserSession] = field(
+    browser: Any | None = None
+    context: Any | None = None
+    page: Any | None = None
+    _sessions: list[BrowserSession] = field(
         default_factory=list, init=False, repr=False
     )
-    _by_browser_id: Dict[int, BrowserSession] = field(
+    _by_browser_id: dict[int, BrowserSession] = field(
         default_factory=dict, init=False, repr=False
     )
-    _by_context_id: Dict[int, BrowserSession] = field(
+    _by_context_id: dict[int, BrowserSession] = field(
         default_factory=dict, init=False, repr=False
     )
-    _by_context_str_id: Dict[Any, BrowserSession] = field(
+    _by_context_str_id: dict[Any, BrowserSession] = field(
         default_factory=dict, init=False, repr=False
     )
-    _by_page_id: Dict[int, BrowserSession] = field(
+    _by_page_id: dict[int, BrowserSession] = field(
         default_factory=dict, init=False, repr=False
     )
-    _by_page_str_id: Dict[Any, BrowserSession] = field(
+    _by_page_str_id: dict[Any, BrowserSession] = field(
         default_factory=dict, init=False, repr=False
     )
 
@@ -349,7 +347,7 @@ class SessionPool:
         self._after_mutation(session)
         return session.browser
 
-    def close(self, browser: Optional[Any] = None) -> None:
+    def close(self, browser: Any | None = None) -> None:
         """Stop one browser; unregister it; promote globals to last remaining session."""
 
         if browser is None and self.browser is None:
@@ -368,7 +366,7 @@ class SessionPool:
             self._clear_globals()
             return
 
-        failures: List[str] = []
+        failures: list[str] = []
         for session in list(self._sessions):
             try:
                 session.close()
@@ -393,7 +391,7 @@ class SessionPool:
             raise BrowserSessionError("No active page. Call `Open Browser` first.")
         return self.page
 
-    def get_active_page(self, browser: Optional[Any] = None) -> Any:
+    def get_active_page(self, browser: Any | None = None) -> Any:
         """Global shortcut when ``browser`` omitted; scoped lookup when explicit handle given."""
 
         if browser is None:
@@ -401,7 +399,7 @@ class SessionPool:
         session = self._require_session_by_browser(self.resolve_browser(browser))
         return session.require_page()
 
-    def get_active_context(self, browser: Optional[Any] = None) -> Any:
+    def get_active_context(self, browser: Any | None = None) -> Any:
         """Always read through the owning :class:`BrowserSession` so globals stay truthful."""
 
         session = self._require_session_by_browser(self.resolve_browser(browser))
@@ -413,7 +411,7 @@ class SessionPool:
         session = self._require_session_by_context(context)
         return session.get_active_page_for_context(context)
 
-    def resolve_browser(self, browser: Optional[Any] = None) -> Any:
+    def resolve_browser(self, browser: Any | None = None) -> Any:
         """Return active global browser when omitted; validate registration otherwise."""
 
         candidate = self.browser if browser is None else browser
@@ -425,7 +423,7 @@ class SessionPool:
             )
         return candidate
 
-    def set_active_page(self, page: Any, browser: Optional[Any] = None) -> None:
+    def set_active_page(self, page: Any, browser: Any | None = None) -> None:
         """Focus bookkeeping for ``page``; optionally constrain to explicit ``browser``.
 
         Resolution prefers ``browser=`` when provided; otherwise uses reverse map
@@ -440,14 +438,14 @@ class SessionPool:
         session.set_active_page(page)
         self._after_mutation(session)
 
-    def pages(self, browser: Optional[Any] = None) -> List[Any]:
+    def pages(self, browser: Any | None = None) -> list[Any]:
         """Return open pages RPC list for resolved browser."""
 
         session = self._require_session_by_browser(self.resolve_browser(browser))
         return session.pages()
 
     def resolve_context(
-        self, context: Optional[Any] = None, browser: Optional[Any] = None
+        self, context: Any | None = None, browser: Any | None = None
     ) -> Any:
         """Resolve ``None`` -> active context; else validate membership + browser mismatch."""
 
@@ -460,7 +458,7 @@ class SessionPool:
             )
         return session.resolve_context(context)
 
-    def new_context(self, browser: Optional[Any] = None) -> Any:
+    def new_context(self, browser: Any | None = None) -> Any:
         """Create isolated browser context via pool-selected session."""
 
         def op(s: BrowserSession) -> Any:
@@ -468,27 +466,25 @@ class SessionPool:
 
         return self._mutate_browser(browser, op)
 
-    def new_page(
-        self, context: Optional[Any] = None, browser: Optional[Any] = None
-    ) -> Any:
+    def new_page(self, context: Any | None = None, browser: Any | None = None) -> Any:
         """Create tab optionally bound to explicit ``context`` or default browser."""
 
         if context is not None:
             resolved = self.resolve_context(context=context, browser=browser)
             session = self._require_session_by_context(resolved)
 
-            def op(s: BrowserSession) -> Any:
+            def op_with_context(s: BrowserSession) -> Any:
                 return s.new_page(context=resolved)
 
-            return self._mutate_session(session, op)
+            return self._mutate_session(session, op_with_context)
         session = self._require_session_by_browser(self.resolve_browser(browser))
 
-        def op(s: BrowserSession) -> Any:
+        def op_default(s: BrowserSession) -> Any:
             return s.new_page()
 
-        return self._mutate_session(session, op)
+        return self._mutate_session(session, op_default)
 
-    def close_page(self, page: Optional[Any] = None) -> None:
+    def close_page(self, page: Any | None = None) -> None:
         """Delegate close to owning session identified by implicit active page or handle."""
 
         target = self.require_page() if page is None else page
@@ -499,13 +495,13 @@ class SessionPool:
 
         self._mutate_session(session, op)
 
-    def contexts(self, browser: Optional[Any] = None) -> List[Any]:
+    def contexts(self, browser: Any | None = None) -> list[Any]:
         """Return library-tracked contexts for chosen browser (not exhaustive remote enumeration)."""
 
         session = self._require_session_by_browser(self.resolve_browser(browser))
         return session.contexts()
 
-    def switch_context(self, context: Any, browser: Optional[Any] = None) -> None:
+    def switch_context(self, context: Any, browser: Any | None = None) -> None:
         """Update active context inside session and sync pool globals."""
 
         resolved = self.resolve_context(context=context, browser=browser)
@@ -517,7 +513,7 @@ class SessionPool:
         self._mutate_session(session, op)
 
     def close_context(
-        self, context: Optional[Any] = None, browser: Optional[Any] = None
+        self, context: Any | None = None, browser: Any | None = None
     ) -> None:
         """Close remote user context plus local maps; then reconcile indices."""
 
@@ -534,7 +530,7 @@ class SessionPool:
 
         return len(self._sessions)
 
-    def resolve_scope(self, scope: Optional[Any] = None) -> Any:
+    def resolve_scope(self, scope: Any | None = None) -> Any:
         """Keyword helper: implicit active ``page`` or explicit page/frame-like object unchanged."""
 
         return self.require_page() if scope is None else scope
@@ -563,7 +559,7 @@ class SessionPool:
         return result
 
     def _mutate_browser(
-        self, browser: Optional[Any], fn: Callable[[BrowserSession], Any]
+        self, browser: Any | None, fn: Callable[[BrowserSession], Any]
     ) -> Any:
         """``_mutate_session`` variant that first resolves owning session from browser handle."""
 
