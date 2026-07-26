@@ -101,6 +101,22 @@ def test_close_active_browser_promotes_last_opened() -> None:
     assert session.page is b1.page()
 
 
+def test_close_deindexes_even_when_stop_raises() -> None:
+    pool = SessionPool()
+    ok = FakeBrowser("ok")
+    bad = FailingBrowser("bad")
+    _register(pool, ok)
+    _register(pool, bad)
+
+    with pytest.raises(RuntimeError, match="bad-stop-failed"):
+        pool.close(browser=bad)
+
+    assert pool.browser_count() == 1
+    assert pool.browser is ok
+    assert pool.page is ok.page()
+    assert id(bad) not in pool._by_browser_id
+
+
 def test_close_all_is_best_effort_and_raises_aggregate_error() -> None:
     session = SessionPool()
     ok = FakeBrowser("ok")
