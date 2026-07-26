@@ -1,9 +1,8 @@
 name: Publish Libdoc
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 concurrency:
   group: pages
