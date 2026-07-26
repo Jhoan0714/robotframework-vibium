@@ -1,3 +1,4 @@
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -58,6 +59,19 @@ class DummySession:
 class TestableWait(WaitKeywords):
     def __init__(self, page: DummyPage) -> None:
         self.library = SimpleNamespace(_session=DummySession(page))
+
+
+def test_wait_for_text_escapes_special_characters() -> None:
+    page = DummyPage()
+    kw = TestableWait(page)
+    text = "line1\nline2 path\\to año"
+
+    kw.wait_for_text(text, timeout="1s")
+
+    fn, timeout_ms = page.wait_until.fn_calls[0]
+    assert json.dumps(text) in fn
+    assert fn.startswith("() => document.body && document.body.innerText.includes(")
+    assert timeout_ms == 1000
 
 
 def test_wait_for_element_resolves_and_waits() -> None:

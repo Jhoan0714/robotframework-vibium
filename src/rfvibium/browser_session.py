@@ -354,10 +354,13 @@ class SessionPool:
             return
         target = self.resolve_browser(browser)
         session = self._require_session_by_browser(target)
-        session.close()
-        self._sessions = [s for s in self._sessions if s is not session]
-        self._unindex_session(session, browser=target)
-        self._activate_last_session(clear_when_empty=True)
+        try:
+            session.close()
+        finally:
+            # Keep pool indexes consistent even if browser.stop() fails.
+            self._sessions = [s for s in self._sessions if s is not session]
+            self._unindex_session(session, browser=target)
+            self._activate_last_session(clear_when_empty=True)
 
     def close_all(self) -> None:
         """Best-effort shutdown of every tracked session; aggregates first wave of errors."""

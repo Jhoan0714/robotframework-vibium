@@ -32,6 +32,8 @@ and waits for DOM **lifecycle / visibility** states: ``visible``, ``hidden``,
 
 from __future__ import annotations
 
+import json
+
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -70,7 +72,7 @@ class WaitKeywords:
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for text '{text}' on page (timeout={timeout}).")
         page.wait_until(
-            f"() => document.body && document.body.innerText.includes({text!r})",
+            f"() => document.body && document.body.innerText.includes({json.dumps(text)})",
             timeout=timeout_ms,
         )
 
