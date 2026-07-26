@@ -38,7 +38,7 @@ classifiers = [
 ]
 dependencies = [
   "robotframework>=5.0",
-  "vibium>=26.3.18",
+  "vibium>=26.5.31",
   "robotframework-pythonlibcore>=4.4.1",
 ]
 
