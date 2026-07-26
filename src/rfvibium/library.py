@@ -15,9 +15,10 @@ from .keywords.interaction import InteractionKeywords
 from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.waits import WaitKeywords
+from .version import __version__
 
 
-@library(scope="GLOBAL", version="0.2.0", doc_format="ROBOT")
+@library(scope="GLOBAL", version=__version__, doc_format="ROBOT")
 class Vibium(DynamicCore):
     """Vibium library is a browser automation library for Robot Framework.
 
@@ -169,7 +170,7 @@ class Vibium(DynamicCore):
     """
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
-    ROBOT_LIBRARY_VERSION = "0.2.0"
+    ROBOT_LIBRARY_VERSION = __version__
 
     def __init__(self, headless: bool = False):
         self._session = SessionPool(headless=headless)
