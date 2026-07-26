@@ -22,7 +22,7 @@ Public contract:
 from __future__ import annotations
 
 import json
-from typing import Any, Optional, Union
+from typing import Any
 
 from robot.api import logger
 from robot.api.deco import keyword
@@ -158,7 +158,7 @@ class InteractionKeywords:
     @keyword("Get Element Attr")
     def get_element_attr(
         self, name: str, *locators: str, scope: object = None
-    ) -> Optional[str]:
+    ) -> str | None:
         """Return an attribute value from the matched element.
 
         | =Argument= | =Description= |
@@ -180,7 +180,7 @@ class InteractionKeywords:
     @keyword("Get Element Attribute")
     def get_element_attribute(
         self, name: str, *locators: str, scope: object = None
-    ) -> Optional[str]:
+    ) -> str | None:
         """Alias of ``Get Element Attr`` using ``element.get_attribute(name)``.
 
         | =Argument= | =Description= |
@@ -626,7 +626,7 @@ class InteractionKeywords:
         self,
         source: object,
         target: object,
-        timeout: Optional[str] = None,
+        timeout: str | None = None,
         scope: object = None,
     ) -> None:
         """Drag one resolved element to another.
@@ -650,7 +650,7 @@ class InteractionKeywords:
         tgt_tokens = InteractionKeywords._coerce_locator_token_group("target", target)
         src_args, src_kwargs = resolve_required_locators(src_tokens)
         tgt_args, tgt_kwargs = resolve_required_locators(tgt_tokens)
-        timeout_ms: Optional[int] = None
+        timeout_ms: int | None = None
         if timeout is not None and str(timeout).strip():
             timeout_ms = parse_timeout_ms(str(timeout))
 

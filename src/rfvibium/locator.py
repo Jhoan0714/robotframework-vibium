@@ -21,7 +21,8 @@ SeleniumLibrary. The ``:`` form is unambiguous and safe.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, Tuple
+from collections.abc import Iterable
+from typing import Any
 
 from .errors import LocatorSyntaxError
 
@@ -42,7 +43,7 @@ CSS_PREFIX = "css"
 SUPPORTED_PREFIXES = (CSS_PREFIX, *SEMANTIC_PREFIXES)
 
 
-def parse_locator(target: str) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+def parse_locator(target: str) -> tuple[tuple[Any, ...], dict[str, Any]]:
     """Return ``(args, kwargs)`` to forward into ``page.find``.
 
     - ``role:button`` → ``((), {"role": "button"})``
@@ -169,7 +170,7 @@ def looks_like_locator(candidate: str) -> bool:
 
 def merge_locators(
     targets: Iterable[str],
-) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+) -> tuple[tuple[Any, ...], dict[str, Any]]:
     """Merge several ``strategy:value`` strings into a single ``find`` call.
 
     Rules:
@@ -178,8 +179,8 @@ def merge_locators(
       most once. Duplicates raise :class:`~.errors.LocatorSyntaxError`.
     - Empty iterable raises :class:`~.errors.LocatorSyntaxError`.
     """
-    merged_args: Tuple[Any, ...] = ()
-    merged_kwargs: Dict[str, Any] = {}
+    merged_args: tuple[Any, ...] = ()
+    merged_kwargs: dict[str, Any] = {}
     count = 0
 
     for target in targets:
@@ -210,7 +211,7 @@ def merge_locators(
 
 def resolve_required_locators(
     targets: Iterable[str],
-) -> Tuple[Tuple[Any, ...], Dict[str, Any]]:
+) -> tuple[tuple[Any, ...], dict[str, Any]]:
     """Resolve one-or-more locator tokens for ``page.find`` calls.
 
     This is the shared helper for keyword modules. It keeps the user-facing

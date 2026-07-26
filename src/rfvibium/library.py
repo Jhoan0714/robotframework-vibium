@@ -6,6 +6,7 @@ from robot.api import logger
 from robot.api.deco import keyword, library
 from robotlibcore import DynamicCore
 
+from .browser_session import SessionPool
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
 from .keywords.context import CookieKeywords, StorageKeywords
@@ -14,7 +15,6 @@ from .keywords.interaction import InteractionKeywords
 from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.waits import WaitKeywords
-from .browser_session import SessionPool
 
 
 @library(scope="GLOBAL", version="0.2.0", doc_format="ROBOT")

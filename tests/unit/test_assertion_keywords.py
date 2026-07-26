@@ -1,6 +1,5 @@
 """Unit tests for ``Vibium.keywords.assertions`` (read-only page keywords)."""
 
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest

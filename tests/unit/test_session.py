@@ -1,7 +1,7 @@
 import pytest
 
-from rfvibium.errors import BrowserSessionError, VibiumLibraryError
 from rfvibium.browser_session import SessionPool
+from rfvibium.errors import BrowserSessionError, VibiumLibraryError
 
 
 def test_require_page_without_open_raises_browser_session_error() -> None:

@@ -4,13 +4,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from robot.api import logger
 from robot.api.deco import keyword
 
 from .capture import _path_for_log, _resolve_capture_path
-
 
 DEFAULT_STORAGE_PATTERN = "vibium-storage-{index}.json"
 
@@ -22,7 +21,7 @@ class CookieKeywords:
         self.library = library
 
     @keyword("List Cookies")
-    def list_cookies(self, context: object = None) -> List[Dict[str, Any]]:
+    def list_cookies(self, context: object = None) -> list[dict[str, Any]]:
         """Return all cookies from the active browser context.
 
         | =Argument= | =Description= |
@@ -50,7 +49,7 @@ class CookieKeywords:
         http_only: bool = False,
         secure: bool = False,
         same_site: str = "",
-        expiry: Optional[int] = None,
+        expiry: int | None = None,
         context: object = None,
     ) -> None:
         """Create or update a cookie in the active browser context.
@@ -78,7 +77,7 @@ class CookieKeywords:
         ctx = _resolve_context(self.library._session, context)
         page = _page_for_context(self.library._session, ctx)
 
-        cookie: Dict[str, Any] = {
+        cookie: dict[str, Any] = {
             "name": name,
             "value": value,
             "url": url or (None if domain else page.url()),
@@ -119,7 +118,7 @@ class StorageKeywords:
     @keyword("Export Storage State")
     def export_storage_state(
         self,
-        output_path: Optional[str] = None,
+        output_path: str | None = None,
         embed: bool = True,
         context: object = None,
     ) -> str:
@@ -189,14 +188,14 @@ def _next_auto_storage_path() -> Path:
         index += 1
 
 
-def _resolve_context(session: object, context: object = None):
+def _resolve_context(session: Any, context: Any = None):
     if hasattr(session, "resolve_context"):
         return session.resolve_context(context=context)
     page = session.require_page()
     return page.context if context is None else context
 
 
-def _page_for_context(session: object, context: object):
+def _page_for_context(session: Any, context: Any):
     if hasattr(session, "get_active_page_for_context"):
         return session.get_active_page_for_context(context)
     return session.require_page()
