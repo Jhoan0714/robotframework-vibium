@@ -4,7 +4,7 @@ All library errors inherit from :class:`VibiumLibraryError` so users can
 catch either a specific subclass or the base class for a broader net::
 
     TRY
-        Click Element    role:button
+        Click    role:button
     EXCEPT    AS    ${err}
         Log    ${err}
     END

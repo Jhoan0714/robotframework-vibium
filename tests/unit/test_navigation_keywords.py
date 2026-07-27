@@ -392,7 +392,7 @@ def test_navigation_keywords_use_explicit_scope_when_provided() -> None:
 
     kw.go_back(scope=frame)
     kw.go_forward(scope=frame)
-    kw.reload_page(scope=frame)
+    kw.reload(scope=frame)
 
     assert frame.back_calls == 1
     assert frame.forward_calls == 1

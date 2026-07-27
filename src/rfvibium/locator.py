@@ -83,7 +83,7 @@ def parse_locator(target: str) -> tuple[tuple[Any, ...], dict[str, Any]]:
 def _guard_type(target: Any) -> None:
     """Reject non-string locators with an actionable message.
 
-    The common trigger is calling ``Click Element    ${VAR}`` where ``VAR``
+    The common trigger is calling ``Click    ${VAR}`` where ``VAR``
     was defined as ``@{VAR}`` in the Variables section. Robot Framework then
     passes a Python ``list`` instead of a string.
     """
@@ -98,7 +98,7 @@ def _guard_type(target: Any) -> None:
             "accessed with '${VAR}' instead of '@{VAR}'. Use '@{VAR}' at "
             "the call site to expand the list into separate arguments:\n"
             "    @{LOCATOR}    strategy:value    strategy:value\n"
-            "    Click Element    @{LOCATOR}"
+            "    Click    @{LOCATOR}"
         )
 
     raise LocatorSyntaxError(f"Locator must be a string, got {type(target).__name__}.")
@@ -130,7 +130,7 @@ def _guard_stringified_sequence(candidate: str) -> None:
         "list to its string representation before passing it to the keyword. "
         "Expand the variable at the call site:\n"
         "    @{LOCATOR}    strategy:value    strategy:value\n"
-        "    Click Element    @{LOCATOR}"
+        "    Click    @{LOCATOR}"
     )
 
 
@@ -152,7 +152,7 @@ def _guard_collapsed_prefixes(full: str, value: str) -> None:
                 "Variables with multiple values: Robot Framework joins them "
                 "with a space. Use a list variable and expand it with '@{VAR}':\n"
                 "    @{LOCATOR}    strategy:value    strategy:value\n"
-                "    Click Element    @{LOCATOR}"
+                "    Click    @{LOCATOR}"
             )
 
 
@@ -160,7 +160,7 @@ def looks_like_locator(candidate: str) -> bool:
     """Return True if ``candidate`` starts with a known ``strategy:`` prefix.
 
     Used by keywords that need to disambiguate between a locator and a value
-    when both can appear as positional arguments (e.g. ``Fill Element``).
+    when both can appear as positional arguments (e.g. ``Fill Text``).
     """
     if not isinstance(candidate, str):
         return False

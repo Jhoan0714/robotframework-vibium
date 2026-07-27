@@ -179,102 +179,102 @@ class TestableInteraction(InteractionKeywords):
 
 
 # ---------------------------------------------------------------------------
-# Click Element
+# Click
 # ---------------------------------------------------------------------------
 
 
-def test_click_element_with_plain_css_selector() -> None:
+def test_click_with_plain_css_selector() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.click_element("input[name='q']")
+    kw.click("input[name='q']")
 
     assert page.last_args == ("input[name='q']",)
     assert page.last_kwargs == {}
     assert page.element.clicked is True
 
 
-def test_click_element_with_role_prefix() -> None:
+def test_click_with_role_prefix() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.click_element("role:button")
+    kw.click("role:button")
 
     assert page.last_args == ()
     assert page.last_kwargs == {"role": "button"}
 
 
-def test_click_element_combines_role_and_text() -> None:
+def test_click_combines_role_and_text() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.click_element("role:button", "text:Log in")
+    kw.click("role:button", "text:Log in")
 
     assert page.last_args == ()
     assert page.last_kwargs == {"role": "button", "text": "Log in"}
 
 
-def test_click_element_preserves_xpath_with_equals() -> None:
+def test_click_preserves_xpath_with_equals() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.click_element("xpath://input[@id='email' and @type='text']")
+    kw.click("xpath://input[@id='email' and @type='text']")
 
     assert page.last_args == ()
     assert page.last_kwargs == {"xpath": "//input[@id='email' and @type='text']"}
 
 
-def test_click_element_without_locators_raises() -> None:
+def test_click_without_locators_raises() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="(?i)at least one locator"):
-        kw.click_element()
+        kw.click()
 
 
-def test_click_element_with_duplicate_axis_raises() -> None:
+def test_click_with_duplicate_axis_raises() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="Duplicate locator filter"):
-        kw.click_element("role:button", "role:link")
+        kw.click("role:button", "role:link")
 
 
-def test_click_element_rejects_list_argument_with_hint() -> None:
+def test_click_rejects_list_argument_with_hint() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match=r"@\{VAR\}"):
-        kw.click_element(["role:button", "text:Log in"])  # type: ignore[arg-type]
+        kw.click(["role:button", "text:Log in"])  # type: ignore[arg-type]
 
 
-def test_click_element_rejects_stringified_list_with_hint() -> None:
+def test_click_rejects_stringified_list_with_hint() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match=r"stringified Python list"):
-        kw.click_element("['role:button', 'text:Log in']")
+        kw.click("['role:button', 'text:Log in']")
 
 
-def test_click_element_rejects_collapsed_prefixes_with_hint() -> None:
+def test_click_rejects_collapsed_prefixes_with_hint() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="collapsed into a single string"):
-        kw.click_element("role:button text:Log in")
+        kw.click("role:button text:Log in")
 
 
 # ---------------------------------------------------------------------------
-# Fill Element — ergonomic mode (value as last positional)
+# Fill Text — ergonomic mode (value as last positional)
 # ---------------------------------------------------------------------------
 
 
-def test_fill_element_css_selector_with_value_last() -> None:
+def test_fill_text_css_selector_with_value_last() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.fill_element("input[name='email']", "user@example.com")
+    kw.fill_text("input[name='email']", "user@example.com")
 
     assert page.last_args == ("input[name='email']",)
     assert page.last_kwargs == {}
     assert page.element.filled_value == "user@example.com"
 
 
-def test_fill_element_combines_filters_with_value_last() -> None:
+def test_fill_text_combines_filters_with_value_last() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.fill_element("role:textbox", "label:E-mail", "user@example.com")
+    kw.fill_text("role:textbox", "label:E-mail", "user@example.com")
 
     assert page.last_args == ()
     assert page.last_kwargs == {"role": "textbox", "label": "E-mail"}
@@ -282,60 +282,60 @@ def test_fill_element_combines_filters_with_value_last() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fill Element — explicit value= mode
+# Fill Text — explicit value= mode
 # ---------------------------------------------------------------------------
 
 
-def test_fill_element_explicit_value_kwarg() -> None:
+def test_fill_text_explicit_value_kwarg() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.fill_element("role:textbox", value="user@example.com")
+    kw.fill_text("role:textbox", value="user@example.com")
 
     assert page.last_kwargs == {"role": "textbox"}
     assert page.element.filled_value == "user@example.com"
 
 
-def test_fill_element_explicit_value_with_value_that_looks_like_locator() -> None:
+def test_fill_text_explicit_value_with_value_that_looks_like_locator() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.fill_element("input#comment", value="role:admin")
+    kw.fill_text("input#comment", value="role:admin")
 
     assert page.last_args == ("input#comment",)
     assert page.element.filled_value == "role:admin"
 
 
-def test_fill_element_empty_string_value_is_allowed() -> None:
+def test_fill_text_empty_string_value_is_allowed() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.fill_element("input#x", value="")
+    kw.fill_text("input#x", value="")
 
     assert page.element.filled_value == ""
 
 
 # ---------------------------------------------------------------------------
-# Fill Element — error cases
+# Fill Text — error cases
 # ---------------------------------------------------------------------------
 
 
-def test_fill_element_rejects_ambiguous_last_positional() -> None:
+def test_fill_text_rejects_ambiguous_last_positional() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="looks like a locator"):
-        kw.fill_element("role:textbox", "label:E-mail")
+        kw.fill_text("role:textbox", "label:E-mail")
 
 
-def test_fill_element_rejects_single_positional_without_value() -> None:
+def test_fill_text_rejects_single_positional_without_value() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="locator and a value"):
-        kw.fill_element("role:textbox")
+        kw.fill_text("role:textbox")
 
 
-def test_fill_element_rejects_value_without_locator() -> None:
+def test_fill_text_rejects_value_without_locator() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="(?i)at least one locator"):
-        kw.fill_element(value="user@example.com")
+        kw.fill_text(value="user@example.com")
 
 
 # ---------------------------------------------------------------------------
@@ -357,7 +357,7 @@ def test_get_text_with_locator_reads_element_text() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    result = kw.get_element_text("role:button", "text:Save")
+    result = kw.get_text("role:button", "text:Save")
 
     assert result == "ELEMENT TEXT"
     assert page.last_args == ()
@@ -368,20 +368,11 @@ def test_element_read_keywords_call_expected_methods() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    assert kw.get_element_inner_text("role:button") == "INNER TEXT"
-    assert kw.get_element_html("role:button") == "<div>HTML</div>"
-    assert kw.get_element_value("role:button") == "VALUE"
-    assert kw.get_element_attr("data-id", "role:button") == "ATTR_VALUE"
+    assert kw.get_inner_text("role:button") == "INNER TEXT"
+    assert kw.get_value("role:button") == "VALUE"
+    assert kw.get_attribute("data-id", "role:button") == "ATTR_VALUE"
     assert page.element.attr_name == "data-id"
-    assert kw.get_element_attribute("aria-label", "role:button") == "ATTR_VALUE"
-    assert page.element.attr_name == "aria-label"
-    assert kw.get_element_bounds("role:button") == {
-        "x": 1,
-        "y": 2,
-        "width": 3,
-        "height": 4,
-    }
-    assert kw.get_element_bounding_box("role:button") == {
+    assert kw.get_bounds("role:button") == {
         "x": 1,
         "y": 2,
         "width": 3,
@@ -392,8 +383,8 @@ def test_element_read_keywords_call_expected_methods() -> None:
     assert kw.element_is_enabled("role:button") is True
     assert kw.element_is_checked("role:button") is False
     assert kw.element_is_editable("role:button") is True
-    assert kw.get_element_role("role:button") == "button"
-    assert kw.get_element_label("role:button") == "Save"
+    assert kw.get_role("role:button") == "button"
+    assert kw.get_label("role:button") == "Save"
 
 
 # ---------------------------------------------------------------------------
@@ -401,34 +392,34 @@ def test_element_read_keywords_call_expected_methods() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_click_element_logs_locator(monkeypatch) -> None:
+def test_click_logs_locator(monkeypatch) -> None:
     spy = _LoggerSpy()
     monkeypatch.setattr(interaction_module, "logger", spy)
     kw = TestableInteraction(DummyPage())
 
-    kw.click_element("role:button", "text:Log in")
+    kw.click("role:button", "text:Log in")
 
     assert spy.messages == ["Clicking element 'role:button text:Log in'."]
 
 
-def test_fill_element_logs_value_by_default(monkeypatch) -> None:
+def test_fill_text_logs_value_by_default(monkeypatch) -> None:
     spy = _LoggerSpy()
     monkeypatch.setattr(interaction_module, "logger", spy)
     kw = TestableInteraction(DummyPage())
 
-    kw.fill_element("role:textbox", value="user@example.com")
+    kw.fill_text("role:textbox", value="user@example.com")
 
     assert any(
         "user@example.com" in msg and "role:textbox" in msg for msg in spy.messages
     )
 
 
-def test_fill_element_masks_value_when_secret(monkeypatch) -> None:
+def test_fill_text_masks_value_when_secret(monkeypatch) -> None:
     spy = _LoggerSpy()
     monkeypatch.setattr(interaction_module, "logger", spy)
     kw = TestableInteraction(DummyPage())
 
-    kw.fill_element("role:textbox", value="s3cret", secret=True)
+    kw.fill_text("role:textbox", value="s3cret", secret=True)
 
     joined = " ".join(spy.messages)
     assert "***" in joined
@@ -509,40 +500,40 @@ def test_type_text_masks_value_when_secret(monkeypatch) -> None:
     assert "secret" not in joined
 
 
-def test_clear_element_calls_clear() -> None:
+def test_clear_text_calls_clear() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.clear_element("css:#email")
+    kw.clear_text("css:#email")
 
     assert page.element.cleared is True
 
 
-def test_double_click_element_calls_dblclick() -> None:
+def test_double_click_calls_dblclick() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.double_click_element("role:button", "text:Open")
+    kw.double_click("role:button", "text:Open")
 
     assert page.last_kwargs == {"role": "button", "text": "Open"}
     assert page.element.double_clicked is True
 
 
-def test_hover_element_calls_hover() -> None:
+def test_hover_calls_hover() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.hover_element("xpath://button[@id='x']")
+    kw.hover("xpath://button[@id='x']")
 
     assert page.last_kwargs == {"xpath": "//button[@id='x']"}
     assert page.element.hovered is True
 
 
-def test_focus_element_calls_focus() -> None:
+def test_focus_calls_focus() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.focus_element("input[name='q']")
+    kw.focus("input[name='q']")
 
     assert page.last_args == ("input[name='q']",)
     assert page.element.focused is True
@@ -568,8 +559,8 @@ def test_check_and_uncheck_keywords() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.check_element("role:checkbox", "text:Terms")
-    kw.uncheck_element("role:checkbox", "text:Terms")
+    kw.check("role:checkbox", "text:Terms")
+    kw.uncheck("role:checkbox", "text:Terms")
 
     assert page.element.checked is True
     assert page.element.unchecked is True
@@ -684,11 +675,11 @@ def test_drag_and_drop_rejects_empty_source_list() -> None:
         kw.drag_and_drop(source=[], target="css:b")
 
 
-def test_scroll_element_into_view_calls_element_method() -> None:
+def test_scroll_into_view_calls_element_method() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.scroll_element_into_view("xpath://div[@id='target']")
+    kw.scroll_into_view("xpath://div[@id='target']")
 
     assert page.last_kwargs == {"xpath": "//div[@id='target']"}
     assert page.element.scrolled_into_view is True
@@ -726,16 +717,16 @@ def test_scroll_rejects_semantic_locator_scope() -> None:
 def test_locator_error_is_typed_as_locator_syntax_error() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(LocatorSyntaxError):
-        kw.click_element("role:")
+        kw.click("role:")
 
 
 def test_empty_locator_call_is_locator_syntax_error() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(LocatorSyntaxError):
-        kw.click_element()
+        kw.click()
 
 
 def test_typed_errors_are_catchable_as_base() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError):
-        kw.click_element()
+        kw.click()

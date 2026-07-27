@@ -10,10 +10,10 @@ Get Frame Missing Raises Typed Error
     [Tags]    acceptance    negative
     Run Keyword And Expect Error    *could not find a frame matching*    Get Frame    missing
 
-Fill Element Missing Value Raises Locator Error
-    [Documentation]    Validates argument contract for Fill Element.
+Fill Text Missing Value Raises Locator Error
+    [Documentation]    Validates argument contract for Fill Text.
     [Tags]    acceptance    negative
-    Run Keyword And Expect Error    *requires at least one locator and a value*    Fill Element    css:#name
+    Run Keyword And Expect Error    *requires at least one locator and a value*    Fill Text    css:#name
 
 Scroll Rejects Semantic Scoped Locator
     [Documentation]    Validates Scroll contract for scoped CSS-only selector.

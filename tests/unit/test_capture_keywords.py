@@ -128,7 +128,7 @@ def test_take_screenshot_succeeds_on_first_attempt(tmp_path: Path) -> None:
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.take_screenshot(str(tmp_path / "ok.png"))
+    out = kw.take_screenshot(output_path=str(tmp_path / "ok.png"))
 
     assert page.screenshot_calls == 1
     assert page.wait_until.loaded_calls == 0
@@ -142,7 +142,7 @@ def test_take_screenshot_passes_full_page_and_clip(tmp_path: Path) -> None:
     kw = TestableCapture(page)
     clip = {"x": 1, "y": 2, "width": 100, "height": 200}
 
-    kw.take_screenshot(str(tmp_path / "clip.png"), full_page=True, clip=clip)
+    kw.take_screenshot(output_path=str(tmp_path / "clip.png"), full_page=True, clip=clip)
 
     assert page.last_screenshot_full_page is True
     assert page.last_screenshot_clip == {"x": 1, "y": 2, "width": 100, "height": 200}
@@ -153,7 +153,7 @@ def test_take_screenshot_accepts_clip_json_string(tmp_path: Path) -> None:
     kw = TestableCapture(page)
 
     kw.take_screenshot(
-        str(tmp_path / "j.png"),
+        output_path=str(tmp_path / "j.png"),
         clip='{"x": 0, "y": 0, "width": 10, "height": 20}',
     )
 
@@ -164,14 +164,14 @@ def test_take_screenshot_rejects_incomplete_clip(tmp_path: Path) -> None:
     page = DummyPage([b"PNG"])
     kw = TestableCapture(page)
     with pytest.raises(ScreenshotError, match="missing"):
-        kw.take_screenshot(str(tmp_path / "bad.png"), clip={"x": 0, "y": 0, "width": 1})
+        kw.take_screenshot(output_path=str(tmp_path / "bad.png"), clip={"x": 0, "y": 0, "width": 1})
 
 
-def test_take_element_screenshot_uses_find_and_element_api(tmp_path: Path) -> None:
+def test_take_screenshot_with_locator_uses_find_and_element_api(tmp_path: Path) -> None:
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.take_element_screenshot("css:#card", output_path=str(tmp_path / "el.png"))
+    out = kw.take_screenshot("css:#card", output_path=str(tmp_path / "el.png"))
 
     assert page.last_find_args == ("#card",)
     assert page.last_find_kwargs == {}
@@ -180,12 +180,29 @@ def test_take_element_screenshot_uses_find_and_element_api(tmp_path: Path) -> No
     assert Path(out).read_bytes() == b"ELPNG"
 
 
+def test_take_screenshot_with_locator_ignores_full_page_and_clip(tmp_path: Path) -> None:
+    page = DummyPage([b"PNGDATA"])
+    kw = TestableCapture(page)
+
+    kw.take_screenshot(
+        "css:#card",
+        output_path=str(tmp_path / "el.png"),
+        full_page=True,
+        clip={"x": 0, "y": 0, "width": 1, "height": 1},
+    )
+
+    assert page.find_element.element_screenshot_calls == 1
+    assert page.screenshot_calls == 0
+    assert page.last_screenshot_full_page is None
+    assert page.last_screenshot_clip is None
+
+
 def test_take_screenshot_retries_after_stale_context_error(tmp_path: Path) -> None:
     stale = RuntimeError("unknown error: Cannot find context with specified id")
     page = DummyPage([stale, b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.take_screenshot(str(tmp_path / "retry.png"))
+    out = kw.take_screenshot(output_path=str(tmp_path / "retry.png"))
 
     assert page.screenshot_calls == 2
     assert page.wait_until.loaded_calls == 1
@@ -198,7 +215,7 @@ def test_take_screenshot_does_not_retry_on_unrelated_error(tmp_path: Path) -> No
     kw = TestableCapture(page)
 
     with pytest.raises(ScreenshotError, match="disk full"):
-        kw.take_screenshot(str(tmp_path / "fail.png"))
+        kw.take_screenshot(output_path=str(tmp_path / "fail.png"))
 
     assert page.screenshot_calls == 1
     assert page.wait_until.loaded_calls == 0
@@ -211,7 +228,7 @@ def test_take_screenshot_fails_if_second_attempt_also_fails(tmp_path: Path) -> N
     kw = TestableCapture(page)
 
     with pytest.raises(ScreenshotError, match="Cannot find context"):
-        kw.take_screenshot(str(tmp_path / "twofail.png"))
+        kw.take_screenshot(output_path=str(tmp_path / "twofail.png"))
 
     assert page.screenshot_calls == 2
     assert page.wait_until.loaded_calls == 1
@@ -223,7 +240,7 @@ def test_take_screenshot_tolerates_failure_in_wait_until_loaded(tmp_path: Path) 
     page.wait_until.loaded_should_raise = RuntimeError("wait failed")
     kw = TestableCapture(page)
 
-    out = kw.take_screenshot(str(tmp_path / "wait_fail.png"))
+    out = kw.take_screenshot(output_path=str(tmp_path / "wait_fail.png"))
 
     assert page.screenshot_calls == 2
     assert page.wait_until.loaded_calls == 1
@@ -235,7 +252,7 @@ def test_take_screenshot_creates_parent_directory(tmp_path: Path) -> None:
     kw = TestableCapture(page)
 
     nested = tmp_path / "a" / "b" / "c" / "shot.png"
-    out = kw.take_screenshot(str(nested))
+    out = kw.take_screenshot(output_path=str(nested))
 
     assert Path(out) == nested.resolve()
     assert nested.exists()
@@ -267,7 +284,7 @@ def test_take_screenshot_embeds_html_snippet_in_log(
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.take_screenshot(str(tmp_path / "shot.png"))
+    out = kw.take_screenshot(output_path=str(tmp_path / "shot.png"))
 
     html_msgs = _html_messages(spy)
     assert len(html_msgs) == 1
@@ -283,7 +300,7 @@ def test_take_screenshot_can_skip_embedding(monkeypatch, tmp_path: Path) -> None
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    kw.take_screenshot(str(tmp_path / "shot.png"), embed=False)
+    kw.take_screenshot(output_path=str(tmp_path / "shot.png"), embed=False)
 
     assert _html_messages(spy) == []
 
@@ -295,7 +312,7 @@ def test_take_screenshot_respects_custom_width(monkeypatch, tmp_path: Path) -> N
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    kw.take_screenshot(str(tmp_path / "shot.png"), width="1200px")
+    kw.take_screenshot(output_path=str(tmp_path / "shot.png"), width="1200px")
 
     html_msgs = _html_messages(spy)
     assert html_msgs
@@ -418,8 +435,8 @@ def test_take_screenshot_explicit_path_is_not_auto_numbered(
     page = DummyPage([b"A", b"B"])
     kw = TestableCapture(page)
 
-    first = kw.take_screenshot("login.png")
-    second = kw.take_screenshot("login.png")
+    first = kw.take_screenshot(output_path="login.png")
+    second = kw.take_screenshot(output_path="login.png")
 
     assert first == second
     assert Path(first).read_bytes() == b"B"
@@ -442,7 +459,7 @@ def test_screenshot_error_is_catchable_as_base(tmp_path: Path) -> None:
     kw = TestableCapture(page)
 
     with pytest.raises(VibiumLibraryError):
-        kw.take_screenshot(str(tmp_path / "x.png"))
+        kw.take_screenshot(output_path=str(tmp_path / "x.png"))
 
 
 def test_screenshot_error_inherits_from_vibium_library_error() -> None:
@@ -454,24 +471,24 @@ def test_screenshot_error_inherits_from_vibium_library_error() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_save_pdf_with_explicit_path(tmp_path: Path) -> None:
+def test_save_page_as_pdf_with_explicit_path(tmp_path: Path) -> None:
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.save_pdf(str(tmp_path / "report.pdf"))
+    out = kw.save_page_as_pdf(str(tmp_path / "report.pdf"))
 
     assert Path(out) == (tmp_path / "report.pdf").resolve()
     assert Path(out).read_bytes() == b"PDFDATA"
     assert page.pdf_calls == 1
 
 
-def test_save_pdf_embeds_link_in_log(monkeypatch, tmp_path: Path) -> None:
+def test_save_page_as_pdf_embeds_link_in_log(monkeypatch, tmp_path: Path) -> None:
     spy = _LoggerSpy()
     monkeypatch.setattr(capture_module, "logger", spy)
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.save_pdf(str(tmp_path / "report.pdf"))
+    out = kw.save_page_as_pdf(str(tmp_path / "report.pdf"))
 
     html_msgs = _html_messages(spy)
     assert len(html_msgs) == 1
@@ -479,35 +496,35 @@ def test_save_pdf_embeds_link_in_log(monkeypatch, tmp_path: Path) -> None:
     assert Path(out).name in html_msgs[0]
 
 
-def test_save_pdf_can_skip_embed(monkeypatch, tmp_path: Path) -> None:
+def test_save_page_as_pdf_can_skip_embed(monkeypatch, tmp_path: Path) -> None:
     spy = _LoggerSpy()
     monkeypatch.setattr(capture_module, "logger", spy)
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    kw.save_pdf(str(tmp_path / "report.pdf"), embed=False)
+    kw.save_page_as_pdf(str(tmp_path / "report.pdf"), embed=False)
 
     assert _html_messages(spy) == []
 
 
-def test_save_pdf_default_path_under_output_media(monkeypatch, tmp_path: Path) -> None:
+def test_save_page_as_pdf_default_path_under_output_media(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(capture_module, "_robot_output_dir", lambda: str(tmp_path))
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    out = kw.save_pdf()
+    out = kw.save_page_as_pdf()
 
     assert Path(out) == (tmp_path / "media" / "vibium-page-1.pdf").resolve()
     assert Path(out).read_bytes() == b"PDFDATA"
 
 
-def test_save_pdf_auto_numbers_successive_calls(monkeypatch, tmp_path: Path) -> None:
+def test_save_page_as_pdf_auto_numbers_successive_calls(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(capture_module, "_robot_output_dir", lambda: str(tmp_path))
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
-    first = kw.save_pdf()
-    second = kw.save_pdf()
+    first = kw.save_page_as_pdf()
+    second = kw.save_page_as_pdf()
 
     media = tmp_path / "media"
     assert Path(first) == (media / "vibium-page-1.pdf").resolve()
@@ -519,11 +536,11 @@ def test_capture_keywords_use_explicit_scope_when_provided(tmp_path: Path) -> No
     scope_page = DummyPage([b"SCOPE", b"PNGDATA"])
     kw = TestableCapture(active_page)
 
-    shot = kw.take_screenshot(str(tmp_path / "scope-shot.png"), scope=scope_page)
-    element_shot = kw.take_element_screenshot(
+    shot = kw.take_screenshot(output_path=str(tmp_path / "scope-shot.png"), scope=scope_page)
+    element_shot = kw.take_screenshot(
         "css:#card", output_path=str(tmp_path / "scope-el.png"), scope=scope_page
     )
-    pdf = kw.save_pdf(str(tmp_path / "scope.pdf"), scope=scope_page)
+    pdf = kw.save_page_as_pdf(str(tmp_path / "scope.pdf"), scope=scope_page)
 
     assert Path(shot).read_bytes() == b"SCOPE"
     assert Path(element_shot).read_bytes() == b"ELPNG"

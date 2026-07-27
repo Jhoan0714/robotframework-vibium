@@ -91,16 +91,16 @@ class Vibium(DynamicCore):
 
     Use ``strategy:value`` to force a specific strategy:
 
-    | Click Element    text:Sign in
-    | Fill Element     label:Email    user@example.com
-    | Click Element    xpath://button[@id='submit']
+    | Click    text:Sign in
+    | Fill Text     label:Email    user@example.com
+    | Click    xpath://button[@id='submit']
 
     = Implicit strategy (default) =
 
     If a token does not include a known ``strategy:`` prefix, it is treated as
     a CSS selector.
 
-    | Click Element    button.primary
+    | Click    button.primary
     | Find Element     #login-form input[name='email']
 
     = Combining locator tokens =
@@ -108,8 +108,8 @@ class Vibium(DynamicCore):
     Passing multiple tokens narrows the match. This is useful when one strategy
     alone is ambiguous.
 
-    | Click Element    role:button    text:Continue
-    | Fill Element     role:textbox   label:Email    value=user@example.com
+    | Click    role:button    text:Continue
+    | Fill Text     role:textbox   label:Email    value=user@example.com
 
     = Practical guidance =
 
@@ -163,8 +163,8 @@ class Vibium(DynamicCore):
     | Basic Flow
     |     Open Browser
     |     Go To    https://example.com
-    |     Fill Element    role:textbox    user@example.com
-    |     Click Element   role:button    text:Submit
+    |     Fill Text    role:textbox    user@example.com
+    |     Click   role:button    text:Submit
     |     Close Browser
 
     """
