@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-07-26
 ### Changed
 - Renamed interaction/navigation/capture keywords to a concise convention
   (breaking; no deprecated aliases):
@@ -25,6 +27,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unified screenshots (breaking): `Take Screenshot` now accepts optional
   locators for element capture; removed `Take Element Screenshot`. With
   locators, `full_page` and `clip` are ignored. (#19)
+- Single version source in `src/rfvibium/version.py` (Hatch dynamic version). (#12)
+- Require `vibium>=26.5.31` and remove the local asyncio stdout monkeypatch. (#25)
+- Publish Libdoc / GitHub Pages on GitHub Release only (not every push to `main`).
+
+### Fixed
+- Harden `parse_timeout_ms`: clear `VibiumLibraryError`s, reject negatives,
+  support minutes. (#13)
+- Make `SessionPool.close()` failure-safe (de-index in `finally`). (#14)
+- Escape `Wait For Text` search text with `json.dumps` for safe JS. (#15)
+
+### Added
+- CI gates: ruff, mypy, and coverage (`fail_under=80`) on pull requests. (#10, #17)
+- Pin Robot Framework 7.4.2 for Libdoc generation. (#9)
+
+### Documentation
+- Rewrite `docs/architecture.md` for DynamicCore composition. (#11)
 
 ## [0.2.0] - 2026-07-13
 ### Changed
@@ -47,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assertions, capture, cookies, storage, dialogs and waits.
 - Project scaffolding: packaging, docs and contributing guide.
 
+[0.3.0]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.2.0
 [0.1.1]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.1.0
