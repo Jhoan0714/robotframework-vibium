@@ -25,6 +25,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unified screenshots (breaking): `Take Screenshot` now accepts optional
   locators for element capture; removed `Take Element Screenshot`. With
   locators, `full_page` and `clip` are ignored. (#19)
+- Single version source in `src/rfvibium/version.py` (Hatch dynamic version). (#12)
+- Require `vibium>=26.5.31` and remove the local asyncio stdout monkeypatch. (#25)
+- Publish Libdoc / GitHub Pages on GitHub Release only (not every push to `main`).
+
+### Fixed
+- Harden `parse_timeout_ms`: clear `VibiumLibraryError`s, reject negatives,
+  support minutes. (#13)
+- Make `SessionPool.close()` failure-safe (de-index in `finally`). (#14)
+- Escape `Wait For Text` search text with `json.dumps` for safe JS. (#15)
+
+### Added
+- CI gates: ruff, mypy, and coverage (`fail_under=80`) on pull requests. (#10, #17)
+- Pin Robot Framework 7.4.2 for Libdoc generation. (#9)
+
+### Documentation
+- Rewrite `docs/architecture.md` for DynamicCore composition. (#11)
 
 ## [0.2.0] - 2026-07-13
 ### Changed
