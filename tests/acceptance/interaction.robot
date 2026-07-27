@@ -5,16 +5,16 @@ Suite Teardown    Close Test Browser
 Test Setup    Reset Interaction Fixture
 
 *** Test Cases ***
-Fill Element Updates Input Value
-    [Documentation]    Validates Fill Element and Get Element Value.
+Fill Text Updates Input Value
+    [Documentation]    Validates Fill Text and Get Value.
     [Tags]    acceptance    interaction    core
-    Fill Element    css:#name    Ada Lovelace
-    ${value}=    Get Element Value    css:#name
+    Fill Text    css:#name    Ada Lovelace
+    ${value}=    Get Value    css:#name
     Should Be Equal    ${value}    Ada Lovelace
 
-Click Element Updates Fixture State
-    [Documentation]    Validates Click Element and Get Element Attr.
+Click Updates Fixture State
+    [Documentation]    Validates Click and Get Attribute.
     [Tags]    acceptance    interaction
-    Click Element    css:#save
-    ${clicked}=    Get Element Attr    data-clicked    css:#save
+    Click    css:#save
+    ${clicked}=    Get Attribute    data-clicked    css:#save
     Should Be Equal    ${clicked}    1

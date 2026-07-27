@@ -37,5 +37,5 @@ Wait For Deferred Visible Element
     [Tags]    acceptance    waits    core
     Reset Deferred Visible Fixture
     Wait For Element    css:#box    state=visible    timeout=5s
-    ${txt}=    Get Element Text    css:#box
+    ${txt}=    Get Text    css:#box
     Should Be Equal    ${txt}    ready

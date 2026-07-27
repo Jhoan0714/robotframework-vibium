@@ -65,6 +65,7 @@ class CaptureKeywords:
     @keyword("Take Screenshot")
     def take_screenshot(
         self,
+        *locators: str,
         output_path: str | None = None,
         embed: bool = True,
         width: str = "800px",
@@ -72,14 +73,15 @@ class CaptureKeywords:
         clip: object = None,
         scope: object = None,
     ) -> str:
-        """Capture a PNG screenshot from the resolved scope.
+        """Capture a PNG screenshot of the page or a matched element.
 
         | =Argument= | =Description= |
+        | ``*locators`` | Optional locator tokens. When provided, captures the matched element. When omitted, captures the page. |
         | ``output_path`` | Optional output file path. When omitted, an auto-numbered file is created under ``media/``. |
         | ``embed`` | When ``True`` (default), embeds an image preview in Robot logs. |
         | ``width`` | Render width used in embedded HTML preview. Default is ``800px``. |
-        | ``full_page`` | Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. |
-        | ``clip`` | Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. |
+        | ``full_page`` | Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. Ignored when locators are provided. |
+        | ``clip`` | Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. Ignored when locators are provided. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
         Returns:
@@ -89,82 +91,52 @@ class CaptureKeywords:
             ScreenshotError: When clip parsing fails or screenshot capture fails.
 
         Note:
-            Vibium only supports this capture on the **top-level** browsing context
-            (the tab's root page). Using ``scope`` with a frame object from
-            ``Get Frame`` typically fails with an error about non-top-level
-            ``context``. Prefer ``scope`` on the main page (optionally with
-            ``clip``), or ``Take Element Screenshot`` for a region inside the page
-            or frame.
+            Page screenshots are only supported on the **top-level** browsing
+            context (the tab's root page). Using ``scope`` with a frame object
+            from ``Get Frame`` typically fails for page captures. Prefer
+            locators (element screenshot) or ``scope`` on the main page
+            (optionally with ``clip``).
 
         Example:
             | ${path}=    Take Screenshot
             | ${path}=    Take Screenshot    full_page=${TRUE}
             | ${path}=    Take Screenshot    output_path=home.png    clip={"x": 0, "y": 0, "width": 800, "height": 600}
+            | ${path}=    Take Screenshot    css:.chart-card    output_path=chart.png
+            | ${path}=    Take Screenshot    role:img    alt:Logo
         """
         page = self.library._session.resolve_scope(scope)
+        if locators:
+            args, kwargs = resolve_required_locators(locators)
+            path = (
+                _next_auto_element_screenshot_path()
+                if output_path is None
+                else _resolve_capture_path(output_path)
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            logger.info(
+                f"Taking element screenshot of '{format_locators(locators)}' -> {path}."
+            )
+            return self._capture_png_with_stale_page_retry(
+                page,
+                path,
+                embed,
+                width,
+                lambda: page.find(*args, **kwargs).screenshot(),
+            )
+
         path = (
             _next_auto_screenshot_path()
             if output_path is None
             else _resolve_capture_path(output_path)
         )
         path.parent.mkdir(parents=True, exist_ok=True)
-
         normalized_clip = _normalize_screenshot_clip(clip)
-
         return self._capture_png_with_stale_page_retry(
             page,
             path,
             embed,
             width,
             lambda: page.screenshot(full_page=full_page, clip=normalized_clip),
-        )
-
-    @keyword("Take Element Screenshot")
-    def take_element_screenshot(
-        self,
-        *locators: str,
-        output_path: str | None = None,
-        embed: bool = True,
-        width: str = "800px",
-        scope: object = None,
-    ) -> str:
-        """Capture a PNG screenshot of the element matched by locator(s).
-
-        | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens used to resolve a single element. |
-        | ``output_path`` | Optional output file path. When omitted, an auto-numbered file is created under ``media/``. |
-        | ``embed`` | When ``True`` (default), embeds an image preview in Robot logs. |
-        | ``width`` | Render width used in embedded HTML preview. Default is ``800px``. |
-        | ``scope`` | Optional page/frame object where element lookup runs. When omitted, uses the active scope. |
-
-        Returns:
-            str: Absolute path of the generated PNG file.
-
-        Raises:
-            ScreenshotError: When screenshot capture fails.
-
-        Example:
-            | ${path}=    Take Element Screenshot    css:.chart-card    output_path=chart.png
-            | ${path}=    Take Element Screenshot    role:img    alt:Logo
-        """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
-        path = (
-            _next_auto_element_screenshot_path()
-            if output_path is None
-            else _resolve_capture_path(output_path)
-        )
-        path.parent.mkdir(parents=True, exist_ok=True)
-        logger.info(
-            f"Taking element screenshot of '{format_locators(locators)}' -> {path}."
-        )
-
-        return self._capture_png_with_stale_page_retry(
-            page,
-            path,
-            embed,
-            width,
-            lambda: page.find(*args, **kwargs).screenshot(),
         )
 
     def _capture_png_with_stale_page_retry(
@@ -195,8 +167,8 @@ class CaptureKeywords:
 
         raise ScreenshotError(f"Unable to take screenshot: {last_exc}") from last_exc
 
-    @keyword("Save Pdf")
-    def save_pdf(
+    @keyword("Save Page As Pdf")
+    def save_page_as_pdf(
         self,
         output_path: str | None = None,
         embed: bool = True,
@@ -218,8 +190,8 @@ class CaptureKeywords:
             be unsupported by Vibium for this operation.
 
         Example:
-            | ${pdf}=    Save Pdf
-            | ${pdf}=    Save Pdf    output_path=report.pdf    embed=${FALSE}
+            | ${pdf}=    Save Page As Pdf
+            | ${pdf}=    Save Page As Pdf    output_path=report.pdf    embed=${FALSE}
         """
         page = self.library._session.resolve_scope(scope)
         path = (

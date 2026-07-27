@@ -2,10 +2,10 @@
 
 Public contract:
 
-- ``Click Element`` / ``Find Element`` accept one or more locator tokens;
+- ``Click`` / ``Find Element`` accept one or more locator tokens;
   each token uses ``strategy:value`` syntax or a plain CSS selector. Tokens
   are merged into a single ``page.find(...)`` call.
-- ``Fill Element`` additionally accepts a value. Two usage modes:
+- ``Fill Text`` additionally accepts a value. Two usage modes:
     1. Ergonomic (value as last positional).
     2. Explicit (``value=...`` as Robot Framework keyword argument).
   The ergonomic mode is refused when the last positional looks like a locator
@@ -62,8 +62,8 @@ class InteractionKeywords:
         page = self.library._session.resolve_scope(scope)
         return str(page.a11y_tree())
 
-    @keyword("Click Element")
-    def click_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Click")
+    def click(self, *locators: str, scope: object = None) -> None:
         """Click the element resolved from locator token(s).
 
         | =Argument= | =Description= |
@@ -72,8 +72,8 @@ class InteractionKeywords:
 
 
                 Example:
-                    | Click Element    role:button    text:Log in
-                    | Click Element    css:.submit
+                    | Click    role:button    text:Log in
+                    | Click    css:.submit
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
@@ -99,8 +99,8 @@ class InteractionKeywords:
         logger.info(f"Finding element '{format_locators(locators)}'.")
         return repr(page.find(*args, **kwargs))
 
-    @keyword("Get Element Text")
-    def get_element_text(self, *locators: str, scope: object = None) -> str:
+    @keyword("Get Text")
+    def get_text(self, *locators: str, scope: object = None) -> str:
         """Return ``element.text()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -116,8 +116,8 @@ class InteractionKeywords:
         logger.info(f"Reading text from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).text()
 
-    @keyword("Get Element Inner Text")
-    def get_element_inner_text(self, *locators: str, scope: object = None) -> str:
+    @keyword("Get Inner Text")
+    def get_inner_text(self, *locators: str, scope: object = None) -> str:
         """Return ``element.inner_text()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -129,21 +129,8 @@ class InteractionKeywords:
         logger.info(f"Reading inner text from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).inner_text()
 
-    @keyword("Get Element Html")
-    def get_element_html(self, *locators: str, scope: object = None) -> str:
-        """Return ``element.html()`` for the matched element.
-
-        | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
-        """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
-        logger.info(f"Reading HTML from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).html()
-
-    @keyword("Get Element Value")
-    def get_element_value(self, *locators: str, scope: object = None) -> str:
+    @keyword("Get Value")
+    def get_value(self, *locators: str, scope: object = None) -> str:
         """Return ``element.value()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -155,8 +142,8 @@ class InteractionKeywords:
         logger.info(f"Reading value from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).value()
 
-    @keyword("Get Element Attr")
-    def get_element_attr(
+    @keyword("Get Attribute")
+    def get_attribute(
         self, name: str, *locators: str, scope: object = None
     ) -> str | None:
         """Return an attribute value from the matched element.
@@ -166,9 +153,8 @@ class InteractionKeywords:
         | ``*locators`` | Locator tokens to resolve a single element. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
-
-                Returns:
-                    str | None: Attribute value or ``None`` when attribute is absent.
+        Returns:
+            str | None: Attribute value or ``None`` when attribute is absent.
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
@@ -177,26 +163,8 @@ class InteractionKeywords:
         )
         return page.find(*args, **kwargs).attr(name)
 
-    @keyword("Get Element Attribute")
-    def get_element_attribute(
-        self, name: str, *locators: str, scope: object = None
-    ) -> str | None:
-        """Alias of ``Get Element Attr`` using ``element.get_attribute(name)``.
-
-        | =Argument= | =Description= |
-        | ``name`` | Attribute name to read. |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
-        """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
-        logger.info(
-            f"Reading attribute '{name}' from element '{format_locators(locators)}'."
-        )
-        return page.find(*args, **kwargs).get_attribute(name)
-
-    @keyword("Get Element Bounds")
-    def get_element_bounds(self, *locators: str, scope: object = None) -> object:
+    @keyword("Get Bounds")
+    def get_bounds(self, *locators: str, scope: object = None) -> object:
         """Return ``element.bounds()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -207,19 +175,6 @@ class InteractionKeywords:
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Reading bounds from element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).bounds()
-
-    @keyword("Get Element Bounding Box")
-    def get_element_bounding_box(self, *locators: str, scope: object = None) -> object:
-        """Return ``element.bounding_box()`` for the matched element.
-
-        | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
-        """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
-        logger.info(f"Reading bounding box from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).bounding_box()
 
     @keyword("Element Is Visible")
     def element_is_visible(self, *locators: str, scope: object = None) -> bool:
@@ -288,8 +243,8 @@ class InteractionKeywords:
         )
         return page.find(*args, **kwargs).is_editable()
 
-    @keyword("Get Element Role")
-    def get_element_role(self, *locators: str, scope: object = None) -> str:
+    @keyword("Get Role")
+    def get_role(self, *locators: str, scope: object = None) -> str:
         """Return semantic role for the matched element.
 
         | =Argument= | =Description= |
@@ -301,8 +256,8 @@ class InteractionKeywords:
         logger.info(f"Reading role of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).role()
 
-    @keyword("Get Element Label")
-    def get_element_label(self, *locators: str, scope: object = None) -> str:
+    @keyword("Get Label")
+    def get_label(self, *locators: str, scope: object = None) -> str:
         """Return accessible label for the matched element.
 
         | =Argument= | =Description= |
@@ -314,8 +269,8 @@ class InteractionKeywords:
         logger.info(f"Reading label of element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs).label()
 
-    @keyword("Fill Element")
-    def fill_element(
+    @keyword("Fill Text")
+    def fill_text(
         self,
         *locators: str,
         value: object = _UNSET,
@@ -335,8 +290,8 @@ class InteractionKeywords:
             If the trailing value looks like a locator token, pass it with ``value=``.
 
         Example:
-            | Fill Element    role:textbox    label:E-mail    user@example.com
-            | Fill Element    role:textbox    label:Password    value=s3cret    secret=${TRUE}
+            | Fill Text    role:textbox    label:E-mail    user@example.com
+            | Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
         """
         page = self.library._session.resolve_scope(scope)
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
@@ -386,8 +341,8 @@ class InteractionKeywords:
         logger.info(f"Pressing key combo '{combo}' on active page.")
         page.keyboard.press(combo)
 
-    @keyword("Double Click Element")
-    def double_click_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Double Click")
+    def double_click(self, *locators: str, scope: object = None) -> None:
         """Double-click the matched element.
 
         | =Argument= | =Description= |
@@ -399,8 +354,8 @@ class InteractionKeywords:
         logger.info(f"Double-clicking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).dblclick()
 
-    @keyword("Hover Element")
-    def hover_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Hover")
+    def hover(self, *locators: str, scope: object = None) -> None:
         """Hover the mouse pointer over the matched element.
 
         | =Argument= | =Description= |
@@ -412,8 +367,8 @@ class InteractionKeywords:
         logger.info(f"Hovering element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).hover()
 
-    @keyword("Focus Element")
-    def focus_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Focus")
+    def focus(self, *locators: str, scope: object = None) -> None:
         """Set focus on the matched element.
 
         | =Argument= | =Description= |
@@ -425,8 +380,8 @@ class InteractionKeywords:
         logger.info(f"Focusing element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).focus()
 
-    @keyword("Clear Element")
-    def clear_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Clear Text")
+    def clear_text(self, *locators: str, scope: object = None) -> None:
         """Clear the value of the matched element.
 
         | =Argument= | =Description= |
@@ -494,8 +449,8 @@ class InteractionKeywords:
         )
         page.find(*args, **kwargs).select_option(option_value)
 
-    @keyword("Check Element")
-    def check_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Check")
+    def check(self, *locators: str, scope: object = None) -> None:
         """Check a matched checkbox or radio control.
 
         | =Argument= | =Description= |
@@ -507,8 +462,8 @@ class InteractionKeywords:
         logger.info(f"Checking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).check()
 
-    @keyword("Uncheck Element")
-    def uncheck_element(self, *locators: str, scope: object = None) -> None:
+    @keyword("Uncheck")
+    def uncheck(self, *locators: str, scope: object = None) -> None:
         """Uncheck a matched checkbox control.
 
         | =Argument= | =Description= |
@@ -520,8 +475,8 @@ class InteractionKeywords:
         logger.info(f"Unchecking element '{format_locators(locators)}'.")
         page.find(*args, **kwargs).uncheck()
 
-    @keyword("Scroll Element Into View")
-    def scroll_element_into_view(self, *locators: str, scope: object = None) -> None:
+    @keyword("Scroll Into View")
+    def scroll_into_view(self, *locators: str, scope: object = None) -> None:
         """Scroll until the matched element is in view.
 
         | =Argument= | =Description= |
@@ -665,7 +620,7 @@ class InteractionKeywords:
     @staticmethod
     def _resolve_fill_arguments(locators, value):
         return InteractionKeywords._resolve_tail_value_arguments(
-            keyword_name="Fill Element",
+            keyword_name="Fill Text",
             positional=locators,
             explicit=value,
             explicit_name="value",

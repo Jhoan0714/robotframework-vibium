@@ -50,8 +50,8 @@ class NavigationKeywords:
         logger.info("Navigating one entry forward in history.")
         page.forward()
 
-    @keyword("Reload Page")
-    def reload_page(self, scope: object = None) -> None:
+    @keyword("Reload")
+    def reload(self, scope: object = None) -> None:
         """Reload the resolved scope.
 
         | =Argument= | =Description= |

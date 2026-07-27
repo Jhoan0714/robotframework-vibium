@@ -23,12 +23,12 @@ History Back And Forward
     ${forward_url}=    Get Url
     Should Be Equal    ${forward_url}    about:blank
 
-Reload Page Keeps Location
-    [Documentation]    Validates Reload Page on the active tab.
+Reload Keeps Location
+    [Documentation]    Validates Reload on the active tab.
     [Tags]    acceptance    navigation    core
     Go To    ${BASE_URL}
     ${before}=    Get Url
-    Reload Page
+    Reload
     ${after}=    Get Url
     Should Contain    ${after}    example.com
 

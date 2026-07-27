@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Renamed interaction/navigation/capture keywords to a concise convention
+  (breaking; no deprecated aliases):
+  `Click Element`→`Click`, `Double Click Element`→`Double Click`,
+  `Hover Element`→`Hover`, `Focus Element`→`Focus`,
+  `Clear Element`→`Clear Text`, `Fill Element`→`Fill Text`,
+  `Check Element`→`Check`, `Uncheck Element`→`Uncheck`,
+  `Scroll Element Into View`→`Scroll Into View`,
+  `Get Element Text`→`Get Text`, `Get Element Inner Text`→`Get Inner Text`,
+  `Get Element Value`→`Get Value`, `Get Element Role`→`Get Role`,
+  `Get Element Label`→`Get Label`, `Reload Page`→`Reload`,
+  `Save Pdf`→`Save Page As Pdf`. (#19)
+- Unified duplicate getters (breaking): `Get Element Attr` /
+  `Get Element Attribute`→`Get Attribute`; `Get Element Bounds` /
+  `Get Element Bounding Box`→`Get Bounds`; removed `Get Element Html`
+  (use `Get Html`). (#19, #22)
+- Unified screenshots (breaking): `Take Screenshot` now accepts optional
+  locators for element capture; removed `Take Element Screenshot`. With
+  locators, `full_page` and `clip` are ignored. (#19)
+
 ## [0.2.0] - 2026-07-13
 ### Changed
 - Refactored the library from multiple mixin inheritance to composition using

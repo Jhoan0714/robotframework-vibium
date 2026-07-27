@@ -49,7 +49,7 @@ Basic Navigation
 
 ## Locator Syntax
 
-Targets passed to `Click Element`, `Fill Element` and `Find Element` use a
+Targets passed to `Click`, `Fill Text` and `Find Element` use a
 prefix-based contract that maps directly to Vibium's `Page.find(...)` API.
 The `:` separator is preferred over `=` deliberately, following
 SeleniumLibrary's guidance, because `=` collides with Robot Framework's
@@ -71,11 +71,11 @@ Supported strategies: `xpath`, `role`, `text`, `label`, `placeholder`,
 ```robot
 *** Test Cases ***
 Single Locator Examples
-    Click Element    input[name='q']
-    Click Element    role:button
-    Click Element    text:Log in
-    Click Element    xpath:(//*[@name='q'])[1]
-    Click Element    xpath://input[@id='email' and @type='text']
+    Click    input[name='q']
+    Click    role:button
+    Click    text:Log in
+    Click    xpath:(//*[@name='q'])[1]
+    Click    xpath://input[@id='email' and @type='text']
 ```
 
 ### Combining multiple strategies
@@ -93,14 +93,14 @@ Rules:
 ```robot
 *** Test Cases ***
 Combined Locators
-    Click Element    role:button    text:Log in
-    Click Element    role:textbox   label:E-mail
-    Click Element    .nav           role:link       text:Home
+    Click    role:button    text:Log in
+    Click    role:textbox   label:E-mail
+    Click    .nav           role:link       text:Home
 ```
 
-### Fill Element: value rules
+### Fill Text: value rules
 
-`Fill Element` supports two modes:
+`Fill Text` supports two modes:
 
 1. **Ergonomic** — the last positional is the value.
 2. **Explicit** — use `value=...` as a Robot Framework keyword argument.
@@ -113,24 +113,24 @@ prefix). Use `value=...` to disambiguate.
 *** Test Cases ***
 Fill Examples
     # Ergonomic: value as last positional
-    Fill Element    input#email                            user@example.com
-    Fill Element    role:textbox    label:E-mail           user@example.com
+    Fill Text    input#email                            user@example.com
+    Fill Text    role:textbox    label:E-mail           user@example.com
 
     # Explicit: value= kwarg
-    Fill Element    role:textbox                           value=user@example.com
-    Fill Element    input#password                         value=secret
+    Fill Text    role:textbox                           value=user@example.com
+    Fill Text    input#password                         value=secret
 
     # Required when the value itself looks like a locator
-    Fill Element    input#comment                          value=role:admin
+    Fill Text    input#comment                          value=role:admin
 
     # Clear a field
-    Fill Element    input#search                           value=${EMPTY}
+    Fill Text    input#search                           value=${EMPTY}
 ```
 
 The following is rejected with a clear error (ambiguous last positional):
 
 ```robot
-Fill Element    role:textbox    label:E-mail        # ERROR: looks like 2 locators, value missing
+Fill Text    role:textbox    label:E-mail        # ERROR: looks like 2 locators, value missing
 ```
 
 ## Development
