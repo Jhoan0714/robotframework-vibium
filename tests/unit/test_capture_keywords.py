@@ -142,7 +142,9 @@ def test_take_screenshot_passes_full_page_and_clip(tmp_path: Path) -> None:
     kw = TestableCapture(page)
     clip = {"x": 1, "y": 2, "width": 100, "height": 200}
 
-    kw.take_screenshot(output_path=str(tmp_path / "clip.png"), full_page=True, clip=clip)
+    kw.take_screenshot(
+        output_path=str(tmp_path / "clip.png"), full_page=True, clip=clip
+    )
 
     assert page.last_screenshot_full_page is True
     assert page.last_screenshot_clip == {"x": 1, "y": 2, "width": 100, "height": 200}
@@ -164,7 +166,9 @@ def test_take_screenshot_rejects_incomplete_clip(tmp_path: Path) -> None:
     page = DummyPage([b"PNG"])
     kw = TestableCapture(page)
     with pytest.raises(ScreenshotError, match="missing"):
-        kw.take_screenshot(output_path=str(tmp_path / "bad.png"), clip={"x": 0, "y": 0, "width": 1})
+        kw.take_screenshot(
+            output_path=str(tmp_path / "bad.png"), clip={"x": 0, "y": 0, "width": 1}
+        )
 
 
 def test_take_screenshot_with_locator_uses_find_and_element_api(tmp_path: Path) -> None:
@@ -180,7 +184,9 @@ def test_take_screenshot_with_locator_uses_find_and_element_api(tmp_path: Path) 
     assert Path(out).read_bytes() == b"ELPNG"
 
 
-def test_take_screenshot_with_locator_ignores_full_page_and_clip(tmp_path: Path) -> None:
+def test_take_screenshot_with_locator_ignores_full_page_and_clip(
+    tmp_path: Path,
+) -> None:
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
 
@@ -507,7 +513,9 @@ def test_save_page_as_pdf_can_skip_embed(monkeypatch, tmp_path: Path) -> None:
     assert _html_messages(spy) == []
 
 
-def test_save_page_as_pdf_default_path_under_output_media(monkeypatch, tmp_path: Path) -> None:
+def test_save_page_as_pdf_default_path_under_output_media(
+    monkeypatch, tmp_path: Path
+) -> None:
     monkeypatch.setattr(capture_module, "_robot_output_dir", lambda: str(tmp_path))
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
@@ -518,7 +526,9 @@ def test_save_page_as_pdf_default_path_under_output_media(monkeypatch, tmp_path:
     assert Path(out).read_bytes() == b"PDFDATA"
 
 
-def test_save_page_as_pdf_auto_numbers_successive_calls(monkeypatch, tmp_path: Path) -> None:
+def test_save_page_as_pdf_auto_numbers_successive_calls(
+    monkeypatch, tmp_path: Path
+) -> None:
     monkeypatch.setattr(capture_module, "_robot_output_dir", lambda: str(tmp_path))
     page = DummyPage([b"PNGDATA"])
     kw = TestableCapture(page)
@@ -536,7 +546,9 @@ def test_capture_keywords_use_explicit_scope_when_provided(tmp_path: Path) -> No
     scope_page = DummyPage([b"SCOPE", b"PNGDATA"])
     kw = TestableCapture(active_page)
 
-    shot = kw.take_screenshot(output_path=str(tmp_path / "scope-shot.png"), scope=scope_page)
+    shot = kw.take_screenshot(
+        output_path=str(tmp_path / "scope-shot.png"), scope=scope_page
+    )
     element_shot = kw.take_screenshot(
         "css:#card", output_path=str(tmp_path / "scope-el.png"), scope=scope_page
     )
