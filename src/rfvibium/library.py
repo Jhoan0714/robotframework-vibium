@@ -7,7 +7,6 @@ from robot.api.deco import keyword, library
 from robotlibcore import DynamicCore
 
 from .browser_session import SessionPool
-from .errors import VibiumLibraryError
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
 from .keywords.context import CookieKeywords, StorageKeywords
@@ -17,43 +16,6 @@ from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.waits import WaitKeywords
 from .version import __version__
-
-_SUPPORTED_ENGINES = frozenset({"chrome", "firefox"})
-_SUPPORTED_CHANNELS = frozenset({"release", "beta"})
-
-
-def _normalize_engine(engine: str | None) -> str | None:
-    if engine is None:
-        return None
-    normalized = str(engine).strip().lower()
-    if not normalized:
-        raise VibiumLibraryError("Open Browser: engine cannot be empty.")
-    if normalized not in _SUPPORTED_ENGINES:
-        raise VibiumLibraryError(
-            f"Open Browser: unsupported engine {engine!r} "
-            f"(supported: {', '.join(sorted(_SUPPORTED_ENGINES))})."
-        )
-    return normalized
-
-
-def _normalize_channel(
-    channel: str | None, *, engine: str | None
-) -> str | None:
-    if channel is None:
-        return None
-    normalized = str(channel).strip().lower()
-    if not normalized:
-        raise VibiumLibraryError("Open Browser: channel cannot be empty.")
-    if normalized not in _SUPPORTED_CHANNELS:
-        raise VibiumLibraryError(
-            f"Open Browser: unsupported channel {channel!r} "
-            f"(supported: {', '.join(sorted(_SUPPORTED_CHANNELS))})."
-        )
-    if engine == "chrome":
-        raise VibiumLibraryError(
-            "Open Browser: channel is not supported for engine 'chrome' (firefox only)."
-        )
-    return normalized
 
 
 @library(scope="GLOBAL", version=__version__, doc_format="ROBOT")
@@ -234,7 +196,7 @@ class Vibium(DynamicCore):
 
         | =Argument= | =Description= |
         | ``engine`` | Optional browser engine: ``chrome`` (default) or ``firefox``. |
-        | ``channel`` | Optional Firefox release channel: ``release`` (default) or ``beta``. Ignored for Chrome. |
+        | ``channel`` | Optional Firefox release channel: ``release`` (default) or ``beta``. Firefox only. |
 
         | *** Test Cases ***
         | Chrome Default
@@ -244,13 +206,9 @@ class Vibium(DynamicCore):
         |     Open Browser    engine=firefox
         |     Go To    https://example.com
         """
-        normalized_engine = _normalize_engine(engine)
-        normalized_channel = _normalize_channel(
-            channel, engine=normalized_engine
-        )
-        browser = self._session.open(
-            engine=normalized_engine, channel=normalized_channel
-        )
+        engine = engine.lower() if engine else engine
+        channel = channel.lower() if channel else channel
+        browser = self._session.open(engine=engine, channel=channel)
         logger.info("Browser session opened.")
         return browser
 
