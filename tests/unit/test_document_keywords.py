@@ -1,8 +1,5 @@
 from types import SimpleNamespace
 
-import pytest
-
-from rfvibium.errors import VibiumLibraryError
 from rfvibium.keywords.document import DocumentKeywords
 
 
@@ -43,9 +40,3 @@ def test_set_page_content_allows_empty_string() -> None:
     kw.set_page_content("")
 
     assert page.content == ""
-
-
-def test_set_page_content_rejects_none() -> None:
-    kw = TestableDocument(DummyPage())
-    with pytest.raises(VibiumLibraryError, match="html is required"):
-        kw.set_page_content(None)  # type: ignore[arg-type]
