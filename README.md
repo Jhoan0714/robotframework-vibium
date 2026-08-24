@@ -28,7 +28,7 @@ pip install robotframework-vibium
 | --- | --- |
 | Python | `>=3.9` |
 | Robot Framework | `>=5.0` |
-| Vibium | `>=26.5.31` |
+| Vibium | `>=26.8.21,<26.9` |
 
 Although Robot Framework supports older Python versions, this library follows Vibium's runtime requirements and therefore requires Python 3.9 or newer.
 
