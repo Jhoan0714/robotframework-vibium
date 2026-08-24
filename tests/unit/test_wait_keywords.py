@@ -7,22 +7,6 @@ from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
 from rfvibium.keywords.waits import WaitKeywords
 
 
-class DummyWaitUntil:
-    def __init__(self) -> None:
-        self.fn_calls: list = []
-        self.url_calls: list = []
-        self.loaded_calls: list = []
-
-    def __call__(self, fn, timeout=None) -> None:
-        self.fn_calls.append((fn, timeout))
-
-    def url(self, pattern, timeout=None) -> None:
-        self.url_calls.append((pattern, timeout))
-
-    def loaded(self, state=None, timeout=None) -> None:
-        self.loaded_calls.append((state, timeout))
-
-
 class DummyElement:
     def __init__(self) -> None:
         self.wait_until_calls: list = []
@@ -33,11 +17,22 @@ class DummyElement:
 
 class DummyPage:
     def __init__(self) -> None:
-        self.wait_until = DummyWaitUntil()
+        self.wait_for_function_calls: list = []
+        self.wait_for_url_calls: list = []
+        self.wait_for_load_calls: list = []
         self.wait_calls: list = []
         self.element = DummyElement()
         self.last_find_args = None
         self.last_find_kwargs = None
+
+    def wait_for_function(self, fn, timeout=None) -> None:
+        self.wait_for_function_calls.append((fn, timeout))
+
+    def wait_for_url(self, pattern, timeout=None) -> None:
+        self.wait_for_url_calls.append((pattern, timeout))
+
+    def wait_for_load(self, state=None, timeout=None) -> None:
+        self.wait_for_load_calls.append((state, timeout))
 
     def find(self, *args, **kwargs):
         self.last_find_args = args
@@ -68,7 +63,7 @@ def test_wait_for_text_escapes_special_characters() -> None:
 
     kw.wait_for_text(text, timeout="1s")
 
-    fn, timeout_ms = page.wait_until.fn_calls[0]
+    fn, timeout_ms = page.wait_for_function_calls[0]
     assert json.dumps(text) in fn
     assert fn.startswith("() => document.body && document.body.innerText.includes(")
     assert timeout_ms == 1000
@@ -96,7 +91,7 @@ def test_wait_for_url_delegates() -> None:
 
     kw.wait_for_url("/ok", timeout="500ms")
 
-    assert page.wait_until.url_calls == [("/ok", 500)]
+    assert page.wait_for_url_calls == [("/ok", 500)]
 
 
 def test_wait_for_function_delegates() -> None:
@@ -105,7 +100,7 @@ def test_wait_for_function_delegates() -> None:
 
     kw.wait_for_function("() => true", timeout="1s")
 
-    assert page.wait_until.fn_calls == [("() => true", 1000)]
+    assert page.wait_for_function_calls == [("() => true", 1000)]
 
 
 def test_wait_for_function_rejects_empty_expression() -> None:
@@ -114,17 +109,17 @@ def test_wait_for_function_rejects_empty_expression() -> None:
         kw.wait_for_function("   ")
 
 
-def test_wait_for_load_state_passes_through_to_loaded() -> None:
+def test_wait_for_load_state_passes_through_to_wait_for_load() -> None:
     page = DummyPage()
     kw = TestableWait(page)
 
     kw.wait_for_load_state()
 
-    assert page.wait_until.loaded_calls == [("loading", 10_000)]
+    assert page.wait_for_load_calls == [("loading", 10_000)]
 
     kw.wait_for_load_state("complete", timeout="3s")
 
-    assert page.wait_until.loaded_calls == [("loading", 10_000), ("complete", 3000)]
+    assert page.wait_for_load_calls == [("loading", 10_000), ("complete", 3000)]
 
 
 def test_sleep_milliseconds() -> None:

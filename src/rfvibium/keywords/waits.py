@@ -3,18 +3,15 @@
 Vibium exposes **two different “wait” surfaces**; the Robot keywords here map
 to one or the other:
 
-**1) Page-level waits** (``async_api/page.py`` — property ``Page.wait_until``)
+**1) Page-level waits** (``sync_api/page.py`` — ``wait_for_*`` methods)
 
-This is a *namespace* object. It is **not** the same as ``Element.wait_until``.
-
-- Calling it like a function — ``page.wait_until(fn, timeout=...)`` — runs
-  ``Page._wait_for_function`` (protocol ``vibium:page.waitForFunction``): wait
-  until a **JavaScript snippet** evaluates to something truthy.
-- ``page.wait_until.url(pattern, ...)`` → ``vibium:page.waitForURL``.
-- ``page.wait_until.loaded(state=..., ...)`` → ``vibium:page.waitForLoad``.
+- ``page.wait_for_function(fn, timeout=...)`` → ``vibium:page.waitForFunction``:
+  wait until a **JavaScript snippet** evaluates to something truthy.
+- ``page.wait_for_url(pattern, ...)`` → ``vibium:page.waitForURL``.
+- ``page.wait_for_load(state=..., ...)`` → ``vibium:page.waitForLoad``.
   Which ``state`` strings are accepted and how they map is defined by **Vibium**.
 - ``page.wait(ms)`` → ``vibium:page.wait`` (fixed delay; unrelated to
-  ``wait_until``).
+  ``wait_for_*``).
 
 **Keywords using the Page API:** ``Wait For Text``, ``Wait For Function``,
 ``Wait For Url``, ``Wait For Load State``, ``Page Wait`` (alias:
@@ -63,7 +60,7 @@ class WaitKeywords:
         | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
 
         Note:
-            Uses page-level ``wait_until(...)`` behavior (waitForFunction).
+            Uses page-level ``wait_for_function(...)`` (waitForFunction).
 
         Example:
             | Wait For Text    Welcome back    timeout=5s
@@ -71,7 +68,7 @@ class WaitKeywords:
         page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for text '{text}' on page (timeout={timeout}).")
-        page.wait_until(
+        page.wait_for_function(
             f"() => document.body && document.body.innerText.includes({json.dumps(text)})",
             timeout=timeout_ms,
         )
@@ -80,7 +77,7 @@ class WaitKeywords:
     def wait_for_load_state(self, state: str = "loading", timeout: str = "10s") -> None:
         """Wait until the page reaches a load state (delegates to Vibium).
 
-        The ``state`` argument is passed through to ``page.wait_until.loaded``
+        The ``state`` argument is passed through to ``page.wait_for_load``
         without rewriting; refer to Vibium's ``waitForLoad`` / page API for valid
         values and semantics.
 
@@ -94,7 +91,7 @@ class WaitKeywords:
         page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for load state '{state}' (timeout={timeout}).")
-        page.wait_until.loaded(state=state, timeout=timeout_ms)
+        page.wait_for_load(state=state, timeout=timeout_ms)
 
     @keyword("Wait For Element")
     def wait_for_element(
@@ -137,7 +134,7 @@ class WaitKeywords:
         """Wait until page URL matches the provided pattern fragment.
 
         | =Argument= | =Description= |
-        | ``pattern`` | URL fragment/pattern accepted by Vibium ``wait_until.url(...)``. |
+        | ``pattern`` | URL fragment/pattern accepted by Vibium ``wait_for_url(...)``. |
         | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
 
         Example:
@@ -146,7 +143,7 @@ class WaitKeywords:
         page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for URL to contain '{pattern}' (timeout={timeout}).")
-        page.wait_until.url(pattern, timeout=timeout_ms)
+        page.wait_for_url(pattern, timeout=timeout_ms)
 
     @keyword("Wait For Function")
     def wait_for_function(self, expression: str, timeout: str = "10s") -> None:
@@ -168,7 +165,7 @@ class WaitKeywords:
             raise LocatorSyntaxError("Wait For Function: expression cannot be empty.")
         timeout_ms = parse_timeout_ms(timeout)
         logger.info(f"Waiting for JS condition (timeout={timeout}).")
-        page.wait_until(stripped, timeout=timeout_ms)
+        page.wait_for_function(stripped, timeout=timeout_ms)
 
     @keyword("Page Wait")
     def page_wait(self, milliseconds: object) -> None:

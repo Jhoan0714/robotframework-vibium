@@ -159,7 +159,7 @@ class CaptureKeywords:
                 last_exc = exc
                 if attempt == 0 and _is_stale_context_error(exc):
                     try:
-                        page.wait_until.loaded()
+                        page.wait_for_load()
                     except Exception:
                         pass
                     continue

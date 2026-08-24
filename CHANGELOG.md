@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Require `vibium>=26.8.21,<26.9` (was `>=26.5.31`). (#47)
+- Migrate page waits from deprecated ``page.wait_until`` to
+  ``wait_for_function`` / ``wait_for_url`` / ``wait_for_load`` in wait keywords
+  and screenshot retry. Element ``wait_until`` for ``Wait For Element`` is
+  unchanged. (#48)
 
 ## [0.3.0] - 2026-07-26
 ### Changed

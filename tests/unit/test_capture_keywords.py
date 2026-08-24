@@ -15,17 +15,6 @@ from rfvibium.keywords.capture import (
 )
 
 
-class DummyWaitUntil:
-    def __init__(self) -> None:
-        self.loaded_calls = 0
-        self.loaded_should_raise: Exception | None = None
-
-    def loaded(self, state=None, timeout=None) -> None:
-        self.loaded_calls += 1
-        if self.loaded_should_raise is not None:
-            raise self.loaded_should_raise
-
-
 class DummyPage:
     def __init__(self, screenshot_responses) -> None:
         # screenshot_responses: list of either bytes (success) or Exception instances
@@ -34,7 +23,8 @@ class DummyPage:
         self.last_screenshot_full_page = None
         self.last_screenshot_clip = None
         self.pdf_calls = 0
-        self.wait_until = DummyWaitUntil()
+        self.wait_for_load_calls = 0
+        self.wait_for_load_should_raise: Exception | None = None
         self.last_find_args = None
         self.last_find_kwargs = None
         self.last_find_all_args = None
@@ -48,6 +38,11 @@ class DummyPage:
         ]
         self.content_value = "<html><body>doc</body></html>"
         self.a11y_value = {"tree": "ok"}
+
+    def wait_for_load(self, state=None, timeout=None) -> None:
+        self.wait_for_load_calls += 1
+        if self.wait_for_load_should_raise is not None:
+            raise self.wait_for_load_should_raise
 
     def screenshot(self, full_page=None, clip=None) -> bytes:
         self.screenshot_calls += 1
@@ -131,7 +126,7 @@ def test_take_screenshot_succeeds_on_first_attempt(tmp_path: Path) -> None:
     out = kw.take_screenshot(output_path=str(tmp_path / "ok.png"))
 
     assert page.screenshot_calls == 1
-    assert page.wait_until.loaded_calls == 0
+    assert page.wait_for_load_calls == 0
     assert Path(out).read_bytes() == b"PNGDATA"
     assert page.last_screenshot_full_page is None
     assert page.last_screenshot_clip is None
@@ -211,7 +206,7 @@ def test_take_screenshot_retries_after_stale_context_error(tmp_path: Path) -> No
     out = kw.take_screenshot(output_path=str(tmp_path / "retry.png"))
 
     assert page.screenshot_calls == 2
-    assert page.wait_until.loaded_calls == 1
+    assert page.wait_for_load_calls == 1
     assert Path(out).read_bytes() == b"PNGDATA"
 
 
@@ -224,7 +219,7 @@ def test_take_screenshot_does_not_retry_on_unrelated_error(tmp_path: Path) -> No
         kw.take_screenshot(output_path=str(tmp_path / "fail.png"))
 
     assert page.screenshot_calls == 1
-    assert page.wait_until.loaded_calls == 0
+    assert page.wait_for_load_calls == 0
 
 
 def test_take_screenshot_fails_if_second_attempt_also_fails(tmp_path: Path) -> None:
@@ -237,19 +232,19 @@ def test_take_screenshot_fails_if_second_attempt_also_fails(tmp_path: Path) -> N
         kw.take_screenshot(output_path=str(tmp_path / "twofail.png"))
 
     assert page.screenshot_calls == 2
-    assert page.wait_until.loaded_calls == 1
+    assert page.wait_for_load_calls == 1
 
 
-def test_take_screenshot_tolerates_failure_in_wait_until_loaded(tmp_path: Path) -> None:
+def test_take_screenshot_tolerates_failure_in_wait_for_load(tmp_path: Path) -> None:
     stale = RuntimeError("execution context was destroyed")
     page = DummyPage([stale, b"PNGDATA"])
-    page.wait_until.loaded_should_raise = RuntimeError("wait failed")
+    page.wait_for_load_should_raise = RuntimeError("wait failed")
     kw = TestableCapture(page)
 
     out = kw.take_screenshot(output_path=str(tmp_path / "wait_fail.png"))
 
     assert page.screenshot_calls == 2
-    assert page.wait_until.loaded_calls == 1
+    assert page.wait_for_load_calls == 1
     assert Path(out).read_bytes() == b"PNGDATA"
 
 
