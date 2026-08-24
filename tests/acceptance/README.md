@@ -32,7 +32,7 @@ Run only smoke tests:
 robot --pythonpath src -i smoke -d reports/acceptance tests/acceptance
 ```
 
-Run pierce tests (requires Vibium ≥ 26.8.21; exclude from CI until dependency floor is raised — #47):
+Run pierce tests (requires Vibium ≥ 26.8.21):
 
 ```bash
 robot --pythonpath src -v HEADLESS:True -i pierce -d reports/acceptance tests/acceptance
