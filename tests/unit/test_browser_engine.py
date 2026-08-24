@@ -23,9 +23,7 @@ def test_browser_session_create_passes_launch_options(mock_start: MagicMock) -> 
 
     BrowserSession.create(headless=True, engine="firefox", channel="beta")
 
-    mock_start.assert_called_once_with(
-        headless=True, engine="firefox", channel="beta"
-    )
+    mock_start.assert_called_once_with(headless=True, engine="firefox", channel="beta")
 
 
 @patch("vibium.browser.start")
