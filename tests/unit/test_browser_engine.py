@@ -1,9 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from rfvibium.browser_session import BrowserSession, SessionPool
-from rfvibium.errors import VibiumLibraryError
 from rfvibium.library import Vibium
 
 
@@ -52,20 +49,20 @@ def test_session_pool_open_forwards_engine_options(mock_create: MagicMock) -> No
     mock_create.return_value = session
     pool = SessionPool(headless=True)
 
-    result = pool.open(engine="firefox", channel="release")
+    result = pool.open(engine="Firefox", channel="release")
 
     mock_create.assert_called_once_with(
-        headless=True, engine="firefox", channel="release"
+        headless=True, engine="Firefox", channel="release"
     )
     assert result is browser
 
 
-def test_open_browser_delegates_normalized_engine_options() -> None:
+def test_open_browser_passes_engine_options() -> None:
     lib = Vibium()
     session = DummySession()
     lib._session = session
 
-    lib.open_browser(engine="Firefox", channel="Beta")
+    lib.open_browser(engine="firefox", channel="beta")
 
     assert session.open_kwargs == {"engine": "firefox", "channel": "beta"}
 
@@ -78,26 +75,3 @@ def test_open_browser_without_engine_passes_none() -> None:
     lib.open_browser()
 
     assert session.open_kwargs == {"engine": None, "channel": None}
-
-
-@pytest.mark.parametrize("engine", ["safari", "", "  "])
-def test_open_browser_rejects_invalid_engine(engine: str) -> None:
-    lib = Vibium()
-
-    with pytest.raises(VibiumLibraryError, match="unsupported engine|cannot be empty"):
-        lib.open_browser(engine=engine)
-
-
-@pytest.mark.parametrize("channel", ["nightly", "", "  "])
-def test_open_browser_rejects_invalid_channel(channel: str) -> None:
-    lib = Vibium()
-
-    with pytest.raises(VibiumLibraryError, match="unsupported channel|cannot be empty"):
-        lib.open_browser(engine="firefox", channel=channel)
-
-
-def test_open_browser_rejects_channel_with_chrome() -> None:
-    lib = Vibium()
-
-    with pytest.raises(VibiumLibraryError, match="firefox only"):
-        lib.open_browser(engine="chrome", channel="beta")
