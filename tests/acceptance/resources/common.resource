@@ -28,6 +28,10 @@ Reset Wait Fixture
 Reset Mouse Fixture
     Go To    data:text/html,<main><button id='mouse-btn' data-pressed='0'>Mouse Target</button></main>
 
+Reset Keyboard Fixture
+    [Documentation]    Input plus Enter handler for page-level and element keystrokes.
+    Set Page Content    <html><body><input id="name"/><input id="q"/><p id="out"></p><script>document.getElementById("q").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("out").textContent="enter";});</script></body></html>
+
 Reset Deferred Visible Fixture
     Go To    data:text/html,<main><div id='box' style='display:none'>ready</div><script>setTimeout(function(){document.getElementById('box').style.display='block';},400);</script></main>
 
