@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Core page/context wrappers (#51): ``Mouse Wheel``; ``Keyboard Type`` /
+  ``Keyboard Key`` (``down`` / ``up`` / ``press``); ``Set Viewport Size`` /
+  ``Get Viewport Size``; ``Set Window`` / ``Get Window Info``;
+  ``Set Page Content``; ``Clear Storage``.
+  Element keystrokes use ``Press Keys`` with a required locator; page-level
+  keys use ``Keyboard Key``.
+- Acceptance coverage for those wrappers in ``document.robot``,
+  ``keyboard.robot``, ``emulation.robot`` (viewport + window), plus
+  ``Mouse Wheel`` and ``Clear Storage``. (#51)
 - Acceptance coverage for Shadow DOM pierce locators (`>>` / `>>>`) in
   `tests/acceptance/pierce.robot`, including negative cases for light-DOM
   selectors and single-hop vs deep pierce (requires Vibium ≥ 26.8.21). (#50)
@@ -19,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ``tests/acceptance/multi_browser.robot``. (#53)
 
 ### Changed
+- Rename ``Press Key`` to ``Press Keys`` and require a locator. Page-level
+  keystrokes use ``Keyboard Key`` (``down`` / ``up`` / ``press``). (#51)
 - Require `vibium>=26.8.21,<26.9` (was `>=26.5.31`). (#47)
 - Migrate page waits from deprecated ``page.wait_until`` to
   ``wait_for_function`` / ``wait_for_url`` / ``wait_for_load`` in wait keywords

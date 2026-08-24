@@ -17,3 +17,8 @@ Mouse Down And Up Execute
     Mouse Move    10    10
     Mouse Down
     Mouse Up
+
+Mouse Wheel Executes
+    [Documentation]    Validates mouse wheel command executes without error.
+    [Tags]    acceptance    mouse
+    Mouse Wheel    0    120

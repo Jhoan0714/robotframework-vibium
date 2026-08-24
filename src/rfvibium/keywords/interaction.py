@@ -303,43 +303,25 @@ class InteractionKeywords:
         )
         page.find(*args, **kwargs).fill(final_value)
 
-    @keyword("Press Key")
-    def press_key(self, key: str, *locators: str, scope: object = None) -> None:
-        """Press a key on page keyboard or on a resolved element.
-
-        | =Argument= | =Description= |
-        | ``key`` | Keyboard key or combo supported by Vibium (for example ``Enter``). |
-        | ``*locators`` | Optional locator tokens. When provided, key press targets the matched element. Otherwise, targets page keyboard. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
-
-
-                Example:
-                    | Press Key    Enter
-                    | Press Key    Enter    role:textbox    label:Search
-        """
-        page = self.library._session.resolve_scope(scope)
-        if locators:
-            args, kwargs = resolve_required_locators(locators)
-            logger.info(
-                f"Pressing key '{key}' on element '{format_locators(locators)}'."
-            )
-            page.find(*args, **kwargs).press(key)
-            return
-
-        logger.info(f"Pressing key '{key}' on active page.")
-        page.keyboard.press(key)
-
     @keyword("Press Keys")
-    def press_keys(self, combo: str, scope: object = None) -> None:
-        """Press a keyboard combination on the resolved scope.
+    def press_keys(self, key: str, *locators: str, scope: object = None) -> None:
+        """Press a key or combo on the matched element.
+
+        Page-level keystrokes (no locator) use ``Keyboard Key    press``.
 
         | =Argument= | =Description= |
-        | ``combo`` | Key combination string (for example ``Control+a``, ``Shift+Tab``). |
+        | ``key`` | Keyboard key or combo supported by Vibium (for example ``Enter``, ``Control+a``). |
+        | ``*locators`` | Locator tokens to resolve a single element. At least one is required. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+
+        Example:
+            | Press Keys    Enter    role:textbox    label:Search
+            | Press Keys    Control+a    css:#editor
         """
         page = self.library._session.resolve_scope(scope)
-        logger.info(f"Pressing key combo '{combo}' on active page.")
-        page.keyboard.press(combo)
+        args, kwargs = resolve_required_locators(locators)
+        logger.info(f"Pressing key '{key}' on element '{format_locators(locators)}'.")
+        page.find(*args, **kwargs).press(key)
 
     @keyword("Double Click")
     def double_click(self, *locators: str, scope: object = None) -> None:

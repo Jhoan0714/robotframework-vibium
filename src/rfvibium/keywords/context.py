@@ -171,6 +171,20 @@ class StorageKeywords:
         logger.info(f"Restoring storage state from '{resolved}'.")
         ctx.set_storage(state)
 
+    @keyword("Clear Storage")
+    def clear_storage(self, context: object = None) -> None:
+        """Clear cookies and origin storage for the active browser context.
+
+        | =Argument= | =Description= |
+        | ``context`` | Optional context handle. When omitted, uses active context. |
+
+        Example:
+            | Clear Storage
+        """
+        ctx = _resolve_context(self.library._session, context)
+        logger.info("Clearing context storage.")
+        ctx.clear_storage()
+
     @staticmethod
     def _log_storage_artifact(path: Path) -> None:
         href = _path_for_log(path)

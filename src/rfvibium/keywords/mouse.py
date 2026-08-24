@@ -182,3 +182,25 @@ class MouseKeywords:
         MouseKeywords._assert_default_button(btn)
         logger.info("Mouse button up (left).")
         page.mouse.up()
+
+    @keyword("Mouse Wheel")
+    def mouse_wheel(
+        self,
+        delta_x: int | float | str = 0,
+        delta_y: int | float | str = 0,
+    ) -> None:
+        """Scroll the page using the mouse wheel at the current pointer position.
+
+        | =Argument= | =Description= |
+        | ``delta_x`` | Horizontal scroll delta in pixels. Default is ``0``. |
+        | ``delta_y`` | Vertical scroll delta in pixels. Default is ``0``. |
+
+        Example:
+            | Mouse Wheel    delta_y=400
+            | Mouse Wheel    100    -200
+        """
+        page = self.library._session.require_page()
+        dx = MouseKeywords._coerce_axis("delta_x", delta_x)
+        dy = MouseKeywords._coerce_axis("delta_y", delta_y)
+        logger.info(f"Mouse wheel delta_x={dx}, delta_y={dy}.")
+        page.mouse.wheel(dx, dy)

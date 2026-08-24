@@ -10,12 +10,17 @@ class DummyContext:
     def __init__(self, state=None) -> None:
         self._state = state or {"cookies": [], "origins": []}
         self.restored = None
+        self.cleared = False
 
     def storage(self):
         return dict(self._state)
 
     def set_storage(self, state) -> None:
         self.restored = state
+
+    def clear_storage(self) -> None:
+        self.cleared = True
+        self._state = {"cookies": [], "origins": []}
 
 
 class DummyPage:
@@ -58,6 +63,15 @@ def test_restore_storage_state_reads_and_applies(tmp_path: Path) -> None:
     kw.restore_storage_state(str(path))
 
     assert page.context.restored == payload
+
+
+def test_clear_storage() -> None:
+    page = DummyPage()
+    kw = TestableStorage(page)
+
+    kw.clear_storage()
+
+    assert page.context.cleared is True
 
 
 def test_export_storage_state_embeds_link(monkeypatch, tmp_path: Path) -> None:
