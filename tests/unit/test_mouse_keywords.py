@@ -10,6 +10,7 @@ class DummyMouse:
     def __init__(self) -> None:
         self.clicks: list[tuple[float, float]] = []
         self.moves: list[tuple[float, float]] = []
+        self.wheels: list[tuple[float, float]] = []
         self.down_count = 0
         self.up_count = 0
 
@@ -24,6 +25,9 @@ class DummyMouse:
 
     def up(self) -> None:
         self.up_count += 1
+
+    def wheel(self, delta_x: float, delta_y: float) -> None:
+        self.wheels.append((delta_x, delta_y))
 
 
 class DummyPage:
@@ -104,3 +108,21 @@ def test_mouse_down_rejects_non_default_button() -> None:
     kw = TestableMouse(DummyPage())
     with pytest.raises(VibiumLibraryError, match="not supported"):
         kw.mouse_down(button=1)
+
+
+def test_mouse_wheel() -> None:
+    page = DummyPage()
+    kw = TestableMouse(page)
+
+    kw.mouse_wheel(10, -40)
+
+    assert page.mouse.wheels == [(10.0, -40.0)]
+
+
+def test_mouse_wheel_defaults_to_zero() -> None:
+    page = DummyPage()
+    kw = TestableMouse(page)
+
+    kw.mouse_wheel(delta_y=120)
+
+    assert page.mouse.wheels == [(0.0, 120.0)]
