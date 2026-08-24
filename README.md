@@ -47,6 +47,10 @@ Basic Navigation
     Close Browser
 ```
 
+`Open Browser` accepts optional ``engine=`` (`chrome` or `firefox`) and
+``channel=`` (`release` or `beta`, Firefox only). When omitted, Chrome is
+used unless ``VIBIUM_ENGINE`` is set in the environment.
+
 ## Locator Syntax
 
 Targets passed to `Click`, `Fill Text` and `Find Element` use a
