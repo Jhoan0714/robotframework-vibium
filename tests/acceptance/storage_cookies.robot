@@ -29,3 +29,13 @@ Export And Restore Storage State
     ${cookies}=    List Cookies
     ${cookie_names}=    Evaluate    [c["name"] for c in $cookies]
     Should Contain    ${cookie_names}    rf_state_cookie
+
+Clear Storage Removes Origin Data
+    [Documentation]    Clears localStorage on the current origin.
+    [Tags]    acceptance    storage
+    Go To    ${BASE_URL}
+    ${before}=    Evaluate JavaScript    localStorage.setItem('rf_clear', '1'), localStorage.getItem('rf_clear')
+    Should Be Equal    ${before}    1
+    Clear Storage
+    ${after}=    Evaluate JavaScript    localStorage.getItem('rf_clear')
+    Should Be Equal    ${after}    ${NONE}
