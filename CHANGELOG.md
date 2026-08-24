@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Acceptance coverage for Shadow DOM pierce locators (`>>` / `>>>`) in
   `tests/acceptance/pierce.robot`, including negative cases for light-DOM
   selectors and single-hop vs deep pierce (requires Vibium ≥ 26.8.21). (#50)
+- Optional ``engine=`` and ``channel=`` arguments on ``Open Browser`` for
+  Chrome and Firefox launch (Vibium multi-engine support). (#53)
 
 ### Changed
 - Require `vibium>=26.8.21,<26.9` (was `>=26.5.31`). (#47)
