@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Require `vibium>=26.8.21,<26.9` (was `>=26.5.31`). (#47)
+
 ## [0.3.0] - 2026-07-26
 ### Changed
 - Renamed interaction/navigation/capture keywords to a concise convention
