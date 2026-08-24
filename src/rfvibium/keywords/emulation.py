@@ -17,9 +17,9 @@ class EmulationKeywords:
         self.library = library
 
     @staticmethod
-    def _as_int(name: str, value: object) -> int:
+    def _as_int(name: str, value: int | str) -> int:
         try:
-            return int(value)  # type: ignore[arg-type]
+            return int(value)
         except (TypeError, ValueError) as exc:
             raise VibiumLibraryError(
                 f"{name} must be an integer, got {value!r}."
