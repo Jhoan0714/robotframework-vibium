@@ -11,7 +11,10 @@ from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
 from .keywords.context import CookieKeywords, StorageKeywords
 from .keywords.dialogs import DialogKeywords
+from .keywords.document import DocumentKeywords
+from .keywords.emulation import EmulationKeywords
 from .keywords.interaction import InteractionKeywords
+from .keywords.keyboard import KeyboardKeywords
 from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.waits import WaitKeywords
@@ -177,6 +180,9 @@ class Vibium(DynamicCore):
         components = [
             NavigationKeywords(self),
             MouseKeywords(self),
+            KeyboardKeywords(self),
+            EmulationKeywords(self),
+            DocumentKeywords(self),
             InteractionKeywords(self),
             AssertionKeywords(self),
             CaptureKeywords(self),
