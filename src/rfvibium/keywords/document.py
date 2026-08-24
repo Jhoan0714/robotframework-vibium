@@ -5,8 +5,6 @@ from __future__ import annotations
 from robot.api import logger
 from robot.api.deco import keyword
 
-from ..errors import VibiumLibraryError
-
 
 class DocumentKeywords:
     """Keywords that replace or inject page document content."""
