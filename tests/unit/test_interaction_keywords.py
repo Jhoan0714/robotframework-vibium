@@ -426,50 +426,20 @@ def test_fill_text_masks_value_when_secret(monkeypatch) -> None:
     assert "s3cret" not in joined
 
 
-def test_press_key_logs_key(monkeypatch) -> None:
-    spy = _LoggerSpy()
-    monkeypatch.setattr(interaction_module, "logger", spy)
-
-    page = DummyPage()
-
-    class _KB:
-        def press(self, key: str) -> None:
-            page.pressed = key
-
-    page.keyboard = _KB()
-    kw = TestableInteraction(page)
-
-    kw.press_key("Enter")
-
-    assert spy.messages == ["Pressing key 'Enter' on active page."]
+def test_press_keys_requires_locator() -> None:
+    kw = TestableInteraction(DummyPage())
+    with pytest.raises(LocatorSyntaxError, match="At least one locator is required"):
+        kw.press_keys("Enter")
 
 
-def test_press_key_with_locator_uses_element_press() -> None:
+def test_press_keys_with_locator_uses_element_press() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
-    kw.press_key("Enter", "role:textbox", "label:Search")
+    kw.press_keys("Enter", "role:textbox", "label:Search")
 
     assert page.last_kwargs == {"role": "textbox", "label": "Search"}
     assert page.element.pressed_key == "Enter"
-
-
-def test_press_keys_uses_keyboard_combo(monkeypatch) -> None:
-    spy = _LoggerSpy()
-    monkeypatch.setattr(interaction_module, "logger", spy)
-    page = DummyPage()
-
-    class _KB:
-        def press(self, key: str) -> None:
-            page.pressed_combo = key
-
-    page.keyboard = _KB()
-    kw = TestableInteraction(page)
-
-    kw.press_keys("Control+a")
-
-    assert page.pressed_combo == "Control+a"
-    assert spy.messages == ["Pressing key combo 'Control+a' on active page."]
 
 
 def test_type_text_with_explicit_text_kwarg() -> None:
