@@ -31,6 +31,10 @@ Reset Mouse Fixture
 Reset Deferred Visible Fixture
     Go To    data:text/html,<main><div id='box' style='display:none'>ready</div><script>setTimeout(function(){document.getElementById('box').style.display='block';},400);</script></main>
 
+Reset Pierce Fixture
+    [Documentation]    Open-shadow Web Components for pierce combinators (``>>`` / ``>>>``).
+    Go To    data:text/html,<main><my-card></my-card><outer-host></outer-host></main><script>customElements.define('my-card',class extends HTMLElement{connectedCallback(){const r=this.attachShadow({mode:'open'});r.innerHTML="<p id='shadow-text'>inside shadow</p><button id='shadow-btn' data-clicked='0'>Save</button>";r.getElementById('shadow-btn').addEventListener('click',function(){this.setAttribute('data-clicked',String(Number(this.getAttribute('data-clicked'))+1));});}});customElements.define('inner-host',class extends HTMLElement{connectedCallback(){this.attachShadow({mode:'open'}).innerHTML="<p id='deep'>nested shadow</p>";}});customElements.define('outer-host',class extends HTMLElement{connectedCallback(){this.attachShadow({mode:'open'}).innerHTML='<inner-host></inner-host>';}});</script>
+
 Trigger Alert Dialog
     Evaluate JavaScript    () => { alert('hello'); return true; }
 
