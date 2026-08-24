@@ -11,10 +11,13 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 - `engine.robot`: `Open Browser` `engine=` (Chrome default vs Firefox; Firefox needs `vibium install --engine firefox`).
 - `artifacts.robot`: full-page and element screenshots plus PDF artifact generation.
 - `frames.robot`: object-first frame scope workflows.
-- `storage_cookies.robot`: cookie and storage state workflows.
+- `storage_cookies.robot`: cookie, storage state, and ``Clear Storage`` workflows.
 - `negative.robot`: invalid usage and expected error contracts.
 - `waits.robot`: wait and synchronization workflows (including load state and deferred visibility).
-- `mouse.robot`: low-level mouse command coverage.
+- `mouse.robot`: low-level mouse command coverage (including ``Mouse Wheel``).
+- `document.robot`: ``Set Page Content`` DOM injection.
+- `keyboard.robot`: ``Keyboard Type``, ``Keyboard Key``, and element ``Press Keys``.
+- `emulation.robot`: viewport and OS window size keywords.
 - `dialogs.robot`: browser dialog handling flows.
 - `assertions.robot`: read-only getters (`Evaluate JavaScript`, `Get Title`, `Count Elements`).
 - `multi_browser.robot`: two `Open Browser` instances with scoped URL reads (Chrome+Chrome and Chrome+Firefox; Firefox needs `vibium install --engine firefox`).
