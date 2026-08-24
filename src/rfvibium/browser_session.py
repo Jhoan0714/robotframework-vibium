@@ -111,11 +111,19 @@ class BrowserSession:
     _context_str_ids: set = field(default_factory=set, init=False, repr=False)
 
     @classmethod
-    def create(cls, *, headless: bool = False) -> BrowserSession:
+    def create(
+        cls,
+        *,
+        headless: bool = False,
+        engine: str | None = None,
+        channel: str | None = None,
+    ) -> BrowserSession:
         """Start one Vibium browser, wrap it in a ``BrowserSession``, bind default page."""
         from vibium import browser as vibium_browser
 
-        browser = vibium_browser.start(headless=headless)
+        browser = vibium_browser.start(
+            headless=headless, engine=engine, channel=channel
+        )
         page = browser.page()
         session = cls(browser=browser, context=None, page=None)
         session._bind_active_page(page)
@@ -339,10 +347,17 @@ class SessionPool:
         default_factory=dict, init=False, repr=False
     )
 
-    def open(self) -> Any:
+    def open(
+        self,
+        *,
+        engine: str | None = None,
+        channel: str | None = None,
+    ) -> Any:
         """Create a new underlying :class:`BrowserSession` and return its browser handle."""
 
-        session = BrowserSession.create(headless=self.headless)
+        session = BrowserSession.create(
+            headless=self.headless, engine=engine, channel=channel
+        )
         self._sessions.append(session)
         self._after_mutation(session)
         return session.browser

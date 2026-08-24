@@ -188,9 +188,27 @@ class Vibium(DynamicCore):
         DynamicCore.__init__(self, components)
 
     @keyword("Open Browser")
-    def open_browser(self):
-        """Open a new Browser session and return its handle."""
-        browser = self._session.open()
+    def open_browser(self, engine: str | None = None, channel: str | None = None):
+        """Open a new Browser session and return its handle.
+
+        When ``engine`` is omitted, Vibium uses Chrome by default or the engine
+        set via the ``VIBIUM_ENGINE`` environment variable.
+
+        | =Argument= | =Description= |
+        | ``engine`` | Optional browser engine: ``chrome`` (default) or ``firefox``. |
+        | ``channel`` | Optional Firefox release channel: ``release`` (default) or ``beta``. Firefox only. |
+
+        | *** Test Cases ***
+        | Chrome Default
+        |     Open Browser
+        |     Go To    https://example.com
+        | Firefox
+        |     Open Browser    engine=firefox
+        |     Go To    https://example.com
+        """
+        engine = engine.lower() if engine else engine
+        channel = channel.lower() if channel else channel
+        browser = self._session.open(engine=engine, channel=channel)
         logger.info("Browser session opened.")
         return browser
 

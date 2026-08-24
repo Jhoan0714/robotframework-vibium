@@ -9,8 +9,9 @@ class DummySession:
         self.close_all_called = False
         self.closed_browser = None
 
-    def open(self):
+    def open(self, **kwargs):
         self.open_called = True
+        self.open_kwargs = kwargs
         return self.open_return
 
     def close(self, browser=None) -> None:

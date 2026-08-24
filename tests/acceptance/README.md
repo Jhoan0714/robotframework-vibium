@@ -8,6 +8,7 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 - `navigation.robot`: URL navigation, history, reload, and multi-tab list/switch/close.
 - `interaction.robot`: element interaction against an injected test fixture.
 - `pierce.robot`: Shadow DOM pierce locators (`>>` / `>>>`; requires Vibium ≥ 26.8.21).
+- `engine.robot`: `Open Browser` `engine=` (Chrome default vs Firefox; Firefox needs `vibium install --engine firefox`).
 - `artifacts.robot`: full-page and element screenshots plus PDF artifact generation.
 - `frames.robot`: object-first frame scope workflows.
 - `storage_cookies.robot`: cookie and storage state workflows.
@@ -16,7 +17,7 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 - `mouse.robot`: low-level mouse command coverage.
 - `dialogs.robot`: browser dialog handling flows.
 - `assertions.robot`: read-only getters (`Evaluate JavaScript`, `Get Title`, `Count Elements`).
-- `multi_browser.robot`: two `Open Browser` instances with scoped URL reads (no suite browser setup).
+- `multi_browser.robot`: two `Open Browser` instances with scoped URL reads (Chrome+Chrome and Chrome+Firefox; Firefox needs `vibium install --engine firefox`).
 
 ## Run
 
@@ -36,4 +37,10 @@ Run pierce tests (requires Vibium ≥ 26.8.21):
 
 ```bash
 robot --pythonpath src -v HEADLESS:True -i pierce -d reports/acceptance tests/acceptance
+```
+
+Run engine tests (Firefox case requires `vibium install --engine firefox`; exclude with `-e firefox` if not installed):
+
+```bash
+robot --pythonpath src -v HEADLESS:True -i engine -d reports/acceptance tests/acceptance
 ```
