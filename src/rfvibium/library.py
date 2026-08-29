@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from robot.api import logger
 from robot.api.deco import keyword, library
 from robotlibcore import DynamicCore
@@ -194,15 +196,30 @@ class Vibium(DynamicCore):
         DynamicCore.__init__(self, components)
 
     @keyword("Open Browser")
-    def open_browser(self, engine: str | None = None, channel: str | None = None):
+    def open_browser(
+        self,
+        url: str | None = None,
+        engine: str | None = None,
+        channel: str | None = None,
+        headless: bool | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> Any:
         """Open a new Browser session and return its handle.
+
+        Mirrors Vibium ``browser.start(url, engine=..., channel=..., headless=..., headers=...)``.
+        The library import ``headless=${TRUE/FALSE}`` is the default when ``headless=`` is
+        omitted on this keyword. Pass ``headless=${TRUE}`` or ``headless=${FALSE}`` here to
+        override per browser.
 
         When ``engine`` is omitted, Vibium uses Chrome by default or the engine
         set via the ``VIBIUM_ENGINE`` environment variable.
 
         | =Argument= | =Description= |
-        | ``engine`` | Optional browser engine: ``chrome`` (default) or ``firefox``. |
-        | ``channel`` | Optional Firefox release channel: ``release`` (default) or ``beta``. Firefox only. |
+        | ``url`` | Optional remote BiDi WebSocket URL. When set, connects instead of local launch. |
+        | ``engine`` | Optional browser engine: ``chrome`` (default) or ``firefox``. Local launch only. |
+        | ``channel`` | Optional Firefox release channel: ``release`` (default) or ``beta``. Firefox only. Local launch only. |
+        | ``headless`` | Optional headless mode for this browser. Defaults to the library ``headless`` import setting. Local launch only. |
+        | ``headers`` | Optional HTTP headers for the remote WebSocket connection (for example auth tokens). Used with ``url=``. |
 
         | *** Test Cases ***
         | Chrome Default
@@ -211,10 +228,20 @@ class Vibium(DynamicCore):
         | Firefox
         |     Open Browser    engine=firefox
         |     Go To    https://example.com
+        | Headed second browser
+        |     Open Browser    headless=${FALSE}
+        | Remote
+        |     Open Browser    url=${REMOTE_BIDI_URL}    headers=&{AUTH_HEADERS}
         """
         engine = engine.lower() if engine else engine
         channel = channel.lower() if channel else channel
-        browser = self._session.open(engine=engine, channel=channel)
+        browser = self._session.open(
+            url=url,
+            engine=engine,
+            channel=channel,
+            headless=headless,
+            headers=headers,
+        )
         logger.info("Browser session opened.")
         return browser
 

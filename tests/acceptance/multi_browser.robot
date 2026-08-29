@@ -41,3 +41,30 @@ Chrome And Firefox Independent Sessions
     ${ua_chrome}=    Evaluate JavaScript    navigator.userAgent    scope=${p_chrome}
     Should Contain    ${ua_chrome}    Chrome
     Should Not Contain    ${ua_chrome}    Firefox
+
+Open Browser Uses Library Headless Default
+    [Documentation]
+    ...    With ``Library    Vibium    headless=${TRUE}``, ``Open Browser`` launches headless Chrome
+    ...    (user agent contains ``Headless``).
+    [Tags]    acceptance    multi-browser    core
+    Open Browser
+    Go To Blank Page
+    ${ua}=    Evaluate JavaScript    navigator.userAgent
+    Should Contain    ${ua}    Headless
+
+Second Browser Can Override Headless To Headed
+    [Documentation]
+    ...    ``Open Browser    headless=${FALSE}`` overrides the library import default.
+    ...    Requires a display; excluded from CI via the ``no-ci`` tag.
+    [Tags]    acceptance    multi-browser    no-ci
+    ${headless}=    Open Browser
+    Go To Blank Page
+    ${ua_headless}=    Evaluate JavaScript    navigator.userAgent
+    Should Contain    ${ua_headless}    Headless
+
+    ${headed}=    Open Browser    headless=${FALSE}
+    Go To Blank Page
+    ${ua_headed}=    Evaluate JavaScript    navigator.userAgent
+    Should Not Contain    ${ua_headed}    Headless
+    Close Browser    browser=${headless}
+    Close Browser    browser=${headed}
