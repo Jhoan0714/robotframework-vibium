@@ -42,4 +42,4 @@ jobs:
         run: pytest tests/unit --cov=rfvibium --cov-report=term-missing
 
       # - name: Acceptance tests
-      #   run: robot -v HEADLESS:True -d reports/acceptance tests/acceptance
+      #   run: robot --pythonpath src -v HEADLESS:True -e no-ci -d reports/acceptance tests/acceptance
