@@ -47,9 +47,13 @@ Basic Navigation
     Close Browser
 ```
 
-`Open Browser` accepts optional ``engine=`` (`chrome` or `firefox`) and
-``channel=`` (`release` or `beta`, Firefox only). When omitted, Chrome is
-used unless ``VIBIUM_ENGINE`` is set in the environment.
+`Open Browser` accepts optional launch arguments aligned with Vibium
+``browser.start()``: ``url=`` (remote BiDi WebSocket), ``engine=`` (`chrome` or
+`firefox`), ``channel=`` (`release` or `beta`, Firefox only), ``headless=`` (per
+browser; defaults to the library import ``headless=${TRUE/FALSE}``), and
+``headers=`` (HTTP headers for remote connect). When ``engine`` is omitted,
+Chrome is used unless ``VIBIUM_ENGINE`` is set. Without ``url=``, Vibium may
+still connect via the ``VIBIUM_CONNECT_URL`` environment variable.
 
 ## Locator Syntax
 
