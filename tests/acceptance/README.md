@@ -21,6 +21,12 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 - `dialogs.robot`: browser dialog handling flows.
 - `assertions.robot`: read-only getters (`Evaluate JavaScript`, `Get Title`, `Count Elements`).
 - `multi_browser.robot`: two `Open Browser` instances with scoped URL reads (Chrome+Chrome and Chrome+Firefox; Firefox needs `vibium install --engine firefox`).
+- `connect.robot`: ``Open Browser    url=...`` remote BiDi connect (``no-ci``; needs ``VIBIUM_CONNECT_URL``).
+
+## Tags
+
+- **`no-ci`**: tests that need a display (headed browser) or a remote BiDi URL. Exclude in CI with ``-e no-ci``.
+- **`firefox`**: Firefox engine cases; exclude with ``-e firefox`` when Firefox is not installed.
 
 ## Run
 
@@ -46,4 +52,17 @@ Run engine tests (Firefox case requires `vibium install --engine firefox`; exclu
 
 ```bash
 robot --pythonpath src -v HEADLESS:True -i engine -d reports/acceptance tests/acceptance
+```
+
+CI-style acceptance run (exclude tests that need a display or remote BiDi URL):
+
+```bash
+robot --pythonpath src -v HEADLESS:True -e no-ci -e firefox -d reports/acceptance tests/acceptance
+```
+
+Run ``no-ci`` tests locally (headed override and/or remote connect):
+
+```bash
+robot --pythonpath src -v HEADLESS:True -i no-ci -d reports/acceptance tests/acceptance
+robot --pythonpath src -v HEADLESS:True -v VIBIUM_CONNECT_URL:'wss://...' -i no-ci tests/acceptance/connect.robot
 ```
