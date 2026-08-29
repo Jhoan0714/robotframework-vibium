@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   selectors and single-hop vs deep pierce (requires Vibium ≥ 26.8.21). (#50)
 - Optional ``engine=`` and ``channel=`` arguments on ``Open Browser`` for
   Chrome and Firefox launch (Vibium multi-engine support). (#53)
+- ``Open Browser`` launch options aligned with ``browser.start()`` (#65): optional
+  ``url=``, ``headless=`` (per browser; defaults to library import), and
+  ``headers=`` for remote BiDi connect.
+- Acceptance: library headless default and ``no-ci`` cases for headed override
+  and remote ``url=`` connect (#65).
 - Acceptance coverage for ``Open Browser`` ``engine=`` in
   ``tests/acceptance/engine.robot`` (Chrome default vs Firefox user-agent). (#53)
 - Acceptance coverage for Chrome + Firefox multi-browser sessions in
