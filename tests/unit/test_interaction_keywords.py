@@ -33,6 +33,9 @@ class DummyElement:
         self.uploaded_files = None
         self.drag_calls: list = []
         self.attr_name = None
+        self.last_find_args = None
+        self.last_find_kwargs = None
+        self.nested_element = None
 
     def click(self) -> None:
         self.clicked = True
@@ -125,6 +128,14 @@ class DummyElement:
 
     def text(self) -> str:
         return "ELEMENT TEXT"
+
+    def find(self, *args, **kwargs):
+        self.last_find_args = args
+        self.last_find_kwargs = kwargs
+        return self.nested_element
+
+    def __repr__(self) -> str:
+        return "Element(tag='button', text='ELEMENT TEXT')"
 
 
 class DummyPage:
@@ -343,14 +354,37 @@ def test_fill_text_rejects_value_without_locator() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_find_element_returns_repr_and_merges_filters() -> None:
+def test_find_element_returns_handle_and_merges_filters() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
 
     result = kw.find_element("role:button", "text:Submit")
 
     assert page.last_kwargs == {"role": "button", "text": "Submit"}
-    assert isinstance(result, str)
+    assert result is page.element
+
+
+def test_describe_element_returns_repr() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    result = kw.describe_element(page.element)
+
+    assert result == "Element(tag='button', text='ELEMENT TEXT')"
+
+
+def test_find_element_nested_scope_uses_element_find() -> None:
+    page = DummyPage()
+    parent = page.element
+    child = DummyElement()
+    parent.nested_element = child
+    kw = TestableInteraction(page)
+
+    result = kw.find_element("css:button", scope=parent)
+
+    assert result is child
+    assert parent.last_find_args == ("button",)
+    assert parent.last_find_kwargs == {}
 
 
 def test_get_text_with_locator_reads_element_text() -> None:

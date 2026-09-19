@@ -67,10 +67,18 @@ class Vibium(DynamicCore):
 
     The library tracks an *active* page used by defaulted keywords.
     Keywords that accept ``scope`` use that active page when ``scope`` is omitted,
-    or use the explicit page/frame you pass. Passing ``scope`` does not change
+    or use the explicit page, frame, or (for find-based keywords) parent
+    ``Element`` handle you pass. Passing ``scope`` does not change
     the global active page unless a keyword explicitly updates it (for example
     ``Switch Page``).
 
+    ``Find Element`` / ``Find Elements`` return Vibium ``Element`` handles.
+    Pass those handles as ``scope=`` to run nested ``element.find`` /
+    ``element.find_all`` lookups. Use ``Describe Element`` when you need a
+    human-readable ``repr`` string for logging or text assertions.
+
+    Page-only keywords (for example ``Get Url``, ``Go To``, ``Map Elements``)
+    expect a page or frame ``scope``, not an element handle.
     = Locating Elements =
 
     Most interaction/getter keywords accept one or more locator tokens.

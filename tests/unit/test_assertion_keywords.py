@@ -153,13 +153,13 @@ def test_get_html_element_inner_not_supported() -> None:
         kw.get_html("input#x", outer=False)
 
 
-def test_find_elements_returns_repr_list_with_limit() -> None:
+def test_find_elements_returns_handles_with_limit() -> None:
     page = DummyPage([b"PNGDATA"])
     kw = TestableAssertions(page)
 
     result = kw.find_elements("css:.row", limit=2)
 
-    assert result == ["Element(name='e1')", "Element(name='e2')"]
+    assert result == page.find_all_elements[:2]
     assert page.last_find_all_args == (".row",)
     assert page.last_find_all_kwargs == {}
 
@@ -206,11 +206,9 @@ def test_assertion_keywords_use_explicit_scope_when_provided() -> None:
     assert kw.get_title(scope=scope_page) == "Example Title"
     assert kw.get_page_text(scope=scope_page) == "PAGE TEXT"
     assert kw.get_html(scope=scope_page) == "<html><body>doc</body></html>"
-    assert kw.find_elements("css:.row", scope=scope_page) == [
-        "Element(name='e1')",
-        "Element(name='e2')",
-        "Element(name='e3')",
-    ]
+    assert kw.find_elements("css:.row", scope=scope_page) == list(
+        scope_page.find_all_elements
+    )
     assert kw.count_elements("css:.row", scope=scope_page) == 3
     assert kw.evaluate_javascript("2 + 2", scope=scope_page) == {"expression": "2 + 2"}
     assert "'everything': False" in kw.get_accessibility_tree(scope=scope_page)

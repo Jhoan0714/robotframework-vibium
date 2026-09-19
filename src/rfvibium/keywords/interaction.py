@@ -4,7 +4,9 @@ Public contract:
 
 - ``Click`` / ``Find Element`` accept one or more locator tokens;
   each token uses ``strategy:value`` syntax or a plain CSS selector. Tokens
-  are merged into a single ``page.find(...)`` call.
+  are merged into a single ``page.find(...)`` / ``scope.find(...)`` call.
+  ``Find Element`` returns a Vibium ``Element`` handle (usable as ``scope=``
+  for nested find). Use ``Describe Element`` for a human-readable ``repr``.
 - ``Fill Text`` additionally accepts a value. Two usage modes:
     1. Ergonomic (value as last positional).
     2. Explicit (``value=...`` as Robot Framework keyword argument).
@@ -81,23 +83,51 @@ class InteractionKeywords:
         page.find(*args, **kwargs).click()
 
     @keyword("Find Element")
-    def find_element(self, *locators: str, scope: object = None) -> str:
-        """Resolve locator token(s) and return a human-readable element representation.
+    def find_element(self, *locators: str, scope: object = None):
+        """Resolve locator token(s) and return a Vibium ``Element`` handle.
 
-            | =Argument= | =Description= |
-            | ``*locators`` | Locator tokens merged into one ``page.find(...)`` call. |
-            | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        The handle can be passed as ``scope=`` to interaction/getter keywords
+        (and to ``Find Element`` / ``Find Elements``) for nested
+        ``element.find(...)`` lookups. For a human-readable string, use
+        ``Describe Element``.
 
-            Returns:
-        str: ``repr`` string for the matched element.
+        | =Argument= | =Description= |
+        | ``*locators`` | Locator tokens merged into one ``find(...)`` call on the resolved scope. |
+        | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
 
-            Example:
-                | ${el}=    Find Element    role:textbox    label:E-mail
+        Returns:
+            object: Vibium ``Element`` handle.
+
+        Example:
+            | ${el}=      Find Element    role:textbox    label:E-mail
+            | ${card}=    Find Element    css:.card
+            | ${btn}=     Find Element    css:button    scope=${card}
+            | Click    css:button    scope=${card}
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
         logger.info(f"Finding element '{format_locators(locators)}'.")
-        return repr(page.find(*args, **kwargs))
+        return page.find(*args, **kwargs)
+
+    @keyword("Describe Element")
+    def describe_element(self, element: object) -> str:
+        """Return a human-readable ``repr`` for an element handle.
+
+        Use after ``Find Element`` / ``Find Elements`` when you need a string
+        for logging or text assertions. Does not call the browser.
+
+        | =Argument= | =Description= |
+        | ``element`` | Element handle returned by ``Find Element`` (or an item from ``Find Elements``). |
+
+        Returns:
+            str: ``repr(element)`` (typically ``Element(tag='...', text='...')``).
+
+        Example:
+            | ${el}=      Find Element    css:button
+            | ${desc}=    Describe Element    ${el}
+            | Should Contain    ${desc}    button
+        """
+        return repr(element)
 
     @keyword("Get Text")
     def get_text(self, *locators: str, scope: object = None) -> str:

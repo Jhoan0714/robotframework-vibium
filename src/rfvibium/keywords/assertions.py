@@ -110,24 +110,29 @@ class AssertionKeywords:
     @keyword("Find Elements")
     def find_elements(
         self, *locators: str, limit: int | None = None, scope: object = None
-    ) -> list[str]:
-        """Return ``repr`` strings for all elements matching the locator(s).
+    ) -> list:
+        """Return Vibium ``Element`` handles for all matches.
+
+        Handles can be passed as ``scope=`` for nested ``element.find_all`` /
+        ``element.find`` lookups. For human-readable strings, use
+        ``Describe Element`` on each handle.
 
         | =Argument= | =Description= |
-        | ``*locators`` | One or more locator tokens merged into a single ``page.find_all(...)`` call. |
+        | ``*locators`` | One or more locator tokens merged into a single ``find_all(...)`` call on the resolved scope. |
         | ``limit`` | Optional maximum number of returned elements. Must be ``>= 1`` when provided. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
 
+        Returns:
+            list: Vibium ``Element`` handles (possibly empty).
 
-                Returns:
-                    list[str]: Human-readable representations of matched elements.
+        Raises:
+            LocatorSyntaxError: If ``limit`` is provided and lower than ``1``.
 
-                Raises:
-                    LocatorSyntaxError: If ``limit`` is provided and lower than ``1``.
-
-                Example:
-                    | @{rows}=    Find Elements    css:.row
-                    | @{first2}=    Find Elements    role:listitem    limit=2
+        Example:
+            | @{rows}=     Find Elements    css:.row
+            | @{first2}=   Find Elements    role:listitem    limit=2
+            | ${card}=     Find Element    css:.card
+            | @{items}=    Find Elements    css:li    scope=${card}
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
@@ -138,21 +143,22 @@ class AssertionKeywords:
             if limit < 1:
                 raise LocatorSyntaxError("Find Elements: 'limit' must be >= 1.")
             elements = elements[:limit]
-        return [repr(el) for el in elements]
+        return list(elements)
 
     @keyword("Count Elements")
     def count_elements(self, *locators: str, scope: object = None) -> int:
         """Return how many elements match the locator(s).
 
             | =Argument= | =Description= |
-            | ``*locators`` | One or more locator tokens merged into a single ``page.find_all(...)`` call. |
-            | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+            | ``*locators`` | One or more locator tokens merged into a single ``find_all(...)`` call on the resolved scope. |
+            | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
 
             Returns:
         int: Number of matched elements.
 
             Example:
                 | ${count}=    Count Elements    css:.item
+                | ${n}=        Count Elements    css:li    scope=${card}
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)

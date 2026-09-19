@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- ``Describe Element`` returns ``repr`` of an ``Element`` handle for logging
+  and text assertions (#57).
 - Core page/context wrappers (#51): ``Mouse Wheel``; ``Keyboard Type`` /
   ``Keyboard Key`` (``down`` / ``up`` / ``press``); ``Set Viewport Size`` /
   ``Get Viewport Size``; ``Set Window`` / ``Get Window Info``;
@@ -33,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ``tests/acceptance/multi_browser.robot``. (#53)
 
 ### Changed
+- **Breaking:** ``Find Element`` returns a Vibium ``Element`` handle (not
+  ``repr`` string). ``Find Elements`` returns a list of handles. Pass handles
+  as ``scope=`` for nested ``element.find`` / ``element.find_all`` (#57).
+  Use ``Describe Element`` for the previous human-readable string.
 - Rename ``Press Key`` to ``Press Keys`` and require a locator. Page-level
   keystrokes use ``Keyboard Key`` (``down`` / ``up`` / ``press``). (#51)
 - Require `vibium>=26.8.21,<26.9` (was `>=26.5.31`). (#47)
