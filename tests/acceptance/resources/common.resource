@@ -19,6 +19,10 @@ Go To Blank Page
 Reset Interaction Fixture
     Go To    data:text/html,<main><input id='name'/><button id='save' data-clicked='0' onclick="this.setAttribute('data-clicked',String(Number(this.getAttribute('data-clicked'))+1))">Save</button></main>
 
+Reset Nested Find Fixture
+    [Documentation]    Parent container with nested button and list items for element-scope find.
+    Set Page Content    <html><body><div id="card"><button id="inner-btn" data-clicked="0">Go</button><ul><li>a</li><li>b</li></ul></div><button id="outer-btn" data-clicked="0">Outside</button><script>document.getElementById("inner-btn").addEventListener("click",function(){this.setAttribute("data-clicked",String(Number(this.getAttribute("data-clicked"))+1));});document.getElementById("outer-btn").addEventListener("click",function(){this.setAttribute("data-clicked",String(Number(this.getAttribute("data-clicked"))+1));});</script></body></html>
+
 Reset Frame Fixture
     Go To    data:text/html,<main><iframe name='child' srcdoc="<input id='in-frame' value='start' /><p id='status'>inside-frame</p>"></iframe></main>
 
