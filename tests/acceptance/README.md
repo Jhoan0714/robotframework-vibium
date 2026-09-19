@@ -6,7 +6,7 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 
 - `smoke.robot`: minimal import/open/navigation check.
 - `navigation.robot`: URL navigation, history, reload, and multi-tab list/switch/close.
-- `interaction.robot`: element interaction against an injected test fixture.
+- `interaction.robot`: element interaction against an injected test fixture (including nested `Find Element` `scope=` / `Describe Element`).
 - `pierce.robot`: Shadow DOM pierce locators (`>>` / `>>>`; requires Vibium ≥ 26.8.21).
 - `engine.robot`: `Open Browser` `engine=` (Chrome default vs Firefox; Firefox needs `vibium install --engine firefox`).
 - `artifacts.robot`: full-page and element screenshots plus PDF artifact generation.
