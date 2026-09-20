@@ -74,11 +74,13 @@ class Vibium(DynamicCore):
 
     ``Find Element`` / ``Find Elements`` return Vibium ``Element`` handles.
     Pass those handles as ``scope=`` to run nested ``element.find`` /
-    ``element.find_all`` lookups. Use ``Describe Element`` when you need a
-    human-readable ``repr`` string for logging or text assertions.
-
+    ``element.find_all`` lookups. Action and getter keywords (for example
+    ``Click``, ``Fill Text``, ``Get Text``, ``Wait For Element``) also accept
+    a sole handle as the target. Use ``Describe Element`` when you
+    need a human-readable ``repr`` string for logging or text assertions.
     Page-only keywords (for example ``Get Url``, ``Go To``, ``Map Elements``)
     expect a page or frame ``scope``, not an element handle.
+
     = Locating Elements =
 
     Most interaction/getter keywords accept one or more locator tokens.
