@@ -7,6 +7,8 @@ Public contract:
   are merged into a single ``page.find(...)`` / ``scope.find(...)`` call.
   ``Find Element`` returns a Vibium ``Element`` handle (usable as ``scope=``
   for nested find). Use ``Describe Element`` for a human-readable ``repr``.
+  Action and getter keywords accept a sole element handle as the target
+  (no second ``find``), in addition to locator tokens.
 - ``Fill Text`` additionally accepts a value. Two usage modes:
     1. Ergonomic (value as last positional).
     2. Explicit (``value=...`` as Robot Framework keyword argument).
@@ -34,6 +36,7 @@ from ..locator import (
     format_locators,
     looks_like_locator,
     merge_locators,
+    resolve_element,
     resolve_required_locators,
 )
 from ..utils import parse_timeout_ms
@@ -65,30 +68,34 @@ class InteractionKeywords:
         return str(page.a11y_tree())
 
     @keyword("Click")
-    def click(self, *locators: str, scope: object = None) -> None:
-        """Click the element resolved from locator token(s).
+    def click(self, *locators, scope: object = None) -> None:
+        """Click an element resolved from locator token(s) or an element handle.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens merged into one ``page.find(...)`` call. Supports ``strategy:value`` tokens (for example ``role:``, ``text:``, ``label:``, ``xpath:``) and plain CSS selectors. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
-
-                Example:
-                    | Click    role:button    text:Log in
-                    | Click    css:.submit
+        Example:
+            | Click    role:button    text:Log in
+            | Click    css:.submit
+            | ${btn}=    Find Element    css:#save
+            | Click    ${btn}
+            | Click    css:button    scope=${card}
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Clicking element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).click()
+        element.click()
 
     @keyword("Find Element")
-    def find_element(self, *locators: str, scope: object = None):
+    def find_element(self, *locators, scope: object = None):
         """Resolve locator token(s) and return a Vibium ``Element`` handle.
 
         The handle can be passed as ``scope=`` to interaction/getter keywords
         (and to ``Find Element`` / ``Find Elements``) for nested
-        ``element.find(...)`` lookups. For a human-readable string, use
+        ``element.find(...)`` lookups, or as the sole ``*locators`` target
+        on action/getter keywords. For a human-readable string, use
         ``Describe Element``.
 
         | =Argument= | =Description= |
@@ -102,6 +109,7 @@ class InteractionKeywords:
             | ${el}=      Find Element    role:textbox    label:E-mail
             | ${card}=    Find Element    css:.card
             | ${btn}=     Find Element    css:button    scope=${card}
+            | Click    ${btn}
             | Click    css:button    scope=${card}
         """
         page = self.library._session.resolve_scope(scope)
@@ -130,179 +138,195 @@ class InteractionKeywords:
         return repr(element)
 
     @keyword("Get Text")
-    def get_text(self, *locators: str, scope: object = None) -> str:
-        """Return ``element.text()`` for the matched element.
+    def get_text(self, *locators, scope: object = None) -> str:
+        """Return ``element.text()`` for a matched element or element handle.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
+        Returns:
+            str: Element text.
 
-                Returns:
-                    str: Element text.
+        Example:
+            | ${text}=    Get Text    css:h1
+            | ${btn}=     Find Element    css:button
+            | ${text}=    Get Text    ${btn}
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading text from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).text()
+        return element.text()
 
     @keyword("Get Inner Text")
-    def get_inner_text(self, *locators: str, scope: object = None) -> str:
+    def get_inner_text(self, *locators, scope: object = None) -> str:
         """Return ``element.inner_text()`` for the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading inner text from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).inner_text()
+        return element.inner_text()
 
     @keyword("Get Value")
-    def get_value(self, *locators: str, scope: object = None) -> str:
+    def get_value(self, *locators, scope: object = None) -> str:
         """Return ``element.value()`` for the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single form element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading value from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).value()
+        return element.value()
 
     @keyword("Get Attribute")
     def get_attribute(
-        self, name: str, *locators: str, scope: object = None
+        self, name: str, *locators, scope: object = None
     ) -> str | None:
         """Return an attribute value from the matched element.
 
         | =Argument= | =Description= |
         | ``name`` | Attribute name to read. |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
         Returns:
             str | None: Attribute value or ``None`` when attribute is absent.
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(
             f"Reading attribute '{name}' from element '{format_locators(locators)}'."
         )
-        return page.find(*args, **kwargs).attr(name)
+        return element.attr(name)
 
     @keyword("Get Bounds")
-    def get_bounds(self, *locators: str, scope: object = None) -> object:
+    def get_bounds(self, *locators, scope: object = None) -> object:
         """Return ``element.bounds()`` for the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading bounds from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).bounds()
+        return element.bounds()
 
     @keyword("Element Is Visible")
-    def element_is_visible(self, *locators: str, scope: object = None) -> bool:
+    def element_is_visible(self, *locators, scope: object = None) -> bool:
         """Check whether the matched element is visible.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Checking visibility of element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).is_visible()
+        return element.is_visible()
 
     @keyword("Element Is Hidden")
-    def element_is_hidden(self, *locators: str, scope: object = None) -> bool:
+    def element_is_hidden(self, *locators, scope: object = None) -> bool:
         """Check whether the matched element is hidden.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Checking hidden state of element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).is_hidden()
+        return element.is_hidden()
 
     @keyword("Element Is Enabled")
-    def element_is_enabled(self, *locators: str, scope: object = None) -> bool:
+    def element_is_enabled(self, *locators, scope: object = None) -> bool:
         """Check whether the matched element is enabled.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Checking enabled state of element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).is_enabled()
+        return element.is_enabled()
 
     @keyword("Element Is Checked")
-    def element_is_checked(self, *locators: str, scope: object = None) -> bool:
+    def element_is_checked(self, *locators, scope: object = None) -> bool:
         """Check whether the matched element is checked.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Checking checked state of element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).is_checked()
+        return element.is_checked()
 
     @keyword("Element Is Editable")
-    def element_is_editable(self, *locators: str, scope: object = None) -> bool:
+    def element_is_editable(self, *locators, scope: object = None) -> bool:
         """Check whether the matched element is editable.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(
             f"Checking editable state of element '{format_locators(locators)}'."
         )
-        return page.find(*args, **kwargs).is_editable()
+        return element.is_editable()
 
     @keyword("Get Role")
-    def get_role(self, *locators: str, scope: object = None) -> str:
+    def get_role(self, *locators, scope: object = None) -> str:
         """Return semantic role for the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading role of element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).role()
+        return element.role()
 
     @keyword("Get Label")
-    def get_label(self, *locators: str, scope: object = None) -> str:
+    def get_label(self, *locators, scope: object = None) -> str:
         """Return accessible label for the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading label of element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).label()
+        return element.label()
 
     @keyword("Fill Text")
     def fill_text(
         self,
-        *locators: str,
+        *locators,
         value: object = _UNSET,
         secret: bool = False,
         scope: object = None,
@@ -310,10 +334,10 @@ class InteractionKeywords:
         """Fill the matched element, replacing existing content.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens plus optional trailing value (ergonomic mode). |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``value`` | Explicit value to type. When provided, all positional arguments are treated as locators. |
         | ``secret`` | When ``True``, masks typed value in logs as ``***``. Default is ``False``. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
         Note:
             The ergonomic form requires at least one locator and one trailing value.
@@ -323,92 +347,98 @@ class InteractionKeywords:
             | Fill Text    role:textbox    label:E-mail    user@example.com
             | Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
         """
-        page = self.library._session.resolve_scope(scope)
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
-        args, kwargs = resolve_required_locators(locator_tokens)
+        element = resolve_element(
+            self.library._session, *locator_tokens, scope=scope
+        )
         display_value = "***" if secret else repr(final_value)
         logger.info(
             f"Typing text {display_value} into element "
             f"'{format_locators(locator_tokens)}'."
         )
-        page.find(*args, **kwargs).fill(final_value)
+        element.fill(final_value)
 
     @keyword("Press Keys")
-    def press_keys(self, key: str, *locators: str, scope: object = None) -> None:
+    def press_keys(self, key: str, *locators, scope: object = None) -> None:
         """Press a key or combo on the matched element.
 
         Page-level keystrokes (no locator) use ``Keyboard Key    press``.
 
         | =Argument= | =Description= |
         | ``key`` | Keyboard key or combo supported by Vibium (for example ``Enter``, ``Control+a``). |
-        | ``*locators`` | Locator tokens to resolve a single element. At least one is required. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
         Example:
             | Press Keys    Enter    role:textbox    label:Search
             | Press Keys    Control+a    css:#editor
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Pressing key '{key}' on element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).press(key)
+        element.press(key)
 
     @keyword("Double Click")
-    def double_click(self, *locators: str, scope: object = None) -> None:
+    def double_click(self, *locators, scope: object = None) -> None:
         """Double-click the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Double-clicking element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).dblclick()
+        element.dblclick()
 
     @keyword("Hover")
-    def hover(self, *locators: str, scope: object = None) -> None:
+    def hover(self, *locators, scope: object = None) -> None:
         """Hover the mouse pointer over the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Hovering element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).hover()
+        element.hover()
 
     @keyword("Focus")
-    def focus(self, *locators: str, scope: object = None) -> None:
+    def focus(self, *locators, scope: object = None) -> None:
         """Set focus on the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Focusing element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).focus()
+        element.focus()
 
     @keyword("Clear Text")
-    def clear_text(self, *locators: str, scope: object = None) -> None:
+    def clear_text(self, *locators, scope: object = None) -> None:
         """Clear the value of the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Clearing element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).clear()
+        element.clear()
 
     @keyword("Type Text")
     def type_text(
         self,
-        *locators: str,
+        *locators,
         text: object = _UNSET,
         secret: bool = False,
         scope: object = None,
@@ -416,96 +446,101 @@ class InteractionKeywords:
         """Type text into the matched element in append mode.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens plus optional trailing text (ergonomic mode). |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``text`` | Explicit text to type. When provided, all positional arguments are treated as locators. |
         | ``secret`` | When ``True``, masks typed text in logs as ``***``. Default is ``False``. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
         locator_tokens, final_text = self._resolve_tail_value_arguments(
             keyword_name="Type Text",
             positional=locators,
             explicit=text,
             explicit_name="text",
         )
-        args, kwargs = resolve_required_locators(locator_tokens)
+        element = resolve_element(
+            self.library._session, *locator_tokens, scope=scope
+        )
         display_value = "***" if secret else repr(final_text)
         logger.info(
             f"Typing text {display_value} into element "
             f"'{format_locators(locator_tokens)}' (append mode)."
         )
-        page.find(*args, **kwargs).type(final_text)
+        element.type(final_text)
 
     @keyword("Select Option")
     def select_option(
-        self, *locators: str, value: object = _UNSET, scope: object = None
+        self, *locators, value: object = _UNSET, scope: object = None
     ) -> None:
         """Select an option value in a matched ``<select>`` element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens plus optional trailing option value. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``value`` | Explicit option value to select. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
         locator_tokens, option_value = self._resolve_tail_value_arguments(
             keyword_name="Select Option",
             positional=locators,
             explicit=value,
             explicit_name="value",
         )
-        args, kwargs = resolve_required_locators(locator_tokens)
+        element = resolve_element(
+            self.library._session, *locator_tokens, scope=scope
+        )
         logger.info(
             f"Selecting option {repr(option_value)} in element "
             f"'{format_locators(locator_tokens)}'."
         )
-        page.find(*args, **kwargs).select_option(option_value)
+        element.select_option(option_value)
 
     @keyword("Check")
-    def check(self, *locators: str, scope: object = None) -> None:
+    def check(self, *locators, scope: object = None) -> None:
         """Check a matched checkbox or radio control.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Checking element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).check()
+        element.check()
 
     @keyword("Uncheck")
-    def uncheck(self, *locators: str, scope: object = None) -> None:
+    def uncheck(self, *locators, scope: object = None) -> None:
         """Uncheck a matched checkbox control.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Unchecking element '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).uncheck()
+        element.uncheck()
 
     @keyword("Scroll Into View")
-    def scroll_into_view(self, *locators: str, scope: object = None) -> None:
+    def scroll_into_view(self, *locators, scope: object = None) -> None:
         """Scroll until the matched element is in view.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Scrolling element into view '{format_locators(locators)}'.")
-        page.find(*args, **kwargs).scroll_into_view()
+        element.scroll_into_view()
 
     @keyword("Scroll")
     def scroll(
         self,
         direction: str = "down",
         amount: int = 3,
-        *locators: str,
+        *locators,
         scope: object = None,
     ) -> None:
         """Scroll the page or a CSS container selector.
@@ -538,7 +573,7 @@ class InteractionKeywords:
     @keyword("Dispatch Event")
     def dispatch_event(
         self,
-        *locators: str,
+        *locators,
         event: str,
         event_init: object = None,
         scope: object = None,
@@ -546,31 +581,32 @@ class InteractionKeywords:
         """Dispatch a DOM event on the matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens to resolve a single element. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``event`` | Event name to dispatch (for example ``click`` or ``change``). |
         | ``event_init`` | Optional event init payload as dict or JSON object string. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
 
                 Raises:
                     LocatorSyntaxError: If ``event_init`` is invalid JSON/object shape.
         """
-        page = self.library._session.resolve_scope(scope)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         init_payload = self._coerce_event_init(event_init)
         logger.info(
             f"Dispatching event '{event}' on element '{format_locators(locators)}'."
         )
-        page.find(*args, **kwargs).dispatch_event(event, init_payload)
+        element.dispatch_event(event, init_payload)
 
     @keyword("Upload Files")
-    def upload_files(self, *locators: str, files: object, scope: object = None) -> None:
+    def upload_files(self, *locators, files: object, scope: object = None) -> None:
         """Upload one or more files into a matched file input.
 
             | =Argument= | =Description= |
-            | ``*locators`` | Locator tokens to resolve a single file input element. |
+            | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
             | ``files`` | File path string or list/tuple of path strings. |
-            | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+            | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
             Raises:
         LocatorSyntaxError: If file paths are empty/invalid.
@@ -579,14 +615,15 @@ class InteractionKeywords:
                 | Upload Files    css:input[type='file']    files=/tmp/a.pdf
                 | Upload Files    xpath://input[@type='file']    files=@{LIST}
         """
-        page = self.library._session.resolve_scope(scope)
         file_paths = InteractionKeywords._coerce_upload_files(files)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(
             f"Uploading {len(file_paths)} file(s) to element "
             f"'{format_locators(locators)}'."
         )
-        page.find(*args, **kwargs).set_files(file_paths)
+        element.set_files(file_paths)
 
     @keyword("Drag And Drop")
     def drag_and_drop(
