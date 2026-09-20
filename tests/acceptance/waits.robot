@@ -39,3 +39,12 @@ Wait For Deferred Visible Element
     Wait For Element    css:#box    state=visible    timeout=5s
     ${txt}=    Get Text    css:#box
     Should Be Equal    ${txt}    ready
+
+Wait For Element With Element Handle
+    [Documentation]    Wait For Element accepts a Find Element handle as the sole target.
+    [Tags]    acceptance    waits
+    Reset Deferred Visible Fixture
+    ${el}=    Find Element    css:#box
+    Wait For Element    ${el}    state=visible    timeout=5s
+    ${txt}=    Get Text    ${el}
+    Should Be Equal    ${txt}    ready
