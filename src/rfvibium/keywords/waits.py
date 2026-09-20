@@ -35,7 +35,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import LocatorSyntaxError, VibiumLibraryError
-from ..locator import format_locators, resolve_required_locators
+from ..locator import format_locators, resolve_element
 from ..utils import parse_timeout_ms
 
 _ELEMENT_WAIT_STATES: frozenset[str] = frozenset(
@@ -96,25 +96,27 @@ class WaitKeywords:
     @keyword("Wait For Element")
     def wait_for_element(
         self,
-        *locators: str,
+        *locators,
         state: str = "visible",
         timeout: str = "10s",
+        scope: object = None,
     ) -> None:
         """Wait until a matched element reaches a target state.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens used to resolve a single element via ``page.find(...)``. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``state`` | Target element state: ``visible``, ``hidden``, ``attached``, or ``detached``. Default is ``visible``. |
         | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
         Raises:
             LocatorSyntaxError: If ``state`` is not supported.
 
         Example:
             | Wait For Element    css:#modal    state=visible    timeout=5s
-            | Wait For Element    role:dialog    text:Saving    state=hidden
+            | ${el}=    Find Element    css:#modal
+            | Wait For Element    ${el}    state=visible
         """
-        page = self.library._session.require_page()
         normalized = state.strip().lower()
         if normalized not in _ELEMENT_WAIT_STATES:
             raise LocatorSyntaxError(
@@ -122,12 +124,14 @@ class WaitKeywords:
                 f"{', '.join(sorted(_ELEMENT_WAIT_STATES))}; got {state!r}."
             )
         timeout_ms = parse_timeout_ms(timeout)
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(
             f"Waiting for element '{format_locators(locators)}' "
             f"to become '{normalized}' (timeout={timeout})."
         )
-        page.find(*args, **kwargs).wait_until(state=normalized, timeout=timeout_ms)
+        element.wait_until(state=normalized, timeout=timeout_ms)
 
     @keyword("Wait For Url")
     def wait_for_url(self, pattern: str, timeout: str = "10s") -> None:
