@@ -2,10 +2,13 @@ import pytest
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
 from rfvibium.locator import (
+    is_element_handle,
     looks_like_locator,
     merge_locators,
     parse_locator,
+    resolve_element,
 )
+from vibium import Element
 
 
 def test_locator_syntax_error_inherits_from_vibium_library_error() -> None:
@@ -204,3 +207,99 @@ def test_merge_rejects_multiple_css_selectors() -> None:
 def test_merge_rejects_empty_iterable() -> None:
     with pytest.raises(LocatorSyntaxError, match="At least one locator"):
         merge_locators([])
+
+
+# ---------------------------------------------------------------------------
+# resolve_element / is_element_handle
+# ---------------------------------------------------------------------------
+
+
+class FakeElement(Element):
+    """Minimal Vibium ``Element`` subclass for handle-path unit tests."""
+
+    def __init__(self) -> None:
+        # Skip Element.__init__ (needs async client); isinstance still holds.
+        self.clicked = False
+
+    def click(self, timeout=None) -> None:
+        self.clicked = True
+
+    def text(self) -> str:
+        return "x"
+
+    def __repr__(self) -> str:
+        return "FakeElement()"
+
+
+class _PageLike:
+    def __init__(self) -> None:
+        self.find_calls: list[tuple] = []
+        self.element = FakeElement()
+
+    def find(self, *args, **kwargs):
+        self.find_calls.append((args, kwargs))
+        return self.element
+
+
+class _SessionLike:
+    def __init__(self, page: _PageLike) -> None:
+        self._page = page
+
+    def resolve_scope(self, scope=None):
+        return self._page if scope is None else scope
+
+
+def test_is_element_handle_requires_vibium_element() -> None:
+    class DuckTyped:
+        def click(self) -> None:
+            pass
+
+        def text(self) -> str:
+            return "x"
+
+    assert is_element_handle(FakeElement()) is True
+    assert is_element_handle(DuckTyped()) is False
+    assert is_element_handle(_PageLike()) is False
+    assert is_element_handle("css:button") is False
+    assert is_element_handle(None) is False
+
+
+def test_resolve_element_returns_handle_alone() -> None:
+    session = _SessionLike(_PageLike())
+    el = FakeElement()
+
+    assert resolve_element(session, el) is el
+    assert session._page.find_calls == []
+
+
+def test_resolve_element_rejects_handle_with_scope() -> None:
+    session = _SessionLike(_PageLike())
+    el = FakeElement()
+
+    with pytest.raises(LocatorSyntaxError, match="do not pass scope"):
+        resolve_element(session, el, scope=session._page)
+
+
+def test_resolve_element_rejects_handle_mixed_with_locators() -> None:
+    session = _SessionLike(_PageLike())
+    el = FakeElement()
+
+    with pytest.raises(LocatorSyntaxError, match="Do not mix"):
+        resolve_element(session, el, "css:button")
+
+
+def test_resolve_element_finds_from_locator_strings() -> None:
+    page = _PageLike()
+    session = _SessionLike(page)
+
+    out = resolve_element(session, "role:button", "text:Go")
+
+    assert out is page.element
+    assert page.find_calls == [((), {"role": "button", "text": "Go"})]
+
+
+def test_resolve_element_requires_a_target() -> None:
+    session = _SessionLike(_PageLike())
+
+    with pytest.raises(LocatorSyntaxError, match="At least one locator or element"):
+        resolve_element(session)
