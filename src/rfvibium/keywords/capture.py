@@ -11,7 +11,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import ScreenshotError
-from ..locator import format_locators, resolve_required_locators
+from ..locator import format_locators, resolve_element
 
 _STALE_CONTEXT_MARKERS = (
     "cannot find context",
@@ -65,7 +65,7 @@ class CaptureKeywords:
     @keyword("Take Screenshot")
     def take_screenshot(
         self,
-        *locators: str,
+        *locators,
         output_path: str | None = None,
         embed: bool = True,
         width: str = "800px",
@@ -76,13 +76,13 @@ class CaptureKeywords:
         """Capture a PNG screenshot of the page or a matched element.
 
         | =Argument= | =Description= |
-        | ``*locators`` | Optional locator tokens. When provided, captures the matched element. When omitted, captures the page. |
+        | ``*locators`` | Optional. Element to capture: locator string(s) or a single element handle. When omitted, captures the page. |
         | ``output_path`` | Optional output file path. When omitted, an auto-numbered file is created under ``media/``. |
         | ``embed`` | When ``True`` (default), embeds an image preview in Robot logs. |
         | ``width`` | Render width used in embedded HTML preview. Default is ``800px``. |
-        | ``full_page`` | Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. Ignored when locators are provided. |
-        | ``clip`` | Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. Ignored when locators are provided. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        | ``full_page`` | Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. Ignored when locators/handle are provided. |
+        | ``clip`` | Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. Ignored when locators/handle are provided. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
         Returns:
             str: Absolute path of the generated PNG file.
@@ -103,10 +103,14 @@ class CaptureKeywords:
             | ${path}=    Take Screenshot    output_path=home.png    clip={"x": 0, "y": 0, "width": 800, "height": 600}
             | ${path}=    Take Screenshot    css:.chart-card    output_path=chart.png
             | ${path}=    Take Screenshot    role:img    alt:Logo
+            | ${el}=      Find Element    css:.chart
+            | ${path}=    Take Screenshot    ${el}
         """
         page = self.library._session.resolve_scope(scope)
         if locators:
-            args, kwargs = resolve_required_locators(locators)
+            element = resolve_element(
+                self.library._session, *locators, scope=scope
+            )
             path = (
                 _next_auto_element_screenshot_path()
                 if output_path is None
@@ -121,7 +125,7 @@ class CaptureKeywords:
                 path,
                 embed,
                 width,
-                lambda: page.find(*args, **kwargs).screenshot(),
+                lambda: element.screenshot(),
             )
 
         path = (
