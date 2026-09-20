@@ -6,7 +6,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import LocatorSyntaxError
-from ..locator import format_locators, resolve_required_locators
+from ..locator import format_locators, resolve_element, resolve_required_locators
 
 
 class AssertionKeywords:
@@ -73,27 +73,29 @@ class AssertionKeywords:
         return page.evaluate("document.body ? document.body.innerText : ''")
 
     @keyword("Get Html")
-    def get_html(self, *locators: str, outer: bool = True, scope: object = None) -> str:
+    def get_html(self, *locators, outer: bool = True, scope: object = None) -> str:
         """Return HTML from the resolved scope or a resolved element.
 
             | =Argument= | =Description= |
-            | ``*locators`` | Zero or more locator tokens. When omitted, reads page-level HTML. When provided, resolves a single element with ``page.find(...)``. |
+            | ``*locators`` | Optional. Element HTML: locator string(s) or a single element handle. When omitted, reads page-level HTML. |
             | ``outer`` | Controls page-level output when no locators are provided. Default is ``True``. - ``True``: full document HTML via ``page.content()``. - ``False``: body inner HTML via ``document.body.innerHTML``. |
-            | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+            | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
             Returns:
         str: HTML content.
 
             Raises:
-        LocatorSyntaxError: When locators are provided with ``outer=False``.
+        LocatorSyntaxError: When locators/handle are provided with ``outer=False``.
 
             Example:
                 | ${doc}=    Get Html
                 | ${body}=    Get Html    outer=${FALSE}
                 | ${card}=    Get Html    css:.card
+                | ${el}=     Find Element    css:.card
+                | ${html}=   Get Html    ${el}
         """
-        page = self.library._session.resolve_scope(scope)
         if not locators:
+            page = self.library._session.resolve_scope(scope)
             if outer:
                 return page.content()
             return page.evaluate("document.body ? document.body.innerHTML : ''")
@@ -103,9 +105,11 @@ class AssertionKeywords:
                 "Get Html with locators supports only outer=True for now."
             )
 
-        args, kwargs = resolve_required_locators(locators)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope
+        )
         logger.info(f"Reading HTML from element '{format_locators(locators)}'.")
-        return page.find(*args, **kwargs).html()
+        return element.html()
 
     @keyword("Find Elements")
     def find_elements(
