@@ -39,7 +39,7 @@ from ..locator import (
     resolve_element,
     resolve_required_locators,
 )
-from ..utils import parse_timeout_ms
+from ..utils import optional_timeout_ms
 
 _UNSET = object()
 
@@ -68,12 +68,13 @@ class InteractionKeywords:
         return str(page.a11y_tree())
 
     @keyword("Click")
-    def click(self, *locators, scope: object = None) -> None:
+    def click(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Click an element resolved from locator token(s) or an element handle.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
         Example:
             | Click    role:button    text:Log in
@@ -82,12 +83,17 @@ class InteractionKeywords:
             | Click    ${btn}
             | Click    css:button    scope=${card}
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Clicking element '{format_locators(locators)}'.")
-        element.click()
+        element.click(timeout=timeout_ms)
 
     @keyword("Find Element")
-    def find_element(self, *locators, scope: object = None):
+    def find_element(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ):
         """Resolve locator token(s) and return a Vibium ``Element`` handle.
 
         The handle can be passed as ``scope=`` to interaction/getter keywords
@@ -99,6 +105,7 @@ class InteractionKeywords:
         | =Argument= | =Description= |
         | ``*locators`` | Locator tokens merged into one ``find(...)`` call on the resolved scope. |
         | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find``. |
 
         Returns:
             object: Vibium ``Element`` handle.
@@ -107,11 +114,15 @@ class InteractionKeywords:
             | ${el}=      Find Element    role:textbox    label:E-mail
             | ${card}=    Find Element    css:.card
             | ${btn}=     Find Element    css:button    scope=${card}
+            | ${fast}=    Find Element    css:#x    timeout=500ms
             | Click    ${btn}
             | Click    css:button    scope=${card}
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
+        timeout_ms = optional_timeout_ms(timeout)
+        if timeout_ms is not None:
+            kwargs = {**kwargs, "timeout": timeout_ms}
         logger.info(f"Finding element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs)
 
@@ -136,12 +147,13 @@ class InteractionKeywords:
         return repr(element)
 
     @keyword("Get Text")
-    def get_text(self, *locators, scope: object = None) -> str:
+    def get_text(self, *locators, scope: object = None, timeout: str | None = None) -> str:
         """Return ``element.text()`` for a matched element or element handle.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
 
         Returns:
             str: Element text.
@@ -151,147 +163,194 @@ class InteractionKeywords:
             | ${btn}=     Find Element    css:button
             | ${text}=    Get Text    ${btn}
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading text from element '{format_locators(locators)}'.")
         return element.text()
 
     @keyword("Get Inner Text")
-    def get_inner_text(self, *locators, scope: object = None) -> str:
+    def get_inner_text(self, *locators, scope: object = None, timeout: str | None = None) -> str:
         """Return ``element.inner_text()`` for the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading inner text from element '{format_locators(locators)}'.")
         return element.inner_text()
 
     @keyword("Get Value")
-    def get_value(self, *locators, scope: object = None) -> str:
+    def get_value(self, *locators, scope: object = None, timeout: str | None = None) -> str:
         """Return ``element.value()`` for the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading value from element '{format_locators(locators)}'.")
         return element.value()
 
     @keyword("Get Attribute")
-    def get_attribute(self, name: str, *locators, scope: object = None) -> str | None:
+    def get_attribute(self, name: str, *locators, scope: object = None, timeout: str | None = None) -> str | None:
         """Return an attribute value from the matched element.
 
         | =Argument= | =Description= |
         | ``name`` | Attribute name to read. |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
 
         Returns:
             str | None: Attribute value or ``None`` when attribute is absent.
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(
             f"Reading attribute '{name}' from element '{format_locators(locators)}'."
         )
         return element.attr(name)
 
     @keyword("Get Bounds")
-    def get_bounds(self, *locators, scope: object = None) -> object:
+    def get_bounds(self, *locators, scope: object = None, timeout: str | None = None) -> object:
         """Return ``element.bounds()`` for the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading bounds from element '{format_locators(locators)}'.")
         return element.bounds()
 
     @keyword("Element Is Visible")
-    def element_is_visible(self, *locators, scope: object = None) -> bool:
+    def element_is_visible(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
         """Check whether the matched element is visible.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Checking visibility of element '{format_locators(locators)}'.")
         return element.is_visible()
 
     @keyword("Element Is Hidden")
-    def element_is_hidden(self, *locators, scope: object = None) -> bool:
+    def element_is_hidden(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
         """Check whether the matched element is hidden.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Checking hidden state of element '{format_locators(locators)}'.")
         return element.is_hidden()
 
     @keyword("Element Is Enabled")
-    def element_is_enabled(self, *locators, scope: object = None) -> bool:
+    def element_is_enabled(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
         """Check whether the matched element is enabled.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Checking enabled state of element '{format_locators(locators)}'.")
         return element.is_enabled()
 
     @keyword("Element Is Checked")
-    def element_is_checked(self, *locators, scope: object = None) -> bool:
+    def element_is_checked(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
         """Check whether the matched element is checked.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Checking checked state of element '{format_locators(locators)}'.")
         return element.is_checked()
 
     @keyword("Element Is Editable")
-    def element_is_editable(self, *locators, scope: object = None) -> bool:
+    def element_is_editable(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
         """Check whether the matched element is editable.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(
             f"Checking editable state of element '{format_locators(locators)}'."
         )
         return element.is_editable()
 
     @keyword("Get Role")
-    def get_role(self, *locators, scope: object = None) -> str:
+    def get_role(self, *locators, scope: object = None, timeout: str | None = None) -> str:
         """Return semantic role for the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading role of element '{format_locators(locators)}'.")
         return element.role()
 
     @keyword("Get Label")
-    def get_label(self, *locators, scope: object = None) -> str:
+    def get_label(self, *locators, scope: object = None, timeout: str | None = None) -> str:
         """Return accessible label for the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading label of element '{format_locators(locators)}'.")
         return element.label()
 
@@ -301,7 +360,7 @@ class InteractionKeywords:
         *locators,
         value: object = _UNSET,
         secret: bool = False,
-        scope: object = None,
+        scope: object = None, timeout: str | None = None,
     ) -> None:
         """Fill the matched element, replacing existing content.
 
@@ -310,6 +369,7 @@ class InteractionKeywords:
         | ``value`` | Explicit value to type. When provided, all positional arguments are treated as locators. |
         | ``secret`` | When ``True``, masks typed value in logs as ``***``. Default is ``False``. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
         Note:
             The ergonomic form requires at least one locator and one trailing value.
@@ -320,16 +380,19 @@ class InteractionKeywords:
             | Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
         """
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
-        element = resolve_element(self.library._session, *locator_tokens, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locator_tokens, scope=scope, timeout=timeout_ms
+        )
         display_value = "***" if secret else repr(final_value)
         logger.info(
             f"Typing text {display_value} into element "
             f"'{format_locators(locator_tokens)}'."
         )
-        element.fill(final_value)
+        element.fill(final_value, timeout=timeout_ms)
 
     @keyword("Press Keys")
-    def press_keys(self, key: str, *locators, scope: object = None) -> None:
+    def press_keys(self, key: str, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Press a key or combo on the matched element.
 
         Page-level keystrokes (no locator) use ``Keyboard Key    press``.
@@ -338,96 +401,124 @@ class InteractionKeywords:
         | ``key`` | Keyboard key or combo supported by Vibium (for example ``Enter``, ``Control+a``). |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
         Example:
             | Press Keys    Enter    role:textbox    label:Search
             | Press Keys    Control+a    css:#editor
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Pressing key '{key}' on element '{format_locators(locators)}'.")
-        element.press(key)
+        element.press(key, timeout=timeout_ms)
 
     @keyword("Double Click")
-    def double_click(self, *locators, scope: object = None) -> None:
+    def double_click(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Double-click the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Double-clicking element '{format_locators(locators)}'.")
-        element.dblclick()
+        element.dblclick(timeout=timeout_ms)
 
     @keyword("Hover")
-    def hover(self, *locators, scope: object = None) -> None:
+    def hover(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Hover the mouse pointer over the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Hovering element '{format_locators(locators)}'.")
-        element.hover()
+        element.hover(timeout=timeout_ms)
 
     @keyword("Tap")
-    def tap(self, *locators, scope: object = None) -> None:
+    def tap(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Tap the matched element (touch input; distinct from ``Click``).
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
         Example:
             | Tap    css:#btn
             | ${el}=    Find Element    css:#btn
             | Tap    ${el}
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Tapping element '{format_locators(locators)}'.")
-        element.tap()
+        element.tap(timeout=timeout_ms)
 
     @keyword("Highlight")
-    def highlight(self, *locators, scope: object = None) -> None:
+    def highlight(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Briefly outline the matched element so a watcher can see it.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
         Example:
             | Highlight    css:.error
             | ${el}=    Find Element    css:.error
             | Highlight    ${el}
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Highlighting element '{format_locators(locators)}'.")
-        element.highlight()
+        element.highlight(timeout=timeout_ms)
 
     @keyword("Focus")
-    def focus(self, *locators, scope: object = None) -> None:
+    def focus(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Set focus on the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Focusing element '{format_locators(locators)}'.")
-        element.focus()
+        element.focus(timeout=timeout_ms)
 
     @keyword("Clear Text")
-    def clear_text(self, *locators, scope: object = None) -> None:
+    def clear_text(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Clear the value of the matched element.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Clearing element '{format_locators(locators)}'.")
-        element.clear()
+        element.clear(timeout=timeout_ms)
 
     @keyword("Type Text")
     def type_text(
@@ -435,7 +526,7 @@ class InteractionKeywords:
         *locators,
         text: object = _UNSET,
         secret: bool = False,
-        scope: object = None,
+        scope: object = None, timeout: str | None = None,
     ) -> None:
         """Type text into the matched element in append mode.
 
@@ -444,6 +535,7 @@ class InteractionKeywords:
         | ``text`` | Explicit text to type. When provided, all positional arguments are treated as locators. |
         | ``secret`` | When ``True``, masks typed text in logs as ``***``. Default is ``False``. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
         locator_tokens, final_text = self._resolve_tail_value_arguments(
             keyword_name="Type Text",
@@ -451,17 +543,20 @@ class InteractionKeywords:
             explicit=text,
             explicit_name="text",
         )
-        element = resolve_element(self.library._session, *locator_tokens, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locator_tokens, scope=scope, timeout=timeout_ms
+        )
         display_value = "***" if secret else repr(final_text)
         logger.info(
             f"Typing text {display_value} into element "
             f"'{format_locators(locator_tokens)}' (append mode)."
         )
-        element.type(final_text)
+        element.type(final_text, timeout=timeout_ms)
 
     @keyword("Select Option")
     def select_option(
-        self, *locators, value: object = _UNSET, scope: object = None
+        self, *locators, value: object = _UNSET, scope: object = None, timeout: str | None = None
     ) -> None:
         """Select an option value in a matched ``<select>`` element.
 
@@ -469,6 +564,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``value`` | Explicit option value to select. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
         locator_tokens, option_value = self._resolve_tail_value_arguments(
             keyword_name="Select Option",
@@ -476,48 +572,63 @@ class InteractionKeywords:
             explicit=value,
             explicit_name="value",
         )
-        element = resolve_element(self.library._session, *locator_tokens, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locator_tokens, scope=scope, timeout=timeout_ms
+        )
         logger.info(
             f"Selecting option {repr(option_value)} in element "
             f"'{format_locators(locator_tokens)}'."
         )
-        element.select_option(option_value)
+        element.select_option(option_value, timeout=timeout_ms)
 
     @keyword("Check")
-    def check(self, *locators, scope: object = None) -> None:
+    def check(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Check a matched checkbox or radio control.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Checking element '{format_locators(locators)}'.")
-        element.check()
+        element.check(timeout=timeout_ms)
 
     @keyword("Uncheck")
-    def uncheck(self, *locators, scope: object = None) -> None:
+    def uncheck(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Uncheck a matched checkbox control.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Unchecking element '{format_locators(locators)}'.")
-        element.uncheck()
+        element.uncheck(timeout=timeout_ms)
 
     @keyword("Scroll Into View")
-    def scroll_into_view(self, *locators, scope: object = None) -> None:
+    def scroll_into_view(self, *locators, scope: object = None, timeout: str | None = None) -> None:
         """Scroll until the matched element is in view.
 
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Scrolling element into view '{format_locators(locators)}'.")
-        element.scroll_into_view()
+        element.scroll_into_view(timeout=timeout_ms)
 
     @keyword("Scroll")
     def scroll(
@@ -560,7 +671,7 @@ class InteractionKeywords:
         *locators,
         event: str,
         event_init: object = None,
-        scope: object = None,
+        scope: object = None, timeout: str | None = None,
     ) -> None:
         """Dispatch a DOM event on the matched element.
 
@@ -569,26 +680,31 @@ class InteractionKeywords:
         | ``event`` | Event name to dispatch (for example ``click`` or ``change``). |
         | ``event_init`` | Optional event init payload as dict or JSON object string. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
 
                 Raises:
                     LocatorSyntaxError: If ``event_init`` is invalid JSON/object shape.
         """
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         init_payload = self._coerce_event_init(event_init)
         logger.info(
             f"Dispatching event '{event}' on element '{format_locators(locators)}'."
         )
-        element.dispatch_event(event, init_payload)
+        element.dispatch_event(event, init_payload, timeout=timeout_ms)
 
     @keyword("Upload Files")
-    def upload_files(self, *locators, files: object, scope: object = None) -> None:
+    def upload_files(self, *locators, files: object, scope: object = None, timeout: str | None = None) -> None:
         """Upload one or more files into a matched file input.
 
             | =Argument= | =Description= |
             | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
             | ``files`` | File path string or list/tuple of path strings. |
             | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
 
             Raises:
         LocatorSyntaxError: If file paths are empty/invalid.
@@ -598,12 +714,15 @@ class InteractionKeywords:
                 | Upload Files    xpath://input[@type='file']    files=@{LIST}
         """
         file_paths = InteractionKeywords._coerce_upload_files(files)
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(
             f"Uploading {len(file_paths)} file(s) to element "
             f"'{format_locators(locators)}'."
         )
-        element.set_files(file_paths)
+        element.set_files(file_paths, timeout=timeout_ms)
 
     @keyword("Drag And Drop")
     def drag_and_drop(
@@ -618,7 +737,7 @@ class InteractionKeywords:
         | =Argument= | =Description= |
         | ``source`` | Source locator token string or list/tuple of locator tokens. |
         | ``target`` | Target locator token string or list/tuple of locator tokens. |
-        | ``timeout`` | Optional Robot timeout string for drag action. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` for source/target and to ``drag_to``. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
 
@@ -634,9 +753,10 @@ class InteractionKeywords:
         tgt_tokens = InteractionKeywords._coerce_locator_token_group("target", target)
         src_args, src_kwargs = resolve_required_locators(src_tokens)
         tgt_args, tgt_kwargs = resolve_required_locators(tgt_tokens)
-        timeout_ms: int | None = None
-        if timeout is not None and str(timeout).strip():
-            timeout_ms = parse_timeout_ms(str(timeout))
+        timeout_ms = optional_timeout_ms(timeout)
+        if timeout_ms is not None:
+            src_kwargs = {**src_kwargs, "timeout": timeout_ms}
+            tgt_kwargs = {**tgt_kwargs, "timeout": timeout_ms}
 
         logger.info(
             f"Dragging from '{format_locators(src_tokens)}' "
