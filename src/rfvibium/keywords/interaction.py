@@ -371,6 +371,40 @@ class InteractionKeywords:
         logger.info(f"Hovering element '{format_locators(locators)}'.")
         element.hover()
 
+    @keyword("Tap")
+    def tap(self, *locators, scope: object = None) -> None:
+        """Tap the matched element (touch input; distinct from ``Click``).
+
+        | =Argument= | =Description= |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+
+        Example:
+            | Tap    css:#btn
+            | ${el}=    Find Element    css:#btn
+            | Tap    ${el}
+        """
+        element = resolve_element(self.library._session, *locators, scope=scope)
+        logger.info(f"Tapping element '{format_locators(locators)}'.")
+        element.tap()
+
+    @keyword("Highlight")
+    def highlight(self, *locators, scope: object = None) -> None:
+        """Briefly outline the matched element so a watcher can see it.
+
+        | =Argument= | =Description= |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+
+        Example:
+            | Highlight    css:.error
+            | ${el}=    Find Element    css:.error
+            | Highlight    ${el}
+        """
+        element = resolve_element(self.library._session, *locators, scope=scope)
+        logger.info(f"Highlighting element '{format_locators(locators)}'.")
+        element.highlight()
+
     @keyword("Focus")
     def focus(self, *locators, scope: object = None) -> None:
         """Set focus on the matched element.
