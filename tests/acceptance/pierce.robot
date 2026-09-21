@@ -27,9 +27,9 @@ Get Text Via Deep Pierce
 Plain Css Selector Does Not Reach Shadow Content
     [Documentation]    Shadow-only ids are not visible to light-DOM ``css:`` selectors; pierce is required.
     [Tags]    acceptance    pierce    negative
-    Run Keyword And Expect Error    *element not found*    Get Text    css:#shadow-text
+    Run Keyword And Expect Error    *element not found*    Get Text    css:#shadow-text    timeout=500ms
 
 Single Pierce Does Not Reach Nested Shadow
     [Documentation]    ``>>`` crosses one shadow boundary; ``#deep`` lives two levels below ``outer-host``.
     [Tags]    acceptance    pierce    negative
-    Run Keyword And Expect Error    *element not found*    Get Text    outer-host >> #deep
+    Run Keyword And Expect Error    *element not found*    Get Text    outer-host >> #deep    timeout=500ms
