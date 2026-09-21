@@ -27,6 +27,10 @@ Reset Hover Fixture
     [Documentation]    Button that records mouseenter via ``data-hovered`` for Hover keyword checks.
     Set Page Content    <html><body><button id="hover-target" data-hovered="0">Hover me</button><script>document.getElementById("hover-target").addEventListener("mouseenter",function(){this.setAttribute("data-hovered","1");});</script></body></html>
 
+Reset Tap Fixture
+    [Documentation]    Button that records tap/click via ``data-tapped`` for Tap keyword checks.
+    Set Page Content    <html><body><button id="tap-target" data-tapped="0">Tap me</button><script>(function(){var el=document.getElementById("tap-target");function mark(){el.setAttribute("data-tapped","1");}el.addEventListener("click",mark);el.addEventListener("pointerup",mark);})();</script></body></html>
+
 Reset Frame Fixture
     Go To    data:text/html,<main><iframe name='child' srcdoc="<input id='in-frame' value='start' /><p id='status'>inside-frame</p>"></iframe></main>
 
