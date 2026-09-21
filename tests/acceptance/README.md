@@ -6,7 +6,7 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 
 - `smoke.robot`: minimal import/open/navigation check.
 - `navigation.robot`: URL navigation, history, reload, and multi-tab list/switch/close.
-- `interaction.robot`: element interaction (nested find `scope=`, handle targets for Click/Get Text/Double Click/Get Attribute/Hover/Fill Text, etc.).
+- `interaction.robot`: element interaction (nested find `scope=`, handle targets for Click/Get Text/Double Click/Get Attribute/Hover/Fill Text/Tap/Highlight, etc.).
 - `pierce.robot`: Shadow DOM pierce locators (`>>` / `>>>`; requires Vibium ≥ 26.8.21).
 - `engine.robot`: `Open Browser` `engine=` (Chrome default vs Firefox; Firefox needs `vibium install --engine firefox`).
 - `artifacts.robot`: full-page and element screenshots plus PDF artifact generation.
@@ -15,6 +15,7 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 - `negative.robot`: invalid usage and expected error contracts.
 - `waits.robot`: wait and synchronization workflows (including load state, deferred visibility, and Wait For Element with a handle).
 - `mouse.robot`: low-level mouse command coverage (including ``Mouse Wheel``).
+- `touch.robot`: page-level ``Touch Tap`` viewport coordinates.
 - `document.robot`: ``Set Page Content`` DOM injection.
 - `keyboard.robot`: ``Keyboard Type``, ``Keyboard Key``, and element ``Press Keys``.
 - `emulation.robot`: viewport and OS window size keywords.
