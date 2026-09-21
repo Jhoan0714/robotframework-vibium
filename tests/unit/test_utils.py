@@ -1,7 +1,7 @@
 import pytest
 
 from rfvibium.errors import VibiumLibraryError
-from rfvibium.utils import coerce_viewport_axis, parse_timeout_ms
+from rfvibium.utils import coerce_viewport_axis, optional_timeout_ms, parse_timeout_ms
 
 
 def test_coerce_viewport_axis_accepts_number_and_string() -> None:
@@ -59,3 +59,14 @@ def test_parse_timeout_ms_rejects_negative() -> None:
         parse_timeout_ms("-1s")
     with pytest.raises(VibiumLibraryError, match="negative"):
         parse_timeout_ms("-100")
+
+
+def test_optional_timeout_ms_none_or_blank() -> None:
+    assert optional_timeout_ms(None) is None
+    assert optional_timeout_ms("") is None
+    assert optional_timeout_ms("   ") is None
+
+
+def test_optional_timeout_ms_parses_value() -> None:
+    assert optional_timeout_ms("500ms") == 500
+    assert optional_timeout_ms("2s") == 2000
