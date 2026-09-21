@@ -298,6 +298,25 @@ def test_resolve_element_finds_from_locator_strings() -> None:
     assert page.find_calls == [((), {"role": "button", "text": "Go"})]
 
 
+def test_resolve_element_forwards_timeout_to_find() -> None:
+    page = _PageLike()
+    session = _SessionLike(page)
+
+    out = resolve_element(session, "css:#x", timeout=500)
+
+    assert out is page.element
+    assert page.find_calls == [(("#x",), {"timeout": 500})]
+
+
+def test_resolve_element_omits_timeout_when_none() -> None:
+    page = _PageLike()
+    session = _SessionLike(page)
+
+    resolve_element(session, "css:#x", timeout=None)
+
+    assert page.find_calls == [(("#x",), {})]
+
+
 def test_resolve_element_requires_a_target() -> None:
     session = _SessionLike(_PageLike())
 
