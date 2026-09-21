@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
+from vibium import Element
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
 from rfvibium.keywords import interaction as interaction_module
@@ -138,6 +139,39 @@ class DummyElement:
         return "Element(tag='button', text='ELEMENT TEXT')"
 
 
+class FakeElement(Element):
+    """Vibium ``Element`` subclass for handle-as-target unit tests."""
+
+    def __init__(self) -> None:
+        self.clicked = False
+        self.double_clicked = False
+        self.hovered = False
+        self.filled_value = None
+        self.attr_name = None
+
+    def click(self, timeout=None) -> None:
+        self.clicked = True
+
+    def dblclick(self, timeout=None) -> None:
+        self.double_clicked = True
+
+    def hover(self, timeout=None) -> None:
+        self.hovered = True
+
+    def fill(self, value, timeout=None) -> None:
+        self.filled_value = value
+
+    def attr(self, name: str):
+        self.attr_name = name
+        return "ATTR_VALUE"
+
+    def text(self) -> str:
+        return "ELEMENT TEXT"
+
+    def __repr__(self) -> str:
+        return "FakeElement()"
+
+
 class DummyPage:
     def __init__(self) -> None:
         self.last_args = None
@@ -239,6 +273,36 @@ def test_click_without_locators_raises() -> None:
     kw = TestableInteraction(DummyPage())
     with pytest.raises(VibiumLibraryError, match="(?i)at least one locator"):
         kw.click()
+
+
+def test_click_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.click(handle)
+
+    assert handle.clicked is True
+    assert page.last_args is None
+    assert page.element.clicked is False
+
+
+def test_click_rejects_element_handle_with_scope() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    with pytest.raises(VibiumLibraryError, match="do not pass scope"):
+        kw.click(handle, scope=page)
+
+
+def test_click_rejects_element_handle_mixed_with_locator() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    with pytest.raises(VibiumLibraryError, match="Do not mix"):
+        kw.click(handle, "css:button")
 
 
 def test_click_with_duplicate_axis_raises() -> None:
@@ -398,6 +462,62 @@ def test_get_text_with_locator_reads_element_text() -> None:
     assert page.last_kwargs == {"role": "button", "text": "Save"}
 
 
+def test_get_text_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    result = kw.get_text(handle)
+
+    assert result == "ELEMENT TEXT"
+    assert page.last_args is None
+
+
+def test_double_click_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.double_click(handle)
+
+    assert handle.double_clicked is True
+    assert page.last_args is None
+
+
+def test_fill_text_with_element_handle_and_value() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.fill_text(handle, value="hello")
+
+    assert handle.filled_value == "hello"
+    assert page.last_args is None
+
+
+def test_hover_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.hover(handle)
+
+    assert handle.hovered is True
+    assert page.last_args is None
+
+
+def test_get_attribute_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    result = kw.get_attribute("data-id", handle)
+
+    assert result == "ATTR_VALUE"
+    assert handle.attr_name == "data-id"
+    assert page.last_args is None
+
+
 def test_element_read_keywords_call_expected_methods() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
@@ -462,7 +582,7 @@ def test_fill_text_masks_value_when_secret(monkeypatch) -> None:
 
 def test_press_keys_requires_locator() -> None:
     kw = TestableInteraction(DummyPage())
-    with pytest.raises(LocatorSyntaxError, match="At least one locator is required"):
+    with pytest.raises(LocatorSyntaxError, match="At least one locator"):
         kw.press_keys("Enter")
 
 
@@ -623,7 +743,7 @@ def test_upload_files_requires_keyword_files() -> None:
 
 def test_upload_files_requires_at_least_one_locator() -> None:
     kw = TestableInteraction(DummyPage())
-    with pytest.raises(LocatorSyntaxError, match="At least one locator is required"):
+    with pytest.raises(LocatorSyntaxError, match="At least one locator"):
         kw.upload_files(files="/only/path.pdf")
 
 

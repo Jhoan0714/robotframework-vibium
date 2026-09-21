@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- ``Click``, ``Get Text``, and other action/getter keywords accept a sole
+  Vibium ``Element`` handle as the target (no second ``find``), in addition to
+  locator tokens (#67).
 - ``Describe Element`` returns ``repr`` of an ``Element`` handle for logging
   and text assertions (#57).
 - Core page/context wrappers (#51): ``Mouse Wheel``; ``Keyboard Type`` /

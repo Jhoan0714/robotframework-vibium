@@ -24,6 +24,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+from vibium import Element
+
 from .errors import LocatorSyntaxError
 
 SEMANTIC_PREFIXES = (
@@ -225,6 +227,51 @@ def resolve_required_locators(
             "(e.g. 'role:button', 'xpath://div[@id=\"x\"]', or 'input[name=\"q\"]')."
         )
     return merge_locators(target_list)
+
+
+def is_element_handle(obj: Any) -> bool:
+    """Return True if ``obj`` is a Vibium sync ``Element`` handle."""
+    return isinstance(obj, Element)
+
+
+def resolve_element(session: Any, *targets: Any, scope: Any = None) -> Any:
+    """Resolve an action/getter target to a Vibium ``Element``.
+
+    Supported shapes:
+
+    - One element handle alone → return it (no second ``find``).
+    - One or more locator strings → ``session.resolve_scope(scope).find(...)``.
+
+    Raises:
+        LocatorSyntaxError: If no target is given, an element handle is mixed
+            with locator tokens, or ``scope=`` is set together with a handle.
+    """
+    target_list = tuple(targets)
+    if not target_list:
+        raise LocatorSyntaxError(
+            "At least one locator or element handle is required "
+            "(e.g. 'role:button', 'css:#save', or an element from Find Element)."
+        )
+
+    if len(target_list) == 1 and is_element_handle(target_list[0]):
+        if scope is not None:
+            raise LocatorSyntaxError(
+                "When the target is an element handle, do not pass scope=. "
+                "Pass the handle alone to act on it, or use locator tokens "
+                "with scope= for nested find."
+            )
+        return target_list[0]
+
+    for target in target_list:
+        if is_element_handle(target):
+            raise LocatorSyntaxError(
+                "Do not mix an element handle with locator tokens. "
+                "Pass the handle alone, or pass only locator strings."
+            )
+
+    page = session.resolve_scope(scope)
+    args, kwargs = resolve_required_locators(target_list)
+    return page.find(*args, **kwargs)
 
 
 def format_locators(targets: Iterable[Any]) -> str:

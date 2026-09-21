@@ -2,6 +2,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from vibium import Element
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
 from rfvibium.keywords.waits import WaitKeywords
@@ -13,6 +14,19 @@ class DummyElement:
 
     def wait_until(self, state=None, timeout=None) -> None:
         self.wait_until_calls.append((state, timeout))
+
+
+class FakeElement(Element):
+    """Vibium ``Element`` subclass for handle-as-target wait tests."""
+
+    def __init__(self) -> None:
+        self.wait_until_calls: list = []
+
+    def wait_until(self, state=None, timeout=None) -> None:
+        self.wait_until_calls.append((state, timeout))
+
+    def __repr__(self) -> str:
+        return "FakeElement()"
 
 
 class DummyPage:
@@ -50,6 +64,9 @@ class DummySession:
     def require_page(self) -> DummyPage:
         return self._page
 
+    def resolve_scope(self, scope=None):
+        return self._page if scope is None else scope
+
 
 class TestableWait(WaitKeywords):
     def __init__(self, page: DummyPage) -> None:
@@ -77,6 +94,17 @@ def test_wait_for_element_resolves_and_waits() -> None:
 
     assert page.last_find_args == ("#box",)
     assert page.element.wait_until_calls == [("attached", 2000)]
+
+
+def test_wait_for_element_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableWait(page)
+    handle = FakeElement()
+
+    kw.wait_for_element(handle, state="visible", timeout="1s")
+
+    assert handle.wait_until_calls == [("visible", 1000)]
+    assert page.last_find_args is None
 
 
 def test_wait_for_element_rejects_invalid_state() -> None:
