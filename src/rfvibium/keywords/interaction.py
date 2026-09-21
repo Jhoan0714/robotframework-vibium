@@ -68,7 +68,9 @@ class InteractionKeywords:
         return str(page.a11y_tree())
 
     @keyword("Click")
-    def click(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def click(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Click an element resolved from locator token(s) or an element handle.
 
         | =Argument= | =Description= |
@@ -91,9 +93,7 @@ class InteractionKeywords:
         element.click(timeout=timeout_ms)
 
     @keyword("Find Element")
-    def find_element(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ):
+    def find_element(self, *locators, scope: object = None, timeout: str | None = None):
         """Resolve locator token(s) and return a Vibium ``Element`` handle.
 
         The handle can be passed as ``scope=`` to interaction/getter keywords
@@ -147,7 +147,9 @@ class InteractionKeywords:
         return repr(element)
 
     @keyword("Get Text")
-    def get_text(self, *locators, scope: object = None, timeout: str | None = None) -> str:
+    def get_text(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> str:
         """Return ``element.text()`` for a matched element or element handle.
 
         | =Argument= | =Description= |
@@ -171,7 +173,9 @@ class InteractionKeywords:
         return element.text()
 
     @keyword("Get Inner Text")
-    def get_inner_text(self, *locators, scope: object = None, timeout: str | None = None) -> str:
+    def get_inner_text(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> str:
         """Return ``element.inner_text()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -187,7 +191,9 @@ class InteractionKeywords:
         return element.inner_text()
 
     @keyword("Get Value")
-    def get_value(self, *locators, scope: object = None, timeout: str | None = None) -> str:
+    def get_value(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> str:
         """Return ``element.value()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -203,7 +209,9 @@ class InteractionKeywords:
         return element.value()
 
     @keyword("Get Attribute")
-    def get_attribute(self, name: str, *locators, scope: object = None, timeout: str | None = None) -> str | None:
+    def get_attribute(
+        self, name: str, *locators, scope: object = None, timeout: str | None = None
+    ) -> str | None:
         """Return an attribute value from the matched element.
 
         | =Argument= | =Description= |
@@ -225,7 +233,9 @@ class InteractionKeywords:
         return element.attr(name)
 
     @keyword("Get Bounds")
-    def get_bounds(self, *locators, scope: object = None, timeout: str | None = None) -> object:
+    def get_bounds(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> object:
         """Return ``element.bounds()`` for the matched element.
 
         | =Argument= | =Description= |
@@ -241,7 +251,9 @@ class InteractionKeywords:
         return element.bounds()
 
     @keyword("Element Is Visible")
-    def element_is_visible(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
+    def element_is_visible(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> bool:
         """Check whether the matched element is visible.
 
         | =Argument= | =Description= |
@@ -257,7 +269,9 @@ class InteractionKeywords:
         return element.is_visible()
 
     @keyword("Element Is Hidden")
-    def element_is_hidden(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
+    def element_is_hidden(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> bool:
         """Check whether the matched element is hidden.
 
         | =Argument= | =Description= |
@@ -273,7 +287,9 @@ class InteractionKeywords:
         return element.is_hidden()
 
     @keyword("Element Is Enabled")
-    def element_is_enabled(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
+    def element_is_enabled(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> bool:
         """Check whether the matched element is enabled.
 
         | =Argument= | =Description= |
@@ -289,7 +305,9 @@ class InteractionKeywords:
         return element.is_enabled()
 
     @keyword("Element Is Checked")
-    def element_is_checked(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
+    def element_is_checked(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> bool:
         """Check whether the matched element is checked.
 
         | =Argument= | =Description= |
@@ -305,7 +323,9 @@ class InteractionKeywords:
         return element.is_checked()
 
     @keyword("Element Is Editable")
-    def element_is_editable(self, *locators, scope: object = None, timeout: str | None = None) -> bool:
+    def element_is_editable(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> bool:
         """Check whether the matched element is editable.
 
         | =Argument= | =Description= |
@@ -323,7 +343,9 @@ class InteractionKeywords:
         return element.is_editable()
 
     @keyword("Get Role")
-    def get_role(self, *locators, scope: object = None, timeout: str | None = None) -> str:
+    def get_role(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> str:
         """Return semantic role for the matched element.
 
         | =Argument= | =Description= |
@@ -339,7 +361,9 @@ class InteractionKeywords:
         return element.role()
 
     @keyword("Get Label")
-    def get_label(self, *locators, scope: object = None, timeout: str | None = None) -> str:
+    def get_label(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> str:
         """Return accessible label for the matched element.
 
         | =Argument= | =Description= |
@@ -360,7 +384,8 @@ class InteractionKeywords:
         *locators,
         value: object = _UNSET,
         secret: bool = False,
-        scope: object = None, timeout: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
     ) -> None:
         """Fill the matched element, replacing existing content.
 
@@ -392,7 +417,9 @@ class InteractionKeywords:
         element.fill(final_value, timeout=timeout_ms)
 
     @keyword("Press Keys")
-    def press_keys(self, key: str, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def press_keys(
+        self, key: str, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Press a key or combo on the matched element.
 
         Page-level keystrokes (no locator) use ``Keyboard Key    press``.
@@ -415,7 +442,9 @@ class InteractionKeywords:
         element.press(key, timeout=timeout_ms)
 
     @keyword("Double Click")
-    def double_click(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def double_click(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Double-click the matched element.
 
         | =Argument= | =Description= |
@@ -431,7 +460,9 @@ class InteractionKeywords:
         element.dblclick(timeout=timeout_ms)
 
     @keyword("Hover")
-    def hover(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def hover(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Hover the mouse pointer over the matched element.
 
         | =Argument= | =Description= |
@@ -468,7 +499,9 @@ class InteractionKeywords:
         element.tap(timeout=timeout_ms)
 
     @keyword("Highlight")
-    def highlight(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def highlight(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Briefly outline the matched element so a watcher can see it.
 
         | =Argument= | =Description= |
@@ -489,7 +522,9 @@ class InteractionKeywords:
         element.highlight(timeout=timeout_ms)
 
     @keyword("Focus")
-    def focus(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def focus(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Set focus on the matched element.
 
         | =Argument= | =Description= |
@@ -505,7 +540,9 @@ class InteractionKeywords:
         element.focus(timeout=timeout_ms)
 
     @keyword("Clear Text")
-    def clear_text(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def clear_text(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Clear the value of the matched element.
 
         | =Argument= | =Description= |
@@ -526,7 +563,8 @@ class InteractionKeywords:
         *locators,
         text: object = _UNSET,
         secret: bool = False,
-        scope: object = None, timeout: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
     ) -> None:
         """Type text into the matched element in append mode.
 
@@ -556,7 +594,11 @@ class InteractionKeywords:
 
     @keyword("Select Option")
     def select_option(
-        self, *locators, value: object = _UNSET, scope: object = None, timeout: str | None = None
+        self,
+        *locators,
+        value: object = _UNSET,
+        scope: object = None,
+        timeout: str | None = None,
     ) -> None:
         """Select an option value in a matched ``<select>`` element.
 
@@ -583,7 +625,9 @@ class InteractionKeywords:
         element.select_option(option_value, timeout=timeout_ms)
 
     @keyword("Check")
-    def check(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def check(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Check a matched checkbox or radio control.
 
         | =Argument= | =Description= |
@@ -599,7 +643,9 @@ class InteractionKeywords:
         element.check(timeout=timeout_ms)
 
     @keyword("Uncheck")
-    def uncheck(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def uncheck(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Uncheck a matched checkbox control.
 
         | =Argument= | =Description= |
@@ -615,7 +661,9 @@ class InteractionKeywords:
         element.uncheck(timeout=timeout_ms)
 
     @keyword("Scroll Into View")
-    def scroll_into_view(self, *locators, scope: object = None, timeout: str | None = None) -> None:
+    def scroll_into_view(
+        self, *locators, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Scroll until the matched element is in view.
 
         | =Argument= | =Description= |
@@ -671,7 +719,8 @@ class InteractionKeywords:
         *locators,
         event: str,
         event_init: object = None,
-        scope: object = None, timeout: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
     ) -> None:
         """Dispatch a DOM event on the matched element.
 
@@ -697,7 +746,9 @@ class InteractionKeywords:
         element.dispatch_event(event, init_payload, timeout=timeout_ms)
 
     @keyword("Upload Files")
-    def upload_files(self, *locators, files: object, scope: object = None, timeout: str | None = None) -> None:
+    def upload_files(
+        self, *locators, files: object, scope: object = None, timeout: str | None = None
+    ) -> None:
         """Upload one or more files into a matched file input.
 
             | =Argument= | =Description= |

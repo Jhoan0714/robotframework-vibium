@@ -75,7 +75,11 @@ class AssertionKeywords:
 
     @keyword("Get Html")
     def get_html(
-        self, *locators, outer: bool = True, scope: object = None, timeout: str | None = None
+        self,
+        *locators,
+        outer: bool = True,
+        scope: object = None,
+        timeout: str | None = None,
     ) -> str:
         """Return HTML from the resolved scope or a resolved element.
 
