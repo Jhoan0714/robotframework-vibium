@@ -79,3 +79,17 @@ def parse_timeout_ms(timeout: str) -> int:
     if ms < 0:
         raise VibiumLibraryError(f"Timeout cannot be negative (got {timeout!r}).")
     return ms
+
+
+def optional_timeout_ms(timeout: object | None) -> int | None:
+    """Parse an optional Robot timeout string to milliseconds.
+
+    Returns ``None`` when ``timeout`` is omitted or blank so callers can pass
+    Vibium's default. Non-empty values use :func:`parse_timeout_ms`.
+    """
+    if timeout is None:
+        return None
+    raw = str(timeout).strip()
+    if not raw:
+        return None
+    return parse_timeout_ms(raw)

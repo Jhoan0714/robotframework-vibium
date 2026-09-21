@@ -7,6 +7,7 @@ from robot.api.deco import keyword
 
 from ..errors import LocatorSyntaxError
 from ..locator import format_locators, resolve_element, resolve_required_locators
+from ..utils import optional_timeout_ms
 
 
 class AssertionKeywords:
@@ -73,13 +74,20 @@ class AssertionKeywords:
         return page.evaluate("document.body ? document.body.innerText : ''")
 
     @keyword("Get Html")
-    def get_html(self, *locators, outer: bool = True, scope: object = None) -> str:
+    def get_html(
+        self,
+        *locators,
+        outer: bool = True,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> str:
         """Return HTML from the resolved scope or a resolved element.
 
             | =Argument= | =Description= |
             | ``*locators`` | Optional. Element HTML: locator string(s) or a single element handle. When omitted, reads page-level HTML. |
             | ``outer`` | Controls page-level output when no locators are provided. Default is ``True``. - ``True``: full document HTML via ``page.content()``. - ``False``: body inner HTML via ``document.body.innerHTML``. |
             | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+            | ``timeout`` | Optional Robot timeout string for locating the element (``find``). Ignored for page-level HTML. |
 
             Returns:
         str: HTML content.
@@ -105,13 +113,20 @@ class AssertionKeywords:
                 "Get Html with locators supports only outer=True for now."
             )
 
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        timeout_ms = optional_timeout_ms(timeout)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(f"Reading HTML from element '{format_locators(locators)}'.")
         return element.html()
 
     @keyword("Find Elements")
     def find_elements(
-        self, *locators: str, limit: int | None = None, scope: object = None
+        self,
+        *locators: str,
+        limit: int | None = None,
+        scope: object = None,
+        timeout: str | None = None,
     ) -> list:
         """Return Vibium ``Element`` handles for all matches.
 
@@ -123,6 +138,7 @@ class AssertionKeywords:
         | ``*locators`` | One or more locator tokens merged into a single ``find_all(...)`` call on the resolved scope. |
         | ``limit`` | Optional maximum number of returned elements. Must be ``>= 1`` when provided. |
         | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``. |
 
         Returns:
             list: Vibium ``Element`` handles (possibly empty).
@@ -138,6 +154,9 @@ class AssertionKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
+        timeout_ms = optional_timeout_ms(timeout)
+        if timeout_ms is not None:
+            kwargs = {**kwargs, "timeout": timeout_ms}
         logger.info(f"Finding all elements '{format_locators(locators)}'.")
         elements = page.find_all(*args, **kwargs)
 
@@ -148,12 +167,15 @@ class AssertionKeywords:
         return list(elements)
 
     @keyword("Count Elements")
-    def count_elements(self, *locators: str, scope: object = None) -> int:
+    def count_elements(
+        self, *locators: str, scope: object = None, timeout: str | None = None
+    ) -> int:
         """Return how many elements match the locator(s).
 
             | =Argument= | =Description= |
             | ``*locators`` | One or more locator tokens merged into a single ``find_all(...)`` call on the resolved scope. |
             | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
+            | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``. |
 
             Returns:
         int: Number of matched elements.
@@ -164,6 +186,9 @@ class AssertionKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
+        timeout_ms = optional_timeout_ms(timeout)
+        if timeout_ms is not None:
+            kwargs = {**kwargs, "timeout": timeout_ms}
         logger.info(f"Counting elements '{format_locators(locators)}'.")
         return len(page.find_all(*args, **kwargs))
 

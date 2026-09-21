@@ -39,57 +39,75 @@ class DummyElement:
         self.last_find_args = None
         self.last_find_kwargs = None
         self.nested_element = None
+        self.last_timeout = None
 
-    def click(self) -> None:
+    def click(self, timeout=None) -> None:
         self.clicked = True
+        self.last_timeout = timeout
 
-    def dblclick(self) -> None:
+    def dblclick(self, timeout=None) -> None:
         self.double_clicked = True
+        self.last_timeout = timeout
 
-    def hover(self) -> None:
+    def hover(self, timeout=None) -> None:
         self.hovered = True
+        self.last_timeout = timeout
 
-    def tap(self) -> None:
+    def tap(self, timeout=None) -> None:
         self.tapped = True
+        self.last_timeout = timeout
 
-    def highlight(self) -> None:
+    def highlight(self, timeout=None) -> None:
         self.highlighted = True
+        self.last_timeout = timeout
 
-    def focus(self) -> None:
+    def focus(self, timeout=None) -> None:
         self.focused = True
+        self.last_timeout = timeout
 
-    def fill(self, value) -> None:
+    def fill(self, value, timeout=None) -> None:
         self.filled_value = value
+        self.last_timeout = timeout
 
-    def type(self, text) -> None:
+    def type(self, text, timeout=None) -> None:
         self.typed_text = text
+        self.last_timeout = timeout
 
-    def clear(self) -> None:
+    def clear(self, timeout=None) -> None:
         self.cleared = True
+        self.last_timeout = timeout
 
-    def check(self) -> None:
+    def check(self, timeout=None) -> None:
         self.checked = True
+        self.last_timeout = timeout
 
-    def uncheck(self) -> None:
+    def uncheck(self, timeout=None) -> None:
         self.unchecked = True
+        self.last_timeout = timeout
 
-    def select_option(self, value) -> None:
+    def select_option(self, value, timeout=None) -> None:
         self.selected_option = value
+        self.last_timeout = timeout
 
-    def dispatch_event(self, event_type, event_init=None) -> None:
+    def dispatch_event(self, event_type, event_init=None, timeout=None) -> None:
         self.dispatched = (event_type, event_init)
+        self.last_timeout = timeout
 
-    def press(self, key) -> None:
+    def press(self, key, timeout=None) -> None:
         self.pressed_key = key
+        self.last_timeout = timeout
 
-    def scroll_into_view(self) -> None:
+    def scroll_into_view(self, timeout=None) -> None:
         self.scrolled_into_view = True
+        self.last_timeout = timeout
 
-    def set_files(self, files) -> None:
+    def set_files(self, files, timeout=None) -> None:
         self.uploaded_files = list(files)
+        self.last_timeout = timeout
 
     def drag_to(self, target, timeout=None) -> None:
         self.drag_calls.append((target, timeout))
+        self.last_timeout = timeout
 
     def inner_text(self) -> str:
         return "INNER TEXT"
@@ -158,24 +176,31 @@ class FakeElement(Element):
         self.highlighted = False
         self.filled_value = None
         self.attr_name = None
+        self.last_timeout = None
 
     def click(self, timeout=None) -> None:
         self.clicked = True
+        self.last_timeout = timeout
 
     def dblclick(self, timeout=None) -> None:
         self.double_clicked = True
+        self.last_timeout = timeout
 
     def hover(self, timeout=None) -> None:
         self.hovered = True
+        self.last_timeout = timeout
 
     def tap(self, timeout=None) -> None:
         self.tapped = True
+        self.last_timeout = timeout
 
     def highlight(self, timeout=None) -> None:
         self.highlighted = True
+        self.last_timeout = timeout
 
     def fill(self, value, timeout=None) -> None:
         self.filled_value = value
+        self.last_timeout = timeout
 
     def attr(self, name: str):
         self.attr_name = name
@@ -273,6 +298,39 @@ def test_click_combines_role_and_text() -> None:
 
     assert page.last_args == ()
     assert page.last_kwargs == {"role": "button", "text": "Log in"}
+
+
+def test_click_forwards_timeout_to_find_and_action() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    kw.click("css:#go", timeout="500ms")
+
+    assert page.last_kwargs == {"timeout": 500}
+    assert page.element.clicked is True
+    assert page.element.last_timeout == 500
+
+
+def test_click_handle_timeout_only_reaches_action() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.click(handle, timeout="2s")
+
+    assert handle.clicked is True
+    assert handle.last_timeout == 2000
+    assert page.last_args is None
+
+
+def test_click_omits_timeout_when_not_set() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    kw.click("css:#go")
+
+    assert "timeout" not in page.last_kwargs
+    assert page.element.last_timeout is None
 
 
 def test_click_preserves_xpath_with_equals() -> None:
@@ -444,6 +502,15 @@ def test_find_element_returns_handle_and_merges_filters() -> None:
     assert result is page.element
 
 
+def test_find_element_forwards_timeout_to_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    kw.find_element("css:#x", timeout="250ms")
+
+    assert page.last_kwargs == {"timeout": 250}
+
+
 def test_describe_element_returns_repr() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
@@ -476,6 +543,17 @@ def test_get_text_with_locator_reads_element_text() -> None:
     assert result == "ELEMENT TEXT"
     assert page.last_args == ()
     assert page.last_kwargs == {"role": "button", "text": "Save"}
+
+
+def test_get_text_forwards_timeout_only_to_find() -> None:
+    """Getters have no action timeout in Vibium; timeout only affects find."""
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    result = kw.get_text("css:#title", timeout="500ms")
+
+    assert result == "ELEMENT TEXT"
+    assert page.last_kwargs == {"timeout": 500}
 
 
 def test_get_text_with_element_handle_skips_find() -> None:
@@ -841,6 +919,8 @@ def test_drag_and_drop_passes_timeout_ms() -> None:
 
     kw.drag_and_drop("css:a", "css:b", timeout="1.5s")
 
+    assert page.find_log[0][1] == {"timeout": 1500}
+    assert page.find_log[1][1] == {"timeout": 1500}
     src_el = page.find_log[0][2]
     assert src_el.drag_calls[0][1] == 1500
 

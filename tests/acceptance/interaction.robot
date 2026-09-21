@@ -19,6 +19,17 @@ Click Updates Fixture State
     ${clicked}=    Get Attribute    data-clicked    css:#save
     Should Be Equal    ${clicked}    1
 
+Click With Timeout
+    [Documentation]    Optional timeout= is accepted on locate+action (find and click).
+    [Tags]    acceptance    interaction
+    Click    css:#save    timeout=5s
+    ${clicked}=    Get Attribute    data-clicked    css:#save
+    Should Be Equal    ${clicked}    1
+    ${btn}=    Find Element    css:#save
+    Click    ${btn}    timeout=5s
+    ${clicked2}=    Get Attribute    data-clicked    ${btn}
+    Should Be Equal    ${clicked2}    2
+
 Nested Find Element Scope
     [Documentation]    Find Element returns a handle usable as scope for nested find.
     [Tags]    acceptance    interaction    core

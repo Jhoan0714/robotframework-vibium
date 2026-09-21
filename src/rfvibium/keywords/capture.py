@@ -12,6 +12,7 @@ from robot.api.deco import keyword
 
 from ..errors import ScreenshotError
 from ..locator import format_locators, resolve_element
+from ..utils import optional_timeout_ms
 
 _STALE_CONTEXT_MARKERS = (
     "cannot find context",
@@ -72,6 +73,7 @@ class CaptureKeywords:
         full_page: bool | None = None,
         clip: object = None,
         scope: object = None,
+        timeout: str | None = None,
     ) -> str:
         """Capture a PNG screenshot of the page or a matched element.
 
@@ -83,6 +85,7 @@ class CaptureKeywords:
         | ``full_page`` | Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. Ignored when locators/handle are provided. |
         | ``clip`` | Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. Ignored when locators/handle are provided. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string for locating the element (``find``). Ignored for page screenshots. |
 
         Returns:
             str: Absolute path of the generated PNG file.
@@ -108,7 +111,10 @@ class CaptureKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         if locators:
-            element = resolve_element(self.library._session, *locators, scope=scope)
+            timeout_ms = optional_timeout_ms(timeout)
+            element = resolve_element(
+                self.library._session, *locators, scope=scope, timeout=timeout_ms
+            )
             path = (
                 _next_auto_element_screenshot_path()
                 if output_path is None
