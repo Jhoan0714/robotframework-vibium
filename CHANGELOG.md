@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Optional ``timeout=`` on element actions, getters, ``Find Element`` /
+  ``Find Elements``, ``Wait For Element``, and element screenshots (#54).
+  Forwarded to Vibium ``find`` / ``find_all`` and to actions that accept
+  ``timeout``; getters use it only for locate. Pierce negative acceptance
+  cases use ``timeout=500ms`` to fail fast.
 - ``Tap``, ``Highlight``, and ``Touch Tap`` keywords for Vibium ``element.tap``,
   ``element.highlight``, and ``page.touch.tap`` (#70).
 - ``Click``, ``Get Text``, and other action/getter keywords accept a sole
