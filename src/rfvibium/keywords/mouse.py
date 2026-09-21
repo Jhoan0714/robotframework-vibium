@@ -6,6 +6,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import VibiumLibraryError
+from ..utils import coerce_viewport_axis
 
 
 class MouseKeywords:
@@ -13,32 +14,6 @@ class MouseKeywords:
 
     def __init__(self, library):
         self.library = library
-
-    @staticmethod
-    def _coerce_axis(name: str, value: object) -> float:
-        if value is None:
-            raise VibiumLibraryError(
-                f"Mouse {name} must be a number (viewport pixels); got none/omitted."
-            )
-        if isinstance(value, bool):
-            raise VibiumLibraryError(
-                f"Mouse {name} must be a number, not a boolean ({value!r})."
-            )
-        if isinstance(value, (int, float)):
-            return float(value)
-        if isinstance(value, str):
-            raw = value.strip()
-            if not raw:
-                raise VibiumLibraryError(f"Mouse {name} cannot be an empty string.")
-            try:
-                return float(raw)
-            except ValueError as exc:
-                raise VibiumLibraryError(
-                    f"Mouse {name} must be a number, got {value!r}."
-                ) from exc
-        raise VibiumLibraryError(
-            f"Mouse {name} must be a number, got {type(value).__name__}: {value!r}."
-        )
 
     @staticmethod
     def _normalize_button(button: object) -> int:
@@ -110,8 +85,8 @@ class MouseKeywords:
         btn = MouseKeywords._normalize_button(button)
         MouseKeywords._assert_default_button(btn)
 
-        xf = MouseKeywords._coerce_axis("x", x)
-        yf = MouseKeywords._coerce_axis("y", y)
+        xf = coerce_viewport_axis("x", x, kind="Mouse")
+        yf = coerce_viewport_axis("y", y, kind="Mouse")
         logger.info(f"Mouse click at ({xf}, {yf}) (button={btn}).")
         page.mouse.click(xf, yf)
 
@@ -130,8 +105,8 @@ class MouseKeywords:
             | Mouse Move    100    200
         """
         page = self.library._session.require_page()
-        xf = MouseKeywords._coerce_axis("x", x)
-        yf = MouseKeywords._coerce_axis("y", y)
+        xf = coerce_viewport_axis("x", x, kind="Mouse")
+        yf = coerce_viewport_axis("y", y, kind="Mouse")
         logger.info(f"Mouse move to ({xf}, {yf}).")
         page.mouse.move(xf, yf)
 
@@ -200,7 +175,7 @@ class MouseKeywords:
             | Mouse Wheel    100    -200
         """
         page = self.library._session.require_page()
-        dx = MouseKeywords._coerce_axis("delta_x", delta_x)
-        dy = MouseKeywords._coerce_axis("delta_y", delta_y)
+        dx = coerce_viewport_axis("delta_x", delta_x, kind="Mouse")
+        dy = coerce_viewport_axis("delta_y", delta_y, kind="Mouse")
         logger.info(f"Mouse wheel delta_x={dx}, delta_y={dy}.")
         page.mouse.wheel(dx, dy)

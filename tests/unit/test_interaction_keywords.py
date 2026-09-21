@@ -22,6 +22,8 @@ class DummyElement:
         self.double_clicked = False
         self.hovered = False
         self.focused = False
+        self.tapped = False
+        self.highlighted = False
         self.filled_value = None
         self.typed_text = None
         self.cleared = False
@@ -46,6 +48,12 @@ class DummyElement:
 
     def hover(self) -> None:
         self.hovered = True
+
+    def tap(self) -> None:
+        self.tapped = True
+
+    def highlight(self) -> None:
+        self.highlighted = True
 
     def focus(self) -> None:
         self.focused = True
@@ -146,6 +154,8 @@ class FakeElement(Element):
         self.clicked = False
         self.double_clicked = False
         self.hovered = False
+        self.tapped = False
+        self.highlighted = False
         self.filled_value = None
         self.attr_name = None
 
@@ -157,6 +167,12 @@ class FakeElement(Element):
 
     def hover(self, timeout=None) -> None:
         self.hovered = True
+
+    def tap(self, timeout=None) -> None:
+        self.tapped = True
+
+    def highlight(self, timeout=None) -> None:
+        self.highlighted = True
 
     def fill(self, value, timeout=None) -> None:
         self.filled_value = value
@@ -506,6 +522,28 @@ def test_hover_with_element_handle_skips_find() -> None:
     assert page.last_args is None
 
 
+def test_tap_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.tap(handle)
+
+    assert handle.tapped is True
+    assert page.last_args is None
+
+
+def test_highlight_with_element_handle_skips_find() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+    handle = FakeElement()
+
+    kw.highlight(handle)
+
+    assert handle.highlighted is True
+    assert page.last_args is None
+
+
 def test_get_attribute_with_element_handle_skips_find() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)
@@ -651,6 +689,26 @@ def test_hover_calls_hover() -> None:
 
     assert page.last_kwargs == {"xpath": "//button[@id='x']"}
     assert page.element.hovered is True
+
+
+def test_tap_calls_tap() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    kw.tap("css:#btn")
+
+    assert page.last_args == ("#btn",)
+    assert page.element.tapped is True
+
+
+def test_highlight_calls_highlight() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    kw.highlight("css:.error")
+
+    assert page.last_args == (".error",)
+    assert page.element.highlighted is True
 
 
 def test_focus_calls_focus() -> None:

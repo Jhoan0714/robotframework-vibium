@@ -1,7 +1,24 @@
 import pytest
 
 from rfvibium.errors import VibiumLibraryError
-from rfvibium.utils import parse_timeout_ms
+from rfvibium.utils import coerce_viewport_axis, parse_timeout_ms
+
+
+def test_coerce_viewport_axis_accepts_number_and_string() -> None:
+    assert coerce_viewport_axis("x", 10) == 10.0
+    assert coerce_viewport_axis("y", "1.5", kind="Touch") == 1.5
+
+
+def test_coerce_viewport_axis_rejects_none_and_empty() -> None:
+    with pytest.raises(VibiumLibraryError, match="Mouse x must be a number"):
+        coerce_viewport_axis("x", None)
+    with pytest.raises(VibiumLibraryError, match="Touch y cannot be an empty"):
+        coerce_viewport_axis("y", "  ", kind="Touch")
+
+
+def test_coerce_viewport_axis_rejects_bool() -> None:
+    with pytest.raises(VibiumLibraryError, match="not a boolean"):
+        coerce_viewport_axis("x", True)
 
 
 def test_parse_timeout_ms_with_seconds() -> None:
