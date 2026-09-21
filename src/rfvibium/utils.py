@@ -5,9 +5,7 @@ from __future__ import annotations
 from .errors import VibiumLibraryError
 
 
-def coerce_viewport_axis(
-    name: str, value: object, *, kind: str = "Mouse"
-) -> float:
+def coerce_viewport_axis(name: str, value: object, *, kind: str = "Mouse") -> float:
     """Coerce a viewport axis (or delta) to ``float`` for mouse/touch keywords.
 
     Args:
