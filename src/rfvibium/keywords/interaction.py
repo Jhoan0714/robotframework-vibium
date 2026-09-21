@@ -82,9 +82,7 @@ class InteractionKeywords:
             | Click    ${btn}
             | Click    css:button    scope=${card}
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Clicking element '{format_locators(locators)}'.")
         element.click()
 
@@ -153,9 +151,7 @@ class InteractionKeywords:
             | ${btn}=     Find Element    css:button
             | ${text}=    Get Text    ${btn}
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading text from element '{format_locators(locators)}'.")
         return element.text()
 
@@ -167,9 +163,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading inner text from element '{format_locators(locators)}'.")
         return element.inner_text()
 
@@ -181,16 +175,12 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading value from element '{format_locators(locators)}'.")
         return element.value()
 
     @keyword("Get Attribute")
-    def get_attribute(
-        self, name: str, *locators, scope: object = None
-    ) -> str | None:
+    def get_attribute(self, name: str, *locators, scope: object = None) -> str | None:
         """Return an attribute value from the matched element.
 
         | =Argument= | =Description= |
@@ -201,9 +191,7 @@ class InteractionKeywords:
         Returns:
             str | None: Attribute value or ``None`` when attribute is absent.
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(
             f"Reading attribute '{name}' from element '{format_locators(locators)}'."
         )
@@ -217,9 +205,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading bounds from element '{format_locators(locators)}'.")
         return element.bounds()
 
@@ -231,9 +217,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Checking visibility of element '{format_locators(locators)}'.")
         return element.is_visible()
 
@@ -245,9 +229,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Checking hidden state of element '{format_locators(locators)}'.")
         return element.is_hidden()
 
@@ -259,9 +241,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Checking enabled state of element '{format_locators(locators)}'.")
         return element.is_enabled()
 
@@ -273,9 +253,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Checking checked state of element '{format_locators(locators)}'.")
         return element.is_checked()
 
@@ -287,9 +265,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(
             f"Checking editable state of element '{format_locators(locators)}'."
         )
@@ -303,9 +279,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading role of element '{format_locators(locators)}'.")
         return element.role()
 
@@ -317,9 +291,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading label of element '{format_locators(locators)}'.")
         return element.label()
 
@@ -348,9 +320,7 @@ class InteractionKeywords:
             | Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
         """
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
-        element = resolve_element(
-            self.library._session, *locator_tokens, scope=scope
-        )
+        element = resolve_element(self.library._session, *locator_tokens, scope=scope)
         display_value = "***" if secret else repr(final_value)
         logger.info(
             f"Typing text {display_value} into element "
@@ -373,9 +343,7 @@ class InteractionKeywords:
             | Press Keys    Enter    role:textbox    label:Search
             | Press Keys    Control+a    css:#editor
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Pressing key '{key}' on element '{format_locators(locators)}'.")
         element.press(key)
 
@@ -387,9 +355,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Double-clicking element '{format_locators(locators)}'.")
         element.dblclick()
 
@@ -401,9 +367,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Hovering element '{format_locators(locators)}'.")
         element.hover()
 
@@ -415,9 +379,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Focusing element '{format_locators(locators)}'.")
         element.focus()
 
@@ -429,9 +391,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Clearing element '{format_locators(locators)}'.")
         element.clear()
 
@@ -457,9 +417,7 @@ class InteractionKeywords:
             explicit=text,
             explicit_name="text",
         )
-        element = resolve_element(
-            self.library._session, *locator_tokens, scope=scope
-        )
+        element = resolve_element(self.library._session, *locator_tokens, scope=scope)
         display_value = "***" if secret else repr(final_text)
         logger.info(
             f"Typing text {display_value} into element "
@@ -484,9 +442,7 @@ class InteractionKeywords:
             explicit=value,
             explicit_name="value",
         )
-        element = resolve_element(
-            self.library._session, *locator_tokens, scope=scope
-        )
+        element = resolve_element(self.library._session, *locator_tokens, scope=scope)
         logger.info(
             f"Selecting option {repr(option_value)} in element "
             f"'{format_locators(locator_tokens)}'."
@@ -501,9 +457,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Checking element '{format_locators(locators)}'.")
         element.check()
 
@@ -515,9 +469,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Unchecking element '{format_locators(locators)}'.")
         element.uncheck()
 
@@ -529,9 +481,7 @@ class InteractionKeywords:
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Scrolling element into view '{format_locators(locators)}'.")
         element.scroll_into_view()
 
@@ -590,9 +540,7 @@ class InteractionKeywords:
                 Raises:
                     LocatorSyntaxError: If ``event_init`` is invalid JSON/object shape.
         """
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         init_payload = self._coerce_event_init(event_init)
         logger.info(
             f"Dispatching event '{event}' on element '{format_locators(locators)}'."
@@ -616,9 +564,7 @@ class InteractionKeywords:
                 | Upload Files    xpath://input[@type='file']    files=@{LIST}
         """
         file_paths = InteractionKeywords._coerce_upload_files(files)
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(
             f"Uploading {len(file_paths)} file(s) to element "
             f"'{format_locators(locators)}'."

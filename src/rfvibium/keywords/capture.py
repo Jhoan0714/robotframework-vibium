@@ -108,9 +108,7 @@ class CaptureKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         if locators:
-            element = resolve_element(
-                self.library._session, *locators, scope=scope
-            )
+            element = resolve_element(self.library._session, *locators, scope=scope)
             path = (
                 _next_auto_element_screenshot_path()
                 if output_path is None

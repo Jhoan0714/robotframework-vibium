@@ -105,9 +105,7 @@ class AssertionKeywords:
                 "Get Html with locators supports only outer=True for now."
             )
 
-        element = resolve_element(
-            self.library._session, *locators, scope=scope
-        )
+        element = resolve_element(self.library._session, *locators, scope=scope)
         logger.info(f"Reading HTML from element '{format_locators(locators)}'.")
         return element.html()
 
