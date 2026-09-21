@@ -30,7 +30,8 @@ def test_parse_timeout_ms_with_milliseconds_suffix() -> None:
 
 
 def test_parse_timeout_ms_with_plain_number() -> None:
-    assert parse_timeout_ms("300") == 300
+    # Breaking (#72): bare number is seconds (RF), not milliseconds.
+    assert parse_timeout_ms("300") == 300_000
 
 
 def test_parse_timeout_ms_with_minutes() -> None:
