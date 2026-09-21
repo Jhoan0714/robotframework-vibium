@@ -5,6 +5,44 @@ from __future__ import annotations
 from .errors import VibiumLibraryError
 
 
+def coerce_viewport_axis(
+    name: str, value: object, *, kind: str = "Mouse"
+) -> float:
+    """Coerce a viewport axis (or delta) to ``float`` for mouse/touch keywords.
+
+    Args:
+        name: Axis label used in errors (``x``, ``y``, ``delta_x``, …).
+        value: Number or numeric string from Robot Framework.
+        kind: Device label prefixed in errors (``Mouse``, ``Touch``, …).
+
+    Raises:
+        VibiumLibraryError: If ``value`` is missing, empty, boolean, or non-numeric.
+    """
+    if value is None:
+        raise VibiumLibraryError(
+            f"{kind} {name} must be a number (viewport pixels); got none/omitted."
+        )
+    if isinstance(value, bool):
+        raise VibiumLibraryError(
+            f"{kind} {name} must be a number, not a boolean ({value!r})."
+        )
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        raw = value.strip()
+        if not raw:
+            raise VibiumLibraryError(f"{kind} {name} cannot be an empty string.")
+        try:
+            return float(raw)
+        except ValueError as exc:
+            raise VibiumLibraryError(
+                f"{kind} {name} must be a number, got {value!r}."
+            ) from exc
+    raise VibiumLibraryError(
+        f"{kind} {name} must be a number, got {type(value).__name__}: {value!r}."
+    )
+
+
 def parse_timeout_ms(timeout: str) -> int:
     """Parse Robot-style timeout to milliseconds.
 
