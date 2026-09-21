@@ -234,13 +234,19 @@ def is_element_handle(obj: Any) -> bool:
     return isinstance(obj, Element)
 
 
-def resolve_element(session: Any, *targets: Any, scope: Any = None) -> Any:
+def resolve_element(
+    session: Any, *targets: Any, scope: Any = None, timeout: int | None = None
+) -> Any:
     """Resolve an action/getter target to a Vibium ``Element``.
 
     Supported shapes:
 
     - One element handle alone → return it (no second ``find``).
     - One or more locator strings → ``session.resolve_scope(scope).find(...)``.
+
+    When ``timeout`` is set (milliseconds), it is forwarded to ``find(...)``.
+    With a sole element handle there is no ``find``; callers may still apply
+    ``timeout`` to the subsequent action.
 
     Raises:
         LocatorSyntaxError: If no target is given, an element handle is mixed
@@ -271,6 +277,8 @@ def resolve_element(session: Any, *targets: Any, scope: Any = None) -> Any:
 
     page = session.resolve_scope(scope)
     args, kwargs = resolve_required_locators(target_list)
+    if timeout is not None:
+        kwargs = {**kwargs, "timeout": timeout}
     return page.find(*args, **kwargs)
 
 
