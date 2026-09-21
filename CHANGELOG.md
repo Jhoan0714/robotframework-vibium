@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- ``Tap``, ``Highlight``, and ``Touch Tap`` keywords for Vibium ``element.tap``,
+  ``element.highlight``, and ``page.touch.tap`` (#70).
 - ``Click``, ``Get Text``, and other action/getter keywords accept a sole
   Vibium ``Element`` handle as the target (no second ``find``), in addition to
   locator tokens (#67).
