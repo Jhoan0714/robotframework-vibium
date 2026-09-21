@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from robot.utils import timestr_to_secs
+
 from .errors import VibiumLibraryError
 
 
@@ -42,40 +44,26 @@ def coerce_viewport_axis(name: str, value: object, *, kind: str = "Mouse") -> fl
 
 
 def parse_timeout_ms(timeout: str) -> int:
-    """Parse Robot-style timeout to milliseconds.
+    """Parse a Robot Framework time string to milliseconds for Vibium.
 
-    Supported formats:
-    - ``500`` (milliseconds)
-    - ``500ms``
-    - ``2s`` / ``1.5s``
-    - ``1m`` / ``1 min`` / ``1min`` (minutes)
+    Uses ``robot.utils.timestr_to_secs``.
+    A bare number is **seconds** (e.g. ``300`` → 300_000 ms). Prefer an
+    explicit unit (``5s``, ``500ms``, ``1 min``).
 
     Raises:
-        VibiumLibraryError: If the value is empty, not a number, or negative.
+        VibiumLibraryError: If the value is empty, invalid, or negative.
     """
-    raw = timeout.strip().lower()
+    raw = timeout.strip()
     if not raw:
         raise VibiumLibraryError("Timeout cannot be empty.")
-
-    # Allow "1 min" / "1.5 s" style spacing.
-    value = "".join(raw.split())
-
     try:
-        if value.endswith("ms"):
-            ms = int(float(value[:-2]))
-        elif value.endswith("min"):
-            ms = int(float(value[:-3]) * 60_000)
-        elif value.endswith("m"):
-            ms = int(float(value[:-1]) * 60_000)
-        elif value.endswith("s"):
-            ms = int(float(value[:-1]) * 1000)
-        else:
-            ms = int(float(value))
+        secs = timestr_to_secs(raw)
     except ValueError as exc:
         raise VibiumLibraryError(
-            f"Invalid timeout {timeout!r}. Use ms, s, m/min, or a plain number."
+            f"Invalid timeout {timeout!r}. Use Robot time format "
+            f"(e.g. '5s', '500ms', '1 min'); a bare number is seconds."
         ) from exc
-
+    ms = int(secs * 1000)
     if ms < 0:
         raise VibiumLibraryError(f"Timeout cannot be negative (got {timeout!r}).")
     return ms
