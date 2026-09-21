@@ -93,6 +93,7 @@ def test_wait_for_element_resolves_and_waits() -> None:
     kw.wait_for_element("css:#box", state="attached", timeout="2s")
 
     assert page.last_find_args == ("#box",)
+    assert page.last_find_kwargs == {"timeout": 2000}
     assert page.element.wait_until_calls == [("attached", 2000)]
 
 
