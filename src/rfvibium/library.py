@@ -19,6 +19,7 @@ from .keywords.interaction import InteractionKeywords
 from .keywords.keyboard import KeyboardKeywords
 from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
+from .keywords.touch import TouchKeywords
 from .keywords.waits import WaitKeywords
 from .version import __version__
 
@@ -192,6 +193,7 @@ class Vibium(DynamicCore):
         components = [
             NavigationKeywords(self),
             MouseKeywords(self),
+            TouchKeywords(self),
             KeyboardKeywords(self),
             EmulationKeywords(self),
             DocumentKeywords(self),
