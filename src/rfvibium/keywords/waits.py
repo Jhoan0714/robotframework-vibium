@@ -106,7 +106,7 @@ class WaitKeywords:
         | =Argument= | =Description= |
         | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
         | ``state`` | Target element state: ``visible``, ``hidden``, ``attached``, or ``detached``. Default is ``visible``. |
-        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
+        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. Applied to ``find`` and to ``wait_until``. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
         Raises:
@@ -124,7 +124,9 @@ class WaitKeywords:
                 f"{', '.join(sorted(_ELEMENT_WAIT_STATES))}; got {state!r}."
             )
         timeout_ms = parse_timeout_ms(timeout)
-        element = resolve_element(self.library._session, *locators, scope=scope)
+        element = resolve_element(
+            self.library._session, *locators, scope=scope, timeout=timeout_ms
+        )
         logger.info(
             f"Waiting for element '{format_locators(locators)}' "
             f"to become '{normalized}' (timeout={timeout})."
