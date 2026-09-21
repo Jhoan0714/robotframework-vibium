@@ -69,3 +69,19 @@ Fill Text With Element Handle
     Fill Text    ${input}    value=Grace Hopper
     ${value}=    Get Value    ${input}
     Should Be Equal    ${value}    Grace Hopper
+
+Tap Updates Fixture State
+    [Documentation]    Tap (element touch) updates fixture attribute; handle target works.
+    [Tags]    acceptance    interaction
+    Reset Tap Fixture
+    ${el}=    Find Element    css:#tap-target
+    Tap    ${el}
+    ${tapped}=    Get Attribute    data-tapped    ${el}
+    Should Be Equal    ${tapped}    1
+
+Highlight Executes On Element
+    [Documentation]    Highlight runs without error on a matched element.
+    [Tags]    acceptance    interaction
+    Highlight    css:#save
+    ${el}=    Find Element    css:#save
+    Highlight    ${el}
