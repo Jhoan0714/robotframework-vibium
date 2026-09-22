@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from robot.utils import timestr_to_secs
+from robot.utils import secs_to_timestr, timestr_to_secs
 
 from .errors import VibiumLibraryError
 
@@ -69,15 +69,30 @@ def parse_timeout_ms(timeout: str) -> int:
     return ms
 
 
-def optional_timeout_ms(timeout: object | None) -> int | None:
-    """Parse an optional Robot timeout string to milliseconds.
+def optional_timeout_ms(
+    timeout: object | None, *, library: object | None = None
+) -> int | None:
+    """Resolve an optional keyword timeout to milliseconds.
 
-    Returns ``None`` when ``timeout`` is omitted or blank so callers can pass
-    Vibium's default. Non-empty values use :func:`parse_timeout_ms`.
+    Precedence:
+
+    1. Explicit non-blank ``timeout`` argument → :func:`parse_timeout_ms`
+    2. Library ``Set Browser Timeout`` stack (when ``library`` is passed)
+    3. ``None`` → Vibium built-in default
     """
-    if timeout is None:
-        return None
-    raw = str(timeout).strip()
-    if not raw:
-        return None
-    return parse_timeout_ms(raw)
+    if timeout is not None:
+        raw = str(timeout).strip()
+        if raw:
+            return parse_timeout_ms(raw)
+    if library is not None:
+        stack = getattr(library, "timeout_stack", None)
+        if stack is not None:
+            return stack.get()
+    return None
+
+
+def timeout_ms_to_timestr(ms: int | None) -> str:
+    """Format milliseconds as a Robot time string, or ``None`` when unset."""
+    if ms is None:
+        return "None"
+    return secs_to_timestr(ms / 1000.0)

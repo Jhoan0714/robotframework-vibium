@@ -111,7 +111,7 @@ class CaptureKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         if locators:
-            timeout_ms = optional_timeout_ms(timeout)
+            timeout_ms = optional_timeout_ms(timeout, library=self.library)
             element = resolve_element(
                 self.library._session, *locators, scope=scope, timeout=timeout_ms
             )

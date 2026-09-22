@@ -11,6 +11,7 @@ from robotlibcore import DynamicCore
 from .browser_session import SessionPool
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
+from .keywords.config import ConfigKeywords
 from .keywords.context import CookieKeywords, StorageKeywords
 from .keywords.dialogs import DialogKeywords
 from .keywords.document import DocumentKeywords
@@ -21,6 +22,7 @@ from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.touch import TouchKeywords
 from .keywords.waits import WaitKeywords
+from .settings_stack import SettingsStack
 from .version import __version__
 
 
@@ -173,6 +175,16 @@ class Vibium(DynamicCore):
     ``ROBOT_LIBRARY_SCOPE`` is ``GLOBAL``. The same Vibium instance is reused
     across suites and tests in a single execution.
 
+    Keywords such as ``Set Browser Timeout`` accept a ``scope`` argument that
+    controls how long the setting lasts:
+
+    - ``Global`` — until overwritten by another Global set
+    - ``Suite`` — until the current suite ends (default)
+    - ``Test`` / ``Task`` — until the current test ends
+
+    Per-call ``timeout=`` on action/getter keywords still overrides the library
+    default for that call.
+
     = Typical usage =
 
     | *** Test Cases ***
@@ -187,10 +199,14 @@ class Vibium(DynamicCore):
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
     ROBOT_LIBRARY_VERSION = __version__
+    ROBOT_LISTENER_API_VERSION = 3
 
     def __init__(self, headless: bool = False):
+        self.ROBOT_LIBRARY_LISTENER = self
         self._session = SessionPool(headless=headless)
+        self.timeout_stack = SettingsStack(global_setting=None)
         components = [
+            ConfigKeywords(self),
             NavigationKeywords(self),
             MouseKeywords(self),
             TouchKeywords(self),
@@ -206,6 +222,22 @@ class Vibium(DynamicCore):
             WaitKeywords(self),
         ]
         DynamicCore.__init__(self, components)
+
+    def start_suite(self, data, result) -> None:  # noqa: ARG002
+        suite_id = str(getattr(data, "id", None) or data.longname)
+        self.timeout_stack.start_suite(suite_id)
+
+    def end_suite(self, data, result) -> None:  # noqa: ARG002
+        suite_id = str(getattr(data, "id", None) or data.longname)
+        self.timeout_stack.end_suite(suite_id)
+
+    def start_test(self, data, result) -> None:  # noqa: ARG002
+        test_id = str(getattr(data, "id", None) or data.longname)
+        self.timeout_stack.start_test(test_id)
+
+    def end_test(self, data, result) -> None:  # noqa: ARG002
+        test_id = str(getattr(data, "id", None) or data.longname)
+        self.timeout_stack.end_test(test_id)
 
     @keyword("Open Browser")
     def open_browser(

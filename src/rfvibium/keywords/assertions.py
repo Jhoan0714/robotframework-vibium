@@ -113,7 +113,7 @@ class AssertionKeywords:
                 "Get Html with locators supports only outer=True for now."
             )
 
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -154,7 +154,7 @@ class AssertionKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         if timeout_ms is not None:
             kwargs = {**kwargs, "timeout": timeout_ms}
         logger.info(f"Finding all elements '{format_locators(locators)}'.")
@@ -186,7 +186,7 @@ class AssertionKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         if timeout_ms is not None:
             kwargs = {**kwargs, "timeout": timeout_ms}
         logger.info(f"Counting elements '{format_locators(locators)}'.")

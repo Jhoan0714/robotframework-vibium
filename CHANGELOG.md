@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- ``Set Browser Timeout`` with ``scope=Global|Suite|Test|Task`` for library-level
+  defaults on element locate/actions when ``timeout=`` is omitted (#75).
+  Per-call ``timeout=`` still wins.
 - Optional ``timeout=`` on element actions, getters, ``Find Element`` /
   ``Find Elements``, ``Wait For Element``, and element screenshots (#54).
   Forwarded to Vibium ``find`` / ``find_all`` and to actions that accept

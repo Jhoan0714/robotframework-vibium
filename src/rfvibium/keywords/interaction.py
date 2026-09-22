@@ -85,7 +85,7 @@ class InteractionKeywords:
             | Click    ${btn}
             | Click    css:button    scope=${card}
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -120,7 +120,7 @@ class InteractionKeywords:
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         if timeout_ms is not None:
             kwargs = {**kwargs, "timeout": timeout_ms}
         logger.info(f"Finding element '{format_locators(locators)}'.")
@@ -165,7 +165,7 @@ class InteractionKeywords:
             | ${btn}=     Find Element    css:button
             | ${text}=    Get Text    ${btn}
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -183,7 +183,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -201,7 +201,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -223,7 +223,7 @@ class InteractionKeywords:
         Returns:
             str | None: Attribute value or ``None`` when attribute is absent.
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -243,7 +243,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -261,7 +261,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -279,7 +279,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -297,7 +297,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -315,7 +315,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -333,7 +333,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -353,7 +353,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -371,7 +371,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -405,7 +405,7 @@ class InteractionKeywords:
             | Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
         """
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locator_tokens, scope=scope, timeout=timeout_ms
         )
@@ -434,7 +434,7 @@ class InteractionKeywords:
             | Press Keys    Enter    role:textbox    label:Search
             | Press Keys    Control+a    css:#editor
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -452,7 +452,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -470,7 +470,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -491,7 +491,7 @@ class InteractionKeywords:
             | ${el}=    Find Element    css:#btn
             | Tap    ${el}
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -514,7 +514,7 @@ class InteractionKeywords:
             | ${el}=    Find Element    css:.error
             | Highlight    ${el}
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -532,7 +532,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -550,7 +550,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -581,7 +581,7 @@ class InteractionKeywords:
             explicit=text,
             explicit_name="text",
         )
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locator_tokens, scope=scope, timeout=timeout_ms
         )
@@ -614,7 +614,7 @@ class InteractionKeywords:
             explicit=value,
             explicit_name="value",
         )
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locator_tokens, scope=scope, timeout=timeout_ms
         )
@@ -635,7 +635,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -653,7 +653,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -671,7 +671,7 @@ class InteractionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -735,7 +735,7 @@ class InteractionKeywords:
                 Raises:
                     LocatorSyntaxError: If ``event_init`` is invalid JSON/object shape.
         """
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -765,7 +765,7 @@ class InteractionKeywords:
                 | Upload Files    xpath://input[@type='file']    files=@{LIST}
         """
         file_paths = InteractionKeywords._coerce_upload_files(files)
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
             self.library._session, *locators, scope=scope, timeout=timeout_ms
         )
@@ -804,7 +804,7 @@ class InteractionKeywords:
         tgt_tokens = InteractionKeywords._coerce_locator_token_group("target", target)
         src_args, src_kwargs = resolve_required_locators(src_tokens)
         tgt_args, tgt_kwargs = resolve_required_locators(tgt_tokens)
-        timeout_ms = optional_timeout_ms(timeout)
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
         if timeout_ms is not None:
             src_kwargs = {**src_kwargs, "timeout": timeout_ms}
             tgt_kwargs = {**tgt_kwargs, "timeout": timeout_ms}
