@@ -12,7 +12,7 @@ class DocumentKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Set Page Content")
+    @keyword("Set Page Content", tags=["Page", "Action"])
     def set_page_content(self, html: str) -> None:
         """Replace the active page HTML with ``html``.
 
