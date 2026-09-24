@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
-from rfvibium.browser_session import BrowserSession, SessionPool
 from rfvibium.library import Vibium
+from rfvibium.session.browser_session import BrowserSession, SessionPool
 
 
 class DummySession:
@@ -57,7 +57,7 @@ def test_browser_session_create_omits_optional_launch_args(
     )
 
 
-@patch("rfvibium.browser_session.BrowserSession.create")
+@patch("rfvibium.session.browser_session.BrowserSession.create")
 def test_session_pool_open_forwards_engine_options(mock_create: MagicMock) -> None:
     session = MagicMock()
     browser = object()
@@ -77,7 +77,7 @@ def test_session_pool_open_forwards_engine_options(mock_create: MagicMock) -> No
     assert result is browser
 
 
-@patch("rfvibium.browser_session.BrowserSession.create")
+@patch("rfvibium.session.browser_session.BrowserSession.create")
 def test_session_pool_open_headless_overrides_library_default(
     mock_create: MagicMock,
 ) -> None:

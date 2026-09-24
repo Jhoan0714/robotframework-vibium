@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
+from rfvibium.config.settings_stack import Scope, SettingsStack
 from rfvibium.errors import VibiumLibraryError
 from rfvibium.keywords.config import ConfigKeywords
-from rfvibium.settings_stack import Scope, SettingsStack
 from rfvibium.utils import optional_timeout_ms, timeout_ms_to_timestr
 
 

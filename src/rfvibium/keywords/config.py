@@ -5,7 +5,7 @@ from __future__ import annotations
 from robot.api import logger
 from robot.api.deco import keyword
 
-from ..settings_stack import parse_scope
+from ..config.settings_stack import parse_scope
 from ..utils import parse_timeout_ms, timeout_ms_to_timestr
 
 

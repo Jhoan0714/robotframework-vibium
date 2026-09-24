@@ -1,14 +1,14 @@
 import pytest
-from vibium import Element
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
-from rfvibium.locator import (
+from rfvibium.locators.locator import (
     is_element_handle,
     looks_like_locator,
     merge_locators,
     parse_locator,
     resolve_element,
 )
+from vibium import Element
 
 
 def test_locator_syntax_error_inherits_from_vibium_library_error() -> None:

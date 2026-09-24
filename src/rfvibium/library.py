@@ -8,7 +8,7 @@ from robot.api import logger
 from robot.api.deco import keyword, library
 from robotlibcore import DynamicCore
 
-from .browser_session import SessionPool
+from .config.settings_stack import SettingsStack
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
 from .keywords.config import ConfigKeywords
@@ -22,7 +22,7 @@ from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.touch import TouchKeywords
 from .keywords.waits import WaitKeywords
-from .settings_stack import SettingsStack
+from .session.browser_session import SessionPool
 from .version import __version__
 
 

@@ -8,13 +8,17 @@ from assertionengine import AssertionOperator
 from robot.api import logger
 from robot.api.deco import keyword
 
-from ..assertion_support import (
+from ..assertions.assertion_support import (
     assert_value,
     coerce_int_expected,
     split_locators_and_assertion,
 )
 from ..errors import LocatorSyntaxError
-from ..locator import format_locators, resolve_element, resolve_required_locators
+from ..locators.locator import (
+    format_locators,
+    resolve_element,
+    resolve_required_locators,
+)
 from ..utils import optional_timeout_ms
 
 

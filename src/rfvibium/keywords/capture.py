@@ -11,7 +11,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import ScreenshotError
-from ..locator import format_locators, resolve_element
+from ..locators.locator import format_locators, resolve_element
 from ..utils import optional_timeout_ms
 
 _STALE_CONTEXT_MARKERS = (

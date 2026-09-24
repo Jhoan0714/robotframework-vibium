@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from .errors import VibiumLibraryError
+from ..errors import VibiumLibraryError
 
 
 class Scope(str, Enum):

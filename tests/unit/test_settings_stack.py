@@ -2,8 +2,8 @@
 
 import pytest
 
+from rfvibium.config.settings_stack import Scope, SettingsStack, parse_scope
 from rfvibium.errors import VibiumLibraryError
-from rfvibium.settings_stack import Scope, SettingsStack, parse_scope
 
 
 def test_parse_scope_accepts_aliases() -> None:

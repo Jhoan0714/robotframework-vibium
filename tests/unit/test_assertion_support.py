@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from assertionengine import AssertionOperator
 
-from rfvibium.assertion_support import (
+from rfvibium.assertions.assertion_support import (
     assert_list,
     assert_value,
     coerce_int_expected,

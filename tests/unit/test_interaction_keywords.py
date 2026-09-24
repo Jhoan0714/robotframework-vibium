@@ -1,11 +1,11 @@
 from types import SimpleNamespace
 
 import pytest
-from vibium import Element
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
 from rfvibium.keywords import interaction as interaction_module
 from rfvibium.keywords.interaction import InteractionKeywords
+from vibium import Element
 
 
 class _LoggerSpy:
