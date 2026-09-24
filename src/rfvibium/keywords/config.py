@@ -15,7 +15,7 @@ class ConfigKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Set Browser Timeout")
+    @keyword("Set Browser Timeout", tags=["Config", "Action"])
     def set_browser_timeout(self, timeout: str, scope: str = "Suite") -> str:
         """Set the default timeout for element locate/actions.
 
