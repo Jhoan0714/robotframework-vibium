@@ -179,6 +179,28 @@ def test_count_elements_uses_find_all_length() -> None:
     assert kw.count_elements("role:listitem") == 3
 
 
+def test_count_elements_inline_assertion() -> None:
+    page = DummyPage([b"PNGDATA"])
+    kw = TestableAssertions(page)
+
+    assert kw.count_elements("role:listitem", "==", "3") == 3
+    assert page.last_find_all_kwargs == {"role": "listitem"}
+
+
+def test_get_title_inline_assertion() -> None:
+    page = DummyPage([b"PNGDATA"])
+    kw = TestableAssertions(page)
+
+    assert kw.get_title("==", "Example Title") == "Example Title"
+
+
+def test_get_url_contains_assertion() -> None:
+    page = DummyPage([b"PNGDATA"])
+    kw = TestableAssertions(page)
+
+    assert kw.get_url("*=", "example.com") == "https://example.com/current"
+
+
 def test_evaluate_javascript_returns_page_result() -> None:
     page = DummyPage([b"PNGDATA"])
     kw = TestableAssertions(page)
