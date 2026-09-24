@@ -12,6 +12,7 @@ from robot.api.deco import keyword
 
 from ..errors import ScreenshotError
 from ..locators.locator import format_locators, resolve_element
+from ..types import FindScope, Locator
 from ..utils import optional_timeout_ms
 
 _STALE_CONTEXT_MARKERS = (
@@ -66,13 +67,13 @@ class CaptureKeywords:
     @keyword("Take Screenshot")
     def take_screenshot(
         self,
-        *locators,
+        *locators: Locator,
         output_path: str | None = None,
         embed: bool = True,
         width: str = "800px",
         full_page: bool | None = None,
         clip: object = None,
-        scope: object = None,
+        scope: FindScope = None,
         timeout: str | None = None,
     ) -> str:
         """Capture a PNG screenshot of the page or a matched element.
@@ -180,7 +181,7 @@ class CaptureKeywords:
         self,
         output_path: str | None = None,
         embed: bool = True,
-        scope: object = None,
+        scope: FindScope = None,
     ) -> str:
         """Save the resolved page scope as PDF.
 
