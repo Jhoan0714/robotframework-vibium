@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from rfvibium.config.settings_stack import Scope, SettingsStack
+from rfvibium.config.settings import Scope, SettingLayers
 from rfvibium.errors import VibiumLibraryError
 from rfvibium.keywords.config import ConfigKeywords
 from rfvibium.utils import optional_timeout_ms, timeout_ms_to_timestr
@@ -12,18 +12,18 @@ from rfvibium.utils import optional_timeout_ms, timeout_ms_to_timestr
 
 class TestableConfig(ConfigKeywords):
     def __init__(self) -> None:
-        self.library = SimpleNamespace(timeout_stack=SettingsStack())
+        self.library = SimpleNamespace(timeout_settings=SettingLayers())
 
 
 def test_optional_timeout_ms_explicit_wins_over_library() -> None:
-    lib = SimpleNamespace(timeout_stack=SettingsStack())
-    lib.timeout_stack.set(60_000, Scope.Global)
+    lib = SimpleNamespace(timeout_settings=SettingLayers())
+    lib.timeout_settings.set(60_000, Scope.Global)
     assert optional_timeout_ms("500ms", library=lib) == 500
 
 
 def test_optional_timeout_ms_falls_back_to_library_stack() -> None:
-    lib = SimpleNamespace(timeout_stack=SettingsStack())
-    lib.timeout_stack.set(2500, Scope.Global)
+    lib = SimpleNamespace(timeout_settings=SettingLayers())
+    lib.timeout_settings.set(2500, Scope.Global)
     assert optional_timeout_ms(None, library=lib) == 2500
     assert optional_timeout_ms("", library=lib) == 2500
 
@@ -41,27 +41,27 @@ def test_timeout_ms_to_timestr() -> None:
 
 def test_set_browser_timeout_returns_previous_and_sets() -> None:
     kw = TestableConfig()
-    kw.library.timeout_stack.start_suite("s1")
+    kw.library.timeout_settings.start_suite("s1")
 
     old = kw.set_browser_timeout("2s", scope="Suite")
     assert old == "None"
-    assert kw.library.timeout_stack.get() == 2000
+    assert kw.library.timeout_settings.get() == 2000
 
     old2 = kw.set_browser_timeout("500ms", scope="Suite")
     assert old2 == "2 seconds"
-    assert kw.library.timeout_stack.get() == 500
+    assert kw.library.timeout_settings.get() == 500
 
 
 def test_set_browser_timeout_clears_with_none() -> None:
     kw = TestableConfig()
-    kw.library.timeout_stack.start_suite("s1")
+    kw.library.timeout_settings.start_suite("s1")
     kw.set_browser_timeout("1s")
     assert kw.set_browser_timeout("None") == "1 second"
-    assert kw.library.timeout_stack.get() is None
+    assert kw.library.timeout_settings.get() is None
 
 
 def test_set_browser_timeout_test_scope_requires_running_test() -> None:
     kw = TestableConfig()
-    kw.library.timeout_stack.start_suite("s1")
+    kw.library.timeout_settings.start_suite("s1")
     with pytest.raises(VibiumLibraryError, match="while a test is running"):
         kw.set_browser_timeout("1s", scope="Test")

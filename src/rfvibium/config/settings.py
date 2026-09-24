@@ -39,8 +39,8 @@ class ScopedSetting:
     setting: Any
 
 
-class SettingsStack:
-    """Stack of scoped settings; ``get()`` returns the innermost value.
+class SettingLayers:
+    """Layers of scoped settings; ``get()`` returns the innermost value.
 
     - ``Global`` updates every frame
     - ``Suite`` overrides at current suite (and clears an active Test frame)

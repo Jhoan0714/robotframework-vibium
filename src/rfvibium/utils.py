@@ -118,7 +118,7 @@ def optional_timeout_ms(
         if raw:
             return parse_timeout_ms(raw)
     if library is not None:
-        stack = getattr(library, "timeout_stack", None)
+        stack = getattr(library, "timeout_settings", None)
         if stack is not None:
             return stack.get()
     return None
