@@ -62,6 +62,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from ..errors import BrowserSessionError
+from ..types import Element, FindScope, Page
 
 
 @dataclass
@@ -562,7 +563,7 @@ class SessionPool:
 
         return len(self._sessions)
 
-    def resolve_scope(self, scope: Any | None = None) -> Any:
+    def resolve_scope(self, scope: FindScope = None) -> Page | Element:
         """Keyword helper: implicit active ``page`` or explicit page/frame-like object unchanged."""
 
         return self.require_page() if scope is None else scope
