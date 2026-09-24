@@ -271,9 +271,7 @@ class AssertionKeywords:
         count = len(page.find_all(*args, **kwargs))
         if op is None:
             return count
-        return assert_value(
-            count, op, coerce_int(expected), "Element count", message
-        )
+        return assert_value(count, op, coerce_int(expected), "Element count", message)
 
     @keyword("Evaluate JavaScript")
     def evaluate_javascript(self, expression: str, scope: object = None):

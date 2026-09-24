@@ -33,9 +33,7 @@ def coerce_int(value: Any) -> Any:
             try:
                 as_float = float(stripped)
             except ValueError as exc:
-                raise ValueError(
-                    f"Expected an integer, got {value!r}."
-                ) from exc
+                raise ValueError(f"Expected an integer, got {value!r}.") from exc
             if as_float.is_integer():
                 return int(as_float)
             raise ValueError(f"Expected an integer, got {value!r}.") from None
