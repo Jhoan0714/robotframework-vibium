@@ -21,7 +21,7 @@ Implementation package: `src/rfvibium/`.
 | `rfvibium/config/settings.py` | `SettingLayers` — scoped library settings (Global / Suite / Test) |
 | `rfvibium/keywords/` | Domain keyword components |
 | `rfvibium/version.py` | Single package version (`__version__`) |
-| `rfvibium/errors.py`, `utils.py`, `types.py` | Shared errors, helpers, typing aliases |
+| `rfvibium/errors.py`, `utils.py`, `types.py` | Shared errors, helpers, typing aliases (`PageScope`, `FindScope`, `Locator`, …) |
 
 Keyword modules under `keywords/`: `navigation`, `mouse`, `interaction`, `assertions`, `capture`, `context` (cookies/storage), `dialogs`, `waits`, plus related domains.
 
@@ -60,5 +60,5 @@ Vibium (DynamicCore)
 ## Evolution path
 
 - Add async adapter when Vibium async API is needed.
-- Add richer selector strategy and typed element reference abstraction.
+- Keep typing aliases in `types.py` aligned with Vibium sync types and Libdoc.
 - Add tracing/network/debug keywords for CI diagnostics.
