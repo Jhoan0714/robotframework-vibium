@@ -17,7 +17,7 @@ Implementation package: `src/rfvibium/`.
 | `rfvibium/library.py` | Public `Vibium` library class (`DynamicCore`) |
 | `rfvibium/session/browser_session.py` | `SessionPool` + per-browser `BrowserSession` |
 | `rfvibium/locators/locator.py` | Locator token parsing / resolution |
-| `rfvibium/assertions/assertion_support.py` | AssertionEngine peel / verify helpers |
+| `rfvibium/assertions/helper.py` | AssertionEngine peel / verify helpers |
 | `rfvibium/config/settings_stack.py` | Scoped library settings (Global / Suite / Test) |
 | `rfvibium/keywords/` | Domain keyword components |
 | `rfvibium/version.py` | Single package version (`__version__`) |
