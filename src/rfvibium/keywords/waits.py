@@ -36,6 +36,7 @@ from robot.api.deco import keyword
 
 from ..errors import LocatorSyntaxError, VibiumLibraryError
 from ..locators.locator import format_locators, resolve_element
+from ..types import FindScope, Locator
 from ..utils import parse_timeout_ms
 
 _ELEMENT_WAIT_STATES: frozenset[str] = frozenset(
@@ -96,10 +97,10 @@ class WaitKeywords:
     @keyword("Wait For Element")
     def wait_for_element(
         self,
-        *locators,
+        *locators: Locator,
         state: str = "visible",
         timeout: str = "10s",
-        scope: object = None,
+        scope: FindScope = None,
     ) -> None:
         """Wait until a matched element reaches a target state.
 
