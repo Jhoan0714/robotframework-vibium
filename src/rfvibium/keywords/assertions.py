@@ -18,6 +18,7 @@ from ..locators.locator import (
     resolve_element,
     resolve_required_locators,
 )
+from ..types import Element, FindScope, Locator
 from ..utils import coerce_int, optional_timeout_ms
 
 
@@ -34,7 +35,7 @@ class AssertionKeywords:
         assertion_expected: Any = None,
         message: str | None = None,
         *,
-        scope: object = None,
+        scope: FindScope = None,
     ) -> Any:
         """Return the current URL from the resolved scope.
 
@@ -63,7 +64,7 @@ class AssertionKeywords:
         assertion_expected: Any = None,
         message: str | None = None,
         *,
-        scope: object = None,
+        scope: FindScope = None,
     ) -> Any:
         """Return the document title from the resolved scope.
 
@@ -96,7 +97,7 @@ class AssertionKeywords:
         assertion_expected: Any = None,
         message: str | None = None,
         *,
-        scope: object = None,
+        scope: FindScope = None,
     ) -> Any:
         """Return visible text from ``document.body.innerText`` in the resolved scope.
 
@@ -122,12 +123,12 @@ class AssertionKeywords:
     @keyword("Get Html")
     def get_html(
         self,
-        *locators,
+        *locators: Locator,
         outer: bool = True,
         assertion_operator: AssertionOperator | None = None,
         assertion_expected: Any = None,
         message: str | None = None,
-        scope: object = None,
+        scope: FindScope = None,
         timeout: str | None = None,
     ) -> Any:
         """Return HTML from the resolved scope or a resolved element.
@@ -184,11 +185,11 @@ class AssertionKeywords:
     @keyword("Find Elements")
     def find_elements(
         self,
-        *locators: str,
+        *locators: Locator,
         limit: int | None = None,
-        scope: object = None,
+        scope: FindScope = None,
         timeout: str | None = None,
-    ) -> list:
+    ) -> list[Element]:
         """Return Vibium ``Element`` handles for all matches.
 
         Handles can be passed as ``scope=`` for nested ``element.find_all`` /
@@ -230,11 +231,11 @@ class AssertionKeywords:
     @keyword("Count Elements")
     def count_elements(
         self,
-        *locators: str,
+        *locators: Locator,
         assertion_operator: AssertionOperator | None = None,
         assertion_expected: Any = None,
         message: str | None = None,
-        scope: object = None,
+        scope: FindScope = None,
         timeout: str | None = None,
     ) -> Any:
         """Return how many elements match the locator(s).
@@ -274,7 +275,7 @@ class AssertionKeywords:
         return assert_value(count, op, coerce_int(expected), "Element count", message)
 
     @keyword("Evaluate JavaScript")
-    def evaluate_javascript(self, expression: str, scope: object = None):
+    def evaluate_javascript(self, expression: str, scope: FindScope = None):
         """Evaluate JavaScript in the resolved scope and return its result.
 
         | =Argument= | =Description= |
@@ -293,7 +294,7 @@ class AssertionKeywords:
 
     @keyword("Get Accessibility Tree")
     def get_accessibility_tree(
-        self, everything: bool = False, scope: object = None
+        self, everything: bool = False, scope: FindScope = None
     ) -> str:
         """Return the accessibility tree for the resolved scope.
 
