@@ -2,9 +2,44 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from robot.utils import secs_to_timestr, timestr_to_secs
 
 from .errors import VibiumLibraryError
+
+
+def coerce_int(value: Any) -> Any:
+    """Coerce Robot-friendly scalars to ``int`` when unambiguous.
+
+    Accepts ``int``, integer-valued ``float``, and numeric strings (``\"2\"``,
+    ``\"2.0\"``). ``None`` and non-integer values that cannot be coerced are
+    returned unchanged or raise ``ValueError`` for bad strings.
+
+    Useful when AssertionEngine compares ints and Robot passes string numbers
+    (e.g. ``Count Elements … == ${2}`` on AssertionEngine 3.0.x / Python 3.9).
+    """
+    if value is None or isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        try:
+            return int(stripped)
+        except ValueError:
+            try:
+                as_float = float(stripped)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Expected an integer, got {value!r}."
+                ) from exc
+            if as_float.is_integer():
+                return int(as_float)
+            raise ValueError(f"Expected an integer, got {value!r}.") from None
+    return value
 
 
 def coerce_viewport_axis(name: str, value: object, *, kind: str = "Mouse") -> float:

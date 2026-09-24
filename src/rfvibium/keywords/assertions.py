@@ -10,7 +10,6 @@ from robot.api.deco import keyword
 
 from ..assertions.helper import (
     assert_value,
-    coerce_int_expected,
     split_locators_and_assertion,
 )
 from ..errors import LocatorSyntaxError
@@ -19,7 +18,7 @@ from ..locators.locator import (
     resolve_element,
     resolve_required_locators,
 )
-from ..utils import optional_timeout_ms
+from ..utils import coerce_int, optional_timeout_ms
 
 
 class AssertionKeywords:
@@ -273,7 +272,7 @@ class AssertionKeywords:
         if op is None:
             return count
         return assert_value(
-            count, op, coerce_int_expected(expected), "Element count", message
+            count, op, coerce_int(expected), "Element count", message
         )
 
     @keyword("Evaluate JavaScript")

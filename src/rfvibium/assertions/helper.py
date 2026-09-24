@@ -84,37 +84,6 @@ def split_locators_and_assertion(
     return raw, None, None
 
 
-def coerce_int_expected(expected: Any) -> Any:
-    """Coerce Robot string/float counts to ``int`` for AssertionEngine 3.0.x.
-
-    ``int_str_verify_assertion`` exists only in AssertionEngine ≥5 (Python ≥3.10).
-    This keeps ``Count Elements … == ${2}`` / ``== 2`` working on 3.9 + AE 3.0.3.
-    """
-    if expected is None or isinstance(expected, bool):
-        return expected
-    if isinstance(expected, int):
-        return expected
-    if isinstance(expected, float) and expected.is_integer():
-        return int(expected)
-    if isinstance(expected, str):
-        stripped = expected.strip()
-        try:
-            return int(stripped)
-        except ValueError:
-            try:
-                as_float = float(stripped)
-            except ValueError as exc:
-                raise ValueError(
-                    f"Expected count must be an integer, got {expected!r}."
-                ) from exc
-            if as_float.is_integer():
-                return int(as_float)
-            raise ValueError(
-                f"Expected count must be an integer, got {expected!r}."
-            ) from None
-    return expected
-
-
 def assert_value(
     value: Any,
     operator: AssertionOperator | str | None,
