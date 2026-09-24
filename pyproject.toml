@@ -40,6 +40,7 @@ dependencies = [
   "robotframework>=5.0",
   "vibium>=26.8.21,<26.9",
   "robotframework-pythonlibcore>=4.4.1",
+  "robotframework-assertion-engine>=3.0.3",
 ]
 
 [project.optional-dependencies]
