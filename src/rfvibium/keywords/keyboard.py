@@ -6,6 +6,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import VibiumLibraryError
+from ..types import PageScope
 
 _KEY_ACTIONS = {
     "down": "down",
@@ -32,7 +33,7 @@ class KeyboardKeywords:
         return normalized
 
     @keyword("Keyboard Type")
-    def keyboard_type(self, text: str, scope: object = None) -> None:
+    def keyboard_type(self, text: str, scope: PageScope = None) -> None:
         """Type ``text`` character by character via the page keyboard.
 
         Unlike ``Fill Text``, this sends key events and does not target a
@@ -52,7 +53,7 @@ class KeyboardKeywords:
         page.keyboard.type(text)
 
     @keyword("Keyboard Key")
-    def keyboard_key(self, action: str, key: str, scope: object = None) -> None:
+    def keyboard_key(self, action: str, key: str, scope: PageScope = None) -> None:
         """Send a page-level key action (``down``, ``up``, or ``press``).
 
         ``press`` sends a full keystroke (or combo such as ``Control+a``).
