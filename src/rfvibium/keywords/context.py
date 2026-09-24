@@ -21,7 +21,7 @@ class CookieKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("List Cookies")
+    @keyword("List Cookies", tags=["BrowserContext", "Getter"])
     def list_cookies(
         self, context: BrowserContext | None = None
     ) -> list[dict[str, Any]]:
@@ -41,7 +41,7 @@ class CookieKeywords:
         logger.info(f"Listed {len(cookies)} cookie(s).")
         return list(cookies)
 
-    @keyword("Set Cookie")
+    @keyword("Set Cookie", tags=["BrowserContext", "Action"])
     def set_cookie(
         self,
         name: str,
@@ -97,7 +97,7 @@ class CookieKeywords:
         logger.info(f"Setting cookie '{name}'.")
         ctx.set_cookies([cookie])
 
-    @keyword("Clear Cookies")
+    @keyword("Clear Cookies", tags=["BrowserContext", "Action"])
     def clear_cookies(self, context: BrowserContext | None = None) -> None:
         """Remove all cookies from the active browser context.
 
@@ -118,7 +118,7 @@ class StorageKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Export Storage State")
+    @keyword("Export Storage State", tags=["BrowserContext", "Getter"])
     def export_storage_state(
         self,
         output_path: str | None = None,
@@ -155,7 +155,7 @@ class StorageKeywords:
             self._log_storage_artifact(path)
         return str(path)
 
-    @keyword("Restore Storage State")
+    @keyword("Restore Storage State", tags=["BrowserContext", "Action"])
     def restore_storage_state(
         self, path: str, context: BrowserContext | None = None
     ) -> None:
@@ -176,7 +176,7 @@ class StorageKeywords:
         logger.info(f"Restoring storage state from '{resolved}'.")
         ctx.set_storage(state)
 
-    @keyword("Clear Storage")
+    @keyword("Clear Storage", tags=["BrowserContext", "Action"])
     def clear_storage(self, context: BrowserContext | None = None) -> None:
         """Clear cookies and origin storage for the active browser context.
 
