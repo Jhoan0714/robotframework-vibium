@@ -164,6 +164,19 @@ class Vibium(DynamicCore):
 
     See also: [https://github.com/MarketSquare/AssertionEngine|AssertionEngine].
 
+    = Keyword Tags =
+
+    Each keyword carries two tags aligned with the
+    [https://github.com/VibiumDev/vibium/blob/main/docs/reference/api.md|Vibium API]:
+
+    - *Domain:* ``Browser``, ``Page``, ``Element``, ``BrowserContext``,
+      ``Keyboard``, ``Mouse``, ``Touch``, ``Dialog``, ``Config``
+    - *Role:* ``Getter``, ``Action``, ``Wait``
+
+    Example: ``Click`` is tagged ``Element`` + ``Action``; ``Get Text`` is
+    ``Element`` + ``Getter``. Use Robot ``--include`` / ``--exclude`` on these
+    tags, and Libdoc groups keywords by tag.
+
     = Timeouts, Waits and Delays =
 
     Wait keywords provide explicit synchronization:
@@ -257,7 +270,7 @@ class Vibium(DynamicCore):
         test_id = str(getattr(data, "id", None) or data.longname)
         self.timeout_settings.end_test(test_id)
 
-    @keyword("Open Browser")
+    @keyword("Open Browser", tags=["Browser", "Action"])
     def open_browser(
         self,
         url: str | None = None,
@@ -307,13 +320,13 @@ class Vibium(DynamicCore):
         logger.info("Browser session opened.")
         return browser
 
-    @keyword("Close Browser")
+    @keyword("Close Browser", tags=["Browser", "Action"])
     def close_browser(self, browser=None) -> None:
         """Close one Browser session (active browser by default)."""
         self._session.close(browser=browser)
         logger.info("Browser session closed.")
 
-    @keyword("Close All Browsers")
+    @keyword("Close All Browsers", tags=["Browser", "Action"])
     def close_all_browsers(self) -> None:
         """Close all Browser sessions created by this library instance."""
         self._session.close_all()
