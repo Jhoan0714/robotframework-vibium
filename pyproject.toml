@@ -83,6 +83,10 @@ ignore = [
   "E501",  # line length: handled by black / long Robot docs
 ]
 
+[tool.ruff.lint.isort]
+# Avoid case-insensitive issues
+known-third-party = ["vibium"]
+
 [tool.mypy]
 python_version = "3.9"
 packages = ["rfvibium"]
