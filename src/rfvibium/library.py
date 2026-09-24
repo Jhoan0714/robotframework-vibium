@@ -8,7 +8,7 @@ from robot.api import logger
 from robot.api.deco import keyword, library
 from robotlibcore import DynamicCore
 
-from .browser_session import SessionPool
+from .config.settings import SettingLayers
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
 from .keywords.config import ConfigKeywords
@@ -22,7 +22,7 @@ from .keywords.mouse import MouseKeywords
 from .keywords.navigation import NavigationKeywords
 from .keywords.touch import TouchKeywords
 from .keywords.waits import WaitKeywords
-from .settings_stack import SettingsStack
+from .session.browser_session import SessionPool
 from .version import __version__
 
 
@@ -222,7 +222,7 @@ class Vibium(DynamicCore):
     def __init__(self, headless: bool = False):
         self.ROBOT_LIBRARY_LISTENER = self
         self._session = SessionPool(headless=headless)
-        self.timeout_stack = SettingsStack(global_setting=None)
+        self.timeout_settings = SettingLayers(global_setting=None)
         components = [
             ConfigKeywords(self),
             NavigationKeywords(self),
@@ -243,19 +243,19 @@ class Vibium(DynamicCore):
 
     def start_suite(self, data, result) -> None:  # noqa: ARG002
         suite_id = str(getattr(data, "id", None) or data.longname)
-        self.timeout_stack.start_suite(suite_id)
+        self.timeout_settings.start_suite(suite_id)
 
     def end_suite(self, data, result) -> None:  # noqa: ARG002
         suite_id = str(getattr(data, "id", None) or data.longname)
-        self.timeout_stack.end_suite(suite_id)
+        self.timeout_settings.end_suite(suite_id)
 
     def start_test(self, data, result) -> None:  # noqa: ARG002
         test_id = str(getattr(data, "id", None) or data.longname)
-        self.timeout_stack.start_test(test_id)
+        self.timeout_settings.start_test(test_id)
 
     def end_test(self, data, result) -> None:  # noqa: ARG002
         test_id = str(getattr(data, "id", None) or data.longname)
-        self.timeout_stack.end_test(test_id)
+        self.timeout_settings.end_test(test_id)
 
     @keyword("Open Browser")
     def open_browser(

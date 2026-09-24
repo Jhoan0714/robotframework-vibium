@@ -26,7 +26,7 @@ from typing import Any
 
 from vibium import Element
 
-from .errors import LocatorSyntaxError
+from ..errors import LocatorSyntaxError
 
 SEMANTIC_PREFIXES = (
     "xpath",

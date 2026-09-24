@@ -5,7 +5,7 @@ from __future__ import annotations
 from robot.api import logger
 from robot.api.deco import keyword
 
-from ..settings_stack import parse_scope
+from ..config.settings import parse_scope
 from ..utils import parse_timeout_ms, timeout_ms_to_timestr
 
 
@@ -34,11 +34,11 @@ class ConfigKeywords:
             | Set Browser Timeout    ${old}
             | Set Browser Timeout    500ms    scope=Test
         """
-        old_ms = self.library.timeout_stack.get()
+        old_ms = self.library.timeout_settings.get()
         old_str = timeout_ms_to_timestr(old_ms)
         new_ms = _coerce_set_timeout(timeout)
         resolved_scope = parse_scope(scope)
-        self.library.timeout_stack.set(new_ms, resolved_scope)
+        self.library.timeout_settings.set(new_ms, resolved_scope)
         logger.info(
             f"Browser timeout set to {timeout_ms_to_timestr(new_ms)!r} "
             f"(scope={resolved_scope.value})."

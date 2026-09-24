@@ -5,10 +5,9 @@ from __future__ import annotations
 import pytest
 from assertionengine import AssertionOperator
 
-from rfvibium.assertion_support import (
+from rfvibium.assertions.helper import (
     assert_list,
     assert_value,
-    coerce_int_expected,
     parse_assertion_operator,
     split_locators_and_assertion,
 )
@@ -96,14 +95,3 @@ def test_assert_list_equal() -> None:
         )
         == states
     )
-
-
-def test_coerce_int_expected() -> None:
-    assert coerce_int_expected(2) == 2
-    assert coerce_int_expected("3") == 3
-    assert coerce_int_expected("4.0") == 4
-    assert coerce_int_expected(5.0) == 5
-    with pytest.raises(ValueError, match="integer"):
-        coerce_int_expected("x")
-    with pytest.raises(ValueError, match="integer"):
-        coerce_int_expected("1.5")

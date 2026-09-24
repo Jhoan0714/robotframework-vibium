@@ -1,9 +1,9 @@
-"""Unit tests for SettingsStack / Scope."""
+"""Unit tests for SettingLayers / Scope."""
 
 import pytest
 
+from rfvibium.config.settings import Scope, SettingLayers, parse_scope
 from rfvibium.errors import VibiumLibraryError
-from rfvibium.settings_stack import Scope, SettingsStack, parse_scope
 
 
 def test_parse_scope_accepts_aliases() -> None:
@@ -19,12 +19,12 @@ def test_parse_scope_rejects_invalid() -> None:
 
 
 def test_stack_global_default_is_none() -> None:
-    stack = SettingsStack()
+    stack = SettingLayers()
     assert stack.get() is None
 
 
 def test_stack_global_set_updates_all_frames() -> None:
-    stack = SettingsStack()
+    stack = SettingLayers()
     stack.start_suite("s1")
     stack.start_test("t1")
     stack.set(5000, Scope.Global)
@@ -36,7 +36,7 @@ def test_stack_global_set_updates_all_frames() -> None:
 
 
 def test_stack_suite_set_restores_on_end() -> None:
-    stack = SettingsStack()
+    stack = SettingLayers()
     stack.start_suite("s1")
     stack.set(2000, Scope.Suite)
     assert stack.get() == 2000
@@ -45,7 +45,7 @@ def test_stack_suite_set_restores_on_end() -> None:
 
 
 def test_stack_test_set_restores_on_end() -> None:
-    stack = SettingsStack()
+    stack = SettingLayers()
     stack.start_suite("s1")
     stack.set(10_000, Scope.Suite)
     stack.start_test("t1")
@@ -58,7 +58,7 @@ def test_stack_test_set_restores_on_end() -> None:
 
 
 def test_stack_test_set_outside_test_raises() -> None:
-    stack = SettingsStack()
+    stack = SettingLayers()
     stack.start_suite("s1")
     with pytest.raises(VibiumLibraryError, match="while a test is running"):
         stack.set(1000, Scope.Test)

@@ -8,14 +8,17 @@ from assertionengine import AssertionOperator
 from robot.api import logger
 from robot.api.deco import keyword
 
-from ..assertion_support import (
+from ..assertions.helper import (
     assert_value,
-    coerce_int_expected,
     split_locators_and_assertion,
 )
 from ..errors import LocatorSyntaxError
-from ..locator import format_locators, resolve_element, resolve_required_locators
-from ..utils import optional_timeout_ms
+from ..locators.locator import (
+    format_locators,
+    resolve_element,
+    resolve_required_locators,
+)
+from ..utils import coerce_int, optional_timeout_ms
 
 
 class AssertionKeywords:
@@ -268,9 +271,7 @@ class AssertionKeywords:
         count = len(page.find_all(*args, **kwargs))
         if op is None:
             return count
-        return assert_value(
-            count, op, coerce_int_expected(expected), "Element count", message
-        )
+        return assert_value(count, op, coerce_int(expected), "Element count", message)
 
     @keyword("Evaluate JavaScript")
     def evaluate_javascript(self, expression: str, scope: object = None):

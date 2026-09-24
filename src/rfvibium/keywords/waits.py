@@ -35,7 +35,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 
 from ..errors import LocatorSyntaxError, VibiumLibraryError
-from ..locator import format_locators, resolve_element
+from ..locators.locator import format_locators, resolve_element
 from ..utils import parse_timeout_ms
 
 _ELEMENT_WAIT_STATES: frozenset[str] = frozenset(

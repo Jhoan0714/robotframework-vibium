@@ -15,13 +15,15 @@ Implementation package: `src/rfvibium/`.
 | Path | Role |
 |------|------|
 | `rfvibium/library.py` | Public `Vibium` library class (`DynamicCore`) |
-| `rfvibium/browser_session.py` | `SessionPool` + per-browser `BrowserSession` |
-| `rfvibium/locator.py` | Locator token parsing / resolution |
+| `rfvibium/session/browser_session.py` | `SessionPool` + per-browser `BrowserSession` |
+| `rfvibium/locators/locator.py` | Locator token parsing / resolution |
+| `rfvibium/assertions/helper.py` | AssertionEngine peel / verify helpers |
+| `rfvibium/config/settings.py` | `SettingLayers` — scoped library settings (Global / Suite / Test) |
 | `rfvibium/keywords/` | Domain keyword components |
 | `rfvibium/version.py` | Single package version (`__version__`) |
 | `rfvibium/errors.py`, `utils.py`, `types.py` | Shared errors, helpers, typing aliases |
 
-Keyword modules under `keywords/`: `navigation`, `mouse`, `interaction`, `assertions`, `capture`, `context` (cookies/storage), `dialogs`, `waits`.
+Keyword modules under `keywords/`: `navigation`, `mouse`, `interaction`, `assertions`, `capture`, `context` (cookies/storage), `dialogs`, `waits`, plus related domains.
 
 ## Layers (DynamicCore composition)
 
@@ -36,7 +38,7 @@ Keyword modules under `keywords/`: `navigation`, `mouse`, `interaction`, `assert
    - Each stores `self.library` (the `Vibium` instance) in `__init__(self, library)`.
    - Keywords access the browser session via `self.library._session` (not via mixins).
 
-3. **`rfvibium.browser_session.SessionPool`**
+3. **`rfvibium.session.browser_session.SessionPool`**
    - Starts/stops browsers and tracks active browser / context / page handles.
    - Provides resolve/require helpers used by keywords.
    - Internally wraps each open browser in a `BrowserSession`.

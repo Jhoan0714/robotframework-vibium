@@ -2,7 +2,7 @@ import pytest
 from vibium import Element
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
-from rfvibium.locator import (
+from rfvibium.locators.locator import (
     is_element_handle,
     looks_like_locator,
     merge_locators,

@@ -1,7 +1,26 @@
 import pytest
 
 from rfvibium.errors import VibiumLibraryError
-from rfvibium.utils import coerce_viewport_axis, optional_timeout_ms, parse_timeout_ms
+from rfvibium.utils import (
+    coerce_int,
+    coerce_viewport_axis,
+    optional_timeout_ms,
+    parse_timeout_ms,
+)
+
+
+def test_coerce_int_accepts_int_float_and_numeric_string() -> None:
+    assert coerce_int(2) == 2
+    assert coerce_int("3") == 3
+    assert coerce_int("4.0") == 4
+    assert coerce_int(5.0) == 5
+
+
+def test_coerce_int_rejects_non_integer_strings() -> None:
+    with pytest.raises(ValueError, match="integer"):
+        coerce_int("x")
+    with pytest.raises(ValueError, match="integer"):
+        coerce_int("1.5")
 
 
 def test_coerce_viewport_axis_accepts_number_and_string() -> None:
