@@ -55,7 +55,7 @@ class InteractionKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Map Elements")
+    @keyword("Map Elements", tags=["Page", "Getter"])
     def map_elements(self, scope: PageScope = None) -> str:
         """Return accessibility tree information for the resolved scope.
 
@@ -72,7 +72,7 @@ class InteractionKeywords:
         page = self.library._session.resolve_scope(scope)
         return str(page.a11y_tree())
 
-    @keyword("Click")
+    @keyword("Click", tags=["Element", "Action"])
     def click(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -97,7 +97,7 @@ class InteractionKeywords:
         logger.info(f"Clicking element '{format_locators(locators)}'.")
         element.click(timeout=timeout_ms)
 
-    @keyword("Find Element")
+    @keyword("Find Element", tags=["Element", "Getter"])
     def find_element(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> Element:
@@ -133,7 +133,7 @@ class InteractionKeywords:
         logger.info(f"Finding element '{format_locators(locators)}'.")
         return page.find(*args, **kwargs)
 
-    @keyword("Describe Element")
+    @keyword("Describe Element", tags=["Element", "Getter"])
     def describe_element(self, element: Element) -> str:
         """Return a human-readable ``repr`` for an element handle.
 
@@ -153,7 +153,7 @@ class InteractionKeywords:
         """
         return repr(element)
 
-    @keyword("Get Text")
+    @keyword("Get Text", tags=["Element", "Getter"])
     def get_text(
         self,
         *locators: Locator,
@@ -199,7 +199,7 @@ class InteractionKeywords:
         logger.info(f"Reading text from element '{format_locators(targets)}'.")
         return assert_value(element.text(), op, expected, "Text", message)
 
-    @keyword("Get Inner Text")
+    @keyword("Get Inner Text", tags=["Element", "Getter"])
     def get_inner_text(
         self,
         *locators: Locator,
@@ -234,7 +234,7 @@ class InteractionKeywords:
         logger.info(f"Reading inner text from element '{format_locators(targets)}'.")
         return assert_value(element.inner_text(), op, expected, "Inner Text", message)
 
-    @keyword("Get Value")
+    @keyword("Get Value", tags=["Element", "Getter"])
     def get_value(
         self,
         *locators: Locator,
@@ -269,7 +269,7 @@ class InteractionKeywords:
         logger.info(f"Reading value from element '{format_locators(targets)}'.")
         return assert_value(element.value(), op, expected, "Value", message)
 
-    @keyword("Get Attribute")
+    @keyword("Get Attribute", tags=["Element", "Getter"])
     def get_attribute(
         self,
         name: str,
@@ -313,7 +313,7 @@ class InteractionKeywords:
             element.attr(name), op, expected, f"Attribute '{name}'", message
         )
 
-    @keyword("Get Bounds")
+    @keyword("Get Bounds", tags=["Element", "Getter"])
     def get_bounds(
         self,
         *locators: Locator,
@@ -348,7 +348,7 @@ class InteractionKeywords:
         logger.info(f"Reading bounds from element '{format_locators(targets)}'.")
         return assert_value(element.bounds(), op, expected, "Bounds", message)
 
-    @keyword("Element Is Visible")
+    @keyword("Element Is Visible", tags=["Element", "Getter"])
     def element_is_visible(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> bool:
@@ -366,7 +366,7 @@ class InteractionKeywords:
         logger.info(f"Checking visibility of element '{format_locators(locators)}'.")
         return element.is_visible()
 
-    @keyword("Element Is Hidden")
+    @keyword("Element Is Hidden", tags=["Element", "Getter"])
     def element_is_hidden(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> bool:
@@ -384,7 +384,7 @@ class InteractionKeywords:
         logger.info(f"Checking hidden state of element '{format_locators(locators)}'.")
         return element.is_hidden()
 
-    @keyword("Element Is Enabled")
+    @keyword("Element Is Enabled", tags=["Element", "Getter"])
     def element_is_enabled(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> bool:
@@ -402,7 +402,7 @@ class InteractionKeywords:
         logger.info(f"Checking enabled state of element '{format_locators(locators)}'.")
         return element.is_enabled()
 
-    @keyword("Element Is Checked")
+    @keyword("Element Is Checked", tags=["Element", "Getter"])
     def element_is_checked(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> bool:
@@ -420,7 +420,7 @@ class InteractionKeywords:
         logger.info(f"Checking checked state of element '{format_locators(locators)}'.")
         return element.is_checked()
 
-    @keyword("Element Is Editable")
+    @keyword("Element Is Editable", tags=["Element", "Getter"])
     def element_is_editable(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> bool:
@@ -440,7 +440,7 @@ class InteractionKeywords:
         )
         return element.is_editable()
 
-    @keyword("Get Role")
+    @keyword("Get Role", tags=["Element", "Getter"])
     def get_role(
         self,
         *locators: Locator,
@@ -475,7 +475,7 @@ class InteractionKeywords:
         logger.info(f"Reading role of element '{format_locators(targets)}'.")
         return assert_value(element.role(), op, expected, "Role", message)
 
-    @keyword("Get Label")
+    @keyword("Get Label", tags=["Element", "Getter"])
     def get_label(
         self,
         *locators: Locator,
@@ -510,7 +510,7 @@ class InteractionKeywords:
         logger.info(f"Reading label of element '{format_locators(targets)}'.")
         return assert_value(element.label(), op, expected, "Label", message)
 
-    @keyword("Get Element States")
+    @keyword("Get Element States", tags=["Element", "Getter"])
     def get_element_states(
         self,
         *locators: Locator,
@@ -573,7 +573,7 @@ class InteractionKeywords:
             pass
         return assert_list(states, op, expected, "Element states", message)
 
-    @keyword("Fill Text")
+    @keyword("Fill Text", tags=["Element", "Action"])
     def fill_text(
         self,
         *locators: Locator,
@@ -611,7 +611,7 @@ class InteractionKeywords:
         )
         element.fill(final_value, timeout=timeout_ms)
 
-    @keyword("Press Keys")
+    @keyword("Press Keys", tags=["Element", "Action"])
     def press_keys(
         self,
         key: str,
@@ -640,7 +640,7 @@ class InteractionKeywords:
         logger.info(f"Pressing key '{key}' on element '{format_locators(locators)}'.")
         element.press(key, timeout=timeout_ms)
 
-    @keyword("Double Click")
+    @keyword("Double Click", tags=["Element", "Action"])
     def double_click(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -658,7 +658,7 @@ class InteractionKeywords:
         logger.info(f"Double-clicking element '{format_locators(locators)}'.")
         element.dblclick(timeout=timeout_ms)
 
-    @keyword("Hover")
+    @keyword("Hover", tags=["Element", "Action"])
     def hover(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -676,7 +676,7 @@ class InteractionKeywords:
         logger.info(f"Hovering element '{format_locators(locators)}'.")
         element.hover(timeout=timeout_ms)
 
-    @keyword("Tap")
+    @keyword("Tap", tags=["Element", "Action"])
     def tap(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -699,7 +699,7 @@ class InteractionKeywords:
         logger.info(f"Tapping element '{format_locators(locators)}'.")
         element.tap(timeout=timeout_ms)
 
-    @keyword("Highlight")
+    @keyword("Highlight", tags=["Element", "Action"])
     def highlight(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -722,7 +722,7 @@ class InteractionKeywords:
         logger.info(f"Highlighting element '{format_locators(locators)}'.")
         element.highlight(timeout=timeout_ms)
 
-    @keyword("Focus")
+    @keyword("Focus", tags=["Element", "Action"])
     def focus(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -740,7 +740,7 @@ class InteractionKeywords:
         logger.info(f"Focusing element '{format_locators(locators)}'.")
         element.focus(timeout=timeout_ms)
 
-    @keyword("Clear Text")
+    @keyword("Clear Text", tags=["Element", "Action"])
     def clear_text(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -758,7 +758,7 @@ class InteractionKeywords:
         logger.info(f"Clearing element '{format_locators(locators)}'.")
         element.clear(timeout=timeout_ms)
 
-    @keyword("Type Text")
+    @keyword("Type Text", tags=["Element", "Action"])
     def type_text(
         self,
         *locators: Locator,
@@ -793,7 +793,7 @@ class InteractionKeywords:
         )
         element.type(final_text, timeout=timeout_ms)
 
-    @keyword("Select Option")
+    @keyword("Select Option", tags=["Element", "Action"])
     def select_option(
         self,
         *locators: Locator,
@@ -825,7 +825,7 @@ class InteractionKeywords:
         )
         element.select_option(option_value, timeout=timeout_ms)
 
-    @keyword("Check")
+    @keyword("Check", tags=["Element", "Action"])
     def check(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -843,7 +843,7 @@ class InteractionKeywords:
         logger.info(f"Checking element '{format_locators(locators)}'.")
         element.check(timeout=timeout_ms)
 
-    @keyword("Uncheck")
+    @keyword("Uncheck", tags=["Element", "Action"])
     def uncheck(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -861,7 +861,7 @@ class InteractionKeywords:
         logger.info(f"Unchecking element '{format_locators(locators)}'.")
         element.uncheck(timeout=timeout_ms)
 
-    @keyword("Scroll Into View")
+    @keyword("Scroll Into View", tags=["Element", "Action"])
     def scroll_into_view(
         self, *locators: Locator, scope: FindScope = None, timeout: str | None = None
     ) -> None:
@@ -879,7 +879,7 @@ class InteractionKeywords:
         logger.info(f"Scrolling element into view '{format_locators(locators)}'.")
         element.scroll_into_view(timeout=timeout_ms)
 
-    @keyword("Scroll")
+    @keyword("Scroll", tags=["Page", "Action"])
     def scroll(
         self,
         direction: str = "down",
@@ -914,7 +914,7 @@ class InteractionKeywords:
             logger.info(f"Scrolling direction='{direction}' amount={amount}.")
         page.scroll(direction=direction, amount=amount, selector=selector)
 
-    @keyword("Dispatch Event")
+    @keyword("Dispatch Event", tags=["Element", "Action"])
     def dispatch_event(
         self,
         *locators: Locator,
@@ -946,7 +946,7 @@ class InteractionKeywords:
         )
         element.dispatch_event(event, init_payload, timeout=timeout_ms)
 
-    @keyword("Upload Files")
+    @keyword("Upload Files", tags=["Element", "Action"])
     def upload_files(
         self,
         *locators: Locator,
@@ -980,7 +980,7 @@ class InteractionKeywords:
         )
         element.set_files(file_paths, timeout=timeout_ms)
 
-    @keyword("Drag And Drop")
+    @keyword("Drag And Drop", tags=["Element", "Action"])
     def drag_and_drop(
         self,
         source: object,

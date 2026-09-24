@@ -52,7 +52,7 @@ class WaitKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Wait For Text")
+    @keyword("Wait For Text", tags=["Page", "Wait"])
     def wait_for_text(self, text: str, timeout: str = "10s") -> None:
         """Wait until text appears in the visible page body.
 
@@ -74,7 +74,7 @@ class WaitKeywords:
             timeout=timeout_ms,
         )
 
-    @keyword("Wait For Load State")
+    @keyword("Wait For Load State", tags=["Page", "Wait"])
     def wait_for_load_state(self, state: str = "loading", timeout: str = "10s") -> None:
         """Wait until the page reaches a load state (delegates to Vibium).
 
@@ -94,7 +94,7 @@ class WaitKeywords:
         logger.info(f"Waiting for load state '{state}' (timeout={timeout}).")
         page.wait_for_load(state=state, timeout=timeout_ms)
 
-    @keyword("Wait For Element")
+    @keyword("Wait For Element", tags=["Element", "Wait"])
     def wait_for_element(
         self,
         *locators: Locator,
@@ -134,7 +134,7 @@ class WaitKeywords:
         )
         element.wait_until(state=normalized, timeout=timeout_ms)
 
-    @keyword("Wait For Url")
+    @keyword("Wait For Url", tags=["Page", "Wait"])
     def wait_for_url(self, pattern: str, timeout: str = "10s") -> None:
         """Wait until page URL matches the provided pattern fragment.
 
@@ -150,7 +150,7 @@ class WaitKeywords:
         logger.info(f"Waiting for URL to contain '{pattern}' (timeout={timeout}).")
         page.wait_for_url(pattern, timeout=timeout_ms)
 
-    @keyword("Wait For Function")
+    @keyword("Wait For Function", tags=["Page", "Wait"])
     def wait_for_function(self, expression: str, timeout: str = "10s") -> None:
         """Wait until a JavaScript expression evaluates to truthy.
 
@@ -172,7 +172,7 @@ class WaitKeywords:
         logger.info(f"Waiting for JS condition (timeout={timeout}).")
         page.wait_for_function(stripped, timeout=timeout_ms)
 
-    @keyword("Page Wait")
+    @keyword("Page Wait", tags=["Page", "Wait"])
     def page_wait(self, milliseconds: object) -> None:
         """Sleep for a fixed number of milliseconds on the active page.
 
@@ -196,7 +196,7 @@ class WaitKeywords:
         logger.info(f"Page wait {ms} ms.")
         page.wait(ms)
 
-    @keyword("Sleep Milliseconds")
+    @keyword("Sleep Milliseconds", tags=["Page", "Wait"])
     def sleep_milliseconds(self, milliseconds: object) -> None:
         """Alias of ``Page Wait``.
 

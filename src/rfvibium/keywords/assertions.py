@@ -28,7 +28,7 @@ class AssertionKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Get Url")
+    @keyword("Get Url", tags=["Page", "Getter"])
     def get_url(
         self,
         assertion_operator: AssertionOperator | None = None,
@@ -57,7 +57,7 @@ class AssertionKeywords:
             page.url(), assertion_operator, assertion_expected, "URL", message
         )
 
-    @keyword("Get Title")
+    @keyword("Get Title", tags=["Page", "Getter"])
     def get_title(
         self,
         assertion_operator: AssertionOperator | None = None,
@@ -90,7 +90,7 @@ class AssertionKeywords:
             page.title(), assertion_operator, assertion_expected, "Title", message
         )
 
-    @keyword("Get Page Text")
+    @keyword("Get Page Text", tags=["Page", "Getter"])
     def get_page_text(
         self,
         assertion_operator: AssertionOperator | None = None,
@@ -120,7 +120,7 @@ class AssertionKeywords:
             value, assertion_operator, assertion_expected, "Page Text", message
         )
 
-    @keyword("Get Html")
+    @keyword("Get Html", tags=["Page", "Getter"])
     def get_html(
         self,
         *locators: Locator,
@@ -182,7 +182,7 @@ class AssertionKeywords:
         logger.info(f"Reading HTML from element '{format_locators(targets)}'.")
         return assert_value(element.html(), op, expected, "HTML", message)
 
-    @keyword("Find Elements")
+    @keyword("Find Elements", tags=["Page", "Getter"])
     def find_elements(
         self,
         *locators: Locator,
@@ -228,7 +228,7 @@ class AssertionKeywords:
             elements = elements[:limit]
         return list(elements)
 
-    @keyword("Count Elements")
+    @keyword("Count Elements", tags=["Page", "Getter"])
     def count_elements(
         self,
         *locators: Locator,
@@ -274,7 +274,7 @@ class AssertionKeywords:
             return count
         return assert_value(count, op, coerce_int(expected), "Element count", message)
 
-    @keyword("Evaluate JavaScript")
+    @keyword("Evaluate JavaScript", tags=["Page", "Action"])
     def evaluate_javascript(self, expression: str, scope: FindScope = None):
         """Evaluate JavaScript in the resolved scope and return its result.
 
@@ -292,7 +292,7 @@ class AssertionKeywords:
         logger.info("Evaluating JavaScript expression.")
         return page.evaluate(expression)
 
-    @keyword("Get Accessibility Tree")
+    @keyword("Get Accessibility Tree", tags=["Page", "Getter"])
     def get_accessibility_tree(
         self, everything: bool = False, scope: FindScope = None
     ) -> str:

@@ -15,7 +15,7 @@ class NavigationKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Go To")
+    @keyword("Go To", tags=["Page", "Action"])
     def go_to(self, url: str) -> None:
         """Navigate the active page to the given URL.
 
@@ -29,7 +29,7 @@ class NavigationKeywords:
         logger.info(f"Navigating to '{url}'.")
         page.go(url)
 
-    @keyword("Go Back")
+    @keyword("Go Back", tags=["Page", "Action"])
     def go_back(self, scope: PageScope = None) -> None:
         """Go one step back in history for the resolved scope.
 
@@ -40,7 +40,7 @@ class NavigationKeywords:
         logger.info("Navigating one entry back in history.")
         page.back()
 
-    @keyword("Go Forward")
+    @keyword("Go Forward", tags=["Page", "Action"])
     def go_forward(self, scope: PageScope = None) -> None:
         """Go one step forward in history for the resolved scope.
 
@@ -51,7 +51,7 @@ class NavigationKeywords:
         logger.info("Navigating one entry forward in history.")
         page.forward()
 
-    @keyword("Reload")
+    @keyword("Reload", tags=["Page", "Action"])
     def reload(self, scope: PageScope = None) -> None:
         """Reload the resolved scope.
 
@@ -62,7 +62,7 @@ class NavigationKeywords:
         logger.info("Reloading page.")
         page.reload()
 
-    @keyword("List Pages")
+    @keyword("List Pages", tags=["Browser", "Getter"])
     def list_pages(self, browser: Browser | None = None) -> list[str]:
         """List open browser pages as ``index: url`` strings.
 
@@ -88,7 +88,7 @@ class NavigationKeywords:
         logger.info(f"Listed {len(result)} open page(s).")
         return result
 
-    @keyword("New Page")
+    @keyword("New Page", tags=["Browser", "Action"])
     def new_page(
         self,
         url: str = "",
@@ -120,7 +120,7 @@ class NavigationKeywords:
             logger.info("Opening new page.")
         return page.url()
 
-    @keyword("Switch Page")
+    @keyword("Switch Page", tags=["Page", "Action"])
     def switch_page(self, page: Page | None = None) -> None:
         """Bring the given page to the foreground.
 
@@ -138,7 +138,7 @@ class NavigationKeywords:
         self.library._session.set_active_page(target)
         logger.info("Brought page to front and updated active page.")
 
-    @keyword("Close Page")
+    @keyword("Close Page", tags=["Page", "Action"])
     def close_page(self, scope: PageScope = None) -> None:
         """Close the resolved page scope.
 
@@ -158,7 +158,7 @@ class NavigationKeywords:
         self.library._session.close_page(page)
         logger.info(f"Closed page '{url}'.")
 
-    @keyword("Get Active Page")
+    @keyword("Get Active Page", tags=["Browser", "Getter"])
     def get_active_page(self, browser: Browser | None = None) -> Page:
         """Return the current active page scope object.
 
@@ -175,7 +175,7 @@ class NavigationKeywords:
         logger.info("Returning active scope object.")
         return scope
 
-    @keyword("Get Frame")
+    @keyword("Get Frame", tags=["Page", "Getter"])
     def get_frame(self, name_or_url: str, scope: PageScope = None) -> Page:
         """Return a child frame from the resolved scope by name or URL fragment.
 
@@ -200,7 +200,7 @@ class NavigationKeywords:
         logger.info(f"Resolved frame '{frame.url()}' from provided scope.")
         return frame
 
-    @keyword("List Frames")
+    @keyword("List Frames", tags=["Page", "Getter"])
     def list_frames(
         self,
         scope: PageScope = None,
@@ -238,7 +238,7 @@ class NavigationKeywords:
     def _require_browser(self, browser: Browser | None = None):
         return self.library._session.resolve_browser(browser)
 
-    @keyword("New Context")
+    @keyword("New Context", tags=["BrowserContext", "Action"])
     def new_context(self, browser: Browser | None = None) -> BrowserContext:
         """Create a new browser context and make it active.
 
@@ -249,14 +249,14 @@ class NavigationKeywords:
         logger.info("Created new browser context.")
         return context
 
-    @keyword("Get Active Context")
+    @keyword("Get Active Context", tags=["BrowserContext", "Getter"])
     def get_active_context(self, browser: Browser | None = None) -> BrowserContext:
         """Return the active context for selected browser."""
         context = self.library._session.get_active_context(browser=browser)
         logger.info("Returning active context object.")
         return context
 
-    @keyword("List Contexts")
+    @keyword("List Contexts", tags=["BrowserContext", "Getter"])
     def list_contexts(self, browser: Browser | None = None) -> list[str]:
         """List known contexts for selected browser."""
         contexts = self.library._session.contexts(browser=browser)
@@ -270,7 +270,7 @@ class NavigationKeywords:
         logger.info(f"Listed {len(result)} context(s).")
         return result
 
-    @keyword("Switch Context")
+    @keyword("Switch Context", tags=["BrowserContext", "Action"])
     def switch_context(
         self, context: BrowserContext, browser: Browser | None = None
     ) -> None:
@@ -278,7 +278,7 @@ class NavigationKeywords:
         self.library._session.switch_context(context=context, browser=browser)
         logger.info("Switched active context.")
 
-    @keyword("Close Context")
+    @keyword("Close Context", tags=["BrowserContext", "Action"])
     def close_context(
         self, context: BrowserContext | None = None, browser: Browser | None = None
     ) -> None:

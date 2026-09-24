@@ -55,7 +55,7 @@ class MouseKeywords:
                 "Use `button=0` (or omit it)."
             )
 
-    @keyword("Mouse Click")
+    @keyword("Mouse Click", tags=["Mouse", "Action"])
     def mouse_click(
         self,
         x: int | float | str | None = None,
@@ -90,7 +90,7 @@ class MouseKeywords:
         logger.info(f"Mouse click at ({xf}, {yf}) (button={btn}).")
         page.mouse.click(xf, yf)
 
-    @keyword("Mouse Move")
+    @keyword("Mouse Move", tags=["Mouse", "Action"])
     def mouse_move(self, x: int | float | str, y: int | float | str) -> None:
         """Move mouse pointer to ``(x, y)`` viewport coordinates.
 
@@ -110,7 +110,7 @@ class MouseKeywords:
         logger.info(f"Mouse move to ({xf}, {yf}).")
         page.mouse.move(xf, yf)
 
-    @keyword("Mouse Down")
+    @keyword("Mouse Down", tags=["Mouse", "Action"])
     def mouse_down(self, button: int | str = 0) -> None:
         """Press mouse button down.
 
@@ -134,7 +134,7 @@ class MouseKeywords:
         logger.info("Mouse button down (left).")
         page.mouse.down()
 
-    @keyword("Mouse Up")
+    @keyword("Mouse Up", tags=["Mouse", "Action"])
     def mouse_up(self, button: int | str = 0) -> None:
         """Release mouse button.
 
@@ -158,7 +158,7 @@ class MouseKeywords:
         logger.info("Mouse button up (left).")
         page.mouse.up()
 
-    @keyword("Mouse Wheel")
+    @keyword("Mouse Wheel", tags=["Mouse", "Action"])
     def mouse_wheel(
         self,
         delta_x: int | float | str = 0,

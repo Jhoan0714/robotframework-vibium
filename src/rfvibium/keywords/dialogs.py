@@ -12,7 +12,7 @@ class DialogKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Dialog Accept")
+    @keyword("Dialog Accept", tags=["Dialog", "Action"])
     def dialog_accept(self, text: str = "") -> None:
         """Configure the next browser dialog to be accepted.
 
@@ -38,7 +38,7 @@ class DialogKeywords:
 
         page.on_dialog(_accept_with_text)
 
-    @keyword("Dialog Dismiss")
+    @keyword("Dialog Dismiss", tags=["Dialog", "Action"])
     def dialog_dismiss(self) -> None:
         """Configure the next browser dialog to be dismissed.
 

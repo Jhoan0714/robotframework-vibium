@@ -64,7 +64,7 @@ class CaptureKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Take Screenshot")
+    @keyword("Take Screenshot", tags=["Page", "Action"])
     def take_screenshot(
         self,
         *locators: Locator,
@@ -176,7 +176,7 @@ class CaptureKeywords:
 
         raise ScreenshotError(f"Unable to take screenshot: {last_exc}") from last_exc
 
-    @keyword("Save Page As Pdf")
+    @keyword("Save Page As Pdf", tags=["Page", "Action"])
     def save_page_as_pdf(
         self,
         output_path: str | None = None,

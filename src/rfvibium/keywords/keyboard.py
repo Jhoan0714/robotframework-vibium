@@ -32,7 +32,7 @@ class KeyboardKeywords:
             )
         return normalized
 
-    @keyword("Keyboard Type")
+    @keyword("Keyboard Type", tags=["Keyboard", "Action"])
     def keyboard_type(self, text: str, scope: PageScope = None) -> None:
         """Type ``text`` character by character via the page keyboard.
 
@@ -52,7 +52,7 @@ class KeyboardKeywords:
         logger.info(f"Keyboard type {display!r}.")
         page.keyboard.type(text)
 
-    @keyword("Keyboard Key")
+    @keyword("Keyboard Key", tags=["Keyboard", "Action"])
     def keyboard_key(self, action: str, key: str, scope: PageScope = None) -> None:
         """Send a page-level key action (``down``, ``up``, or ``press``).
 
