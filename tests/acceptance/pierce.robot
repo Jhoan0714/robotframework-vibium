@@ -24,6 +24,12 @@ Get Text Via Deep Pierce
     ${text}=    Get Text    outer-host >>> #deep
     Should Be Equal    ${text}    nested shadow
 
+Get Text Via Chained Pierce
+    [Documentation]    Chains two single-hop ``>>`` combinators (host >> nested-host >> target).
+    [Tags]    acceptance    pierce
+    ${text}=    Get Text    outer-host >> inner-host >> #deep
+    Should Be Equal    ${text}    nested shadow
+
 Plain Css Selector Does Not Reach Shadow Content
     [Documentation]    Shadow-only ids are not visible to light-DOM ``css:`` selectors; pierce is required.
     [Tags]    acceptance    pierce    negative
