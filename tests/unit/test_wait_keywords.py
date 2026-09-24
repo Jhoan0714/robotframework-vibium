@@ -2,10 +2,10 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from vibium import Element
 
 from rfvibium.errors import LocatorSyntaxError, VibiumLibraryError
 from rfvibium.keywords.waits import WaitKeywords
-from vibium import Element
 
 
 class DummyElement:
