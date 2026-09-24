@@ -25,7 +25,7 @@ class EmulationKeywords:
                 f"{name} must be an integer, got {value!r}."
             ) from exc
 
-    @keyword("Set Viewport Size")
+    @keyword("Set Viewport Size", tags=["Page", "Action"])
     def set_viewport_size(
         self,
         width: int | str,
@@ -47,7 +47,7 @@ class EmulationKeywords:
         logger.info(f"Setting viewport size to {w}x{h}.")
         page.set_viewport(size)
 
-    @keyword("Get Viewport Size")
+    @keyword("Get Viewport Size", tags=["Page", "Getter"])
     def get_viewport_size(self) -> dict[str, Any]:
         """Return the active page viewport size.
 
@@ -63,7 +63,7 @@ class EmulationKeywords:
         logger.info(f"Viewport size is {size.get('width')}x{size.get('height')}.")
         return dict(size)
 
-    @keyword("Set Window")
+    @keyword("Set Window", tags=["Page", "Action"])
     def set_window(
         self,
         width: int | str | None = None,
@@ -111,7 +111,7 @@ class EmulationKeywords:
         logger.info(f"Setting window {options}.")
         page.set_window(**options)
 
-    @keyword("Get Window Info")
+    @keyword("Get Window Info", tags=["Page", "Getter"])
     def get_window_info(self) -> dict[str, Any]:
         """Return the OS browser window size, position, and state.
 
