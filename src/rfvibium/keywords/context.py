@@ -9,6 +9,7 @@ from typing import Any
 from robot.api import logger
 from robot.api.deco import keyword
 
+from ..types import BrowserContext
 from .capture import _path_for_log, _resolve_capture_path
 
 DEFAULT_STORAGE_PATTERN = "vibium-storage-{index}.json"
@@ -21,7 +22,9 @@ class CookieKeywords:
         self.library = library
 
     @keyword("List Cookies")
-    def list_cookies(self, context: object = None) -> list[dict[str, Any]]:
+    def list_cookies(
+        self, context: BrowserContext | None = None
+    ) -> list[dict[str, Any]]:
         """Return all cookies from the active browser context.
 
         | =Argument= | =Description= |
@@ -50,7 +53,7 @@ class CookieKeywords:
         secure: bool = False,
         same_site: str = "",
         expiry: int | None = None,
-        context: object = None,
+        context: BrowserContext | None = None,
     ) -> None:
         """Create or update a cookie in the active browser context.
 
@@ -95,7 +98,7 @@ class CookieKeywords:
         ctx.set_cookies([cookie])
 
     @keyword("Clear Cookies")
-    def clear_cookies(self, context: object = None) -> None:
+    def clear_cookies(self, context: BrowserContext | None = None) -> None:
         """Remove all cookies from the active browser context.
 
         | =Argument= | =Description= |
@@ -120,7 +123,7 @@ class StorageKeywords:
         self,
         output_path: str | None = None,
         embed: bool = True,
-        context: object = None,
+        context: BrowserContext | None = None,
     ) -> str:
         """Export cookies and storage data to a JSON file.
 
@@ -153,7 +156,9 @@ class StorageKeywords:
         return str(path)
 
     @keyword("Restore Storage State")
-    def restore_storage_state(self, path: str, context: object = None) -> None:
+    def restore_storage_state(
+        self, path: str, context: BrowserContext | None = None
+    ) -> None:
         """Restore cookies and storage data from a JSON state file.
 
         | =Argument= | =Description= |
@@ -172,7 +177,7 @@ class StorageKeywords:
         ctx.set_storage(state)
 
     @keyword("Clear Storage")
-    def clear_storage(self, context: object = None) -> None:
+    def clear_storage(self, context: BrowserContext | None = None) -> None:
         """Clear cookies and origin storage for the active browser context.
 
         | =Argument= | =Description= |

@@ -27,6 +27,7 @@ from typing import Any
 from vibium import Element
 
 from ..errors import LocatorSyntaxError
+from ..types import FindScope, Locator
 
 SEMANTIC_PREFIXES = (
     "xpath",
@@ -235,8 +236,8 @@ def is_element_handle(obj: Any) -> bool:
 
 
 def resolve_element(
-    session: Any, *targets: Any, scope: Any = None, timeout: int | None = None
-) -> Any:
+    session: Any, *targets: Locator, scope: FindScope = None, timeout: int | None = None
+) -> Element:
     """Resolve an action/getter target to a Vibium ``Element``.
 
     Supported shapes:

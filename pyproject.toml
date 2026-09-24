@@ -107,7 +107,7 @@ ignore_missing_imports = true
 [tool.coverage.run]
 source = ["rfvibium"]
 omit = [
-  "*/rfvibium/types.py",  # typing aliases only; not executed at runtime
+  "*/rfvibium/types.py",
 ]
 
 [tool.coverage.report]
