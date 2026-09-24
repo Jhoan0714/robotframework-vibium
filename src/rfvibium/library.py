@@ -146,6 +146,24 @@ class Vibium(DynamicCore):
     Read/assertion-oriented keywords provide page and element state retrieval,
     such as URL, title, page HTML, element counting, and JavaScript evaluation.
 
+    == Inline assertions (AssertionEngine) ==
+
+    Getter keywords optionally accept AssertionEngine operators so you can
+    read and validate in one step:
+
+    | Get Text     css:h1    ==    Welcome
+    | Get Title    ==    Home
+    | Count Elements    css:p    ==    ${2}
+
+    Without an operator the getter only returns the value (previous behavior).
+    For element getters, a trailing operator + expected may follow locator
+    tokens; named ``assertion_operator`` / ``assertion_expected`` override peel.
+    ``scope=``, ``timeout=``, and ``message=`` are always named arguments.
+    ``Element Is Visible`` and related keywords remain available; use
+    ``Get Element States`` for a combined state list.
+
+    See also: [https://github.com/MarketSquare/AssertionEngine|AssertionEngine].
+
     = Timeouts, Waits and Delays =
 
     Wait keywords provide explicit synchronization:
