@@ -1,6 +1,6 @@
 """AssertionEngine helpers for getter keywords.
 
-Design (issue #18):
+Design:
 
 - Prefer explicit ``assertion_operator=`` / ``assertion_expected=`` kwargs.
 - Otherwise peel from the end of positional ``*locators``: if the penultimate
