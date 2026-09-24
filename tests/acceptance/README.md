@@ -20,7 +20,7 @@ Acceptance tests validate the public Robot Framework keywords end-to-end.
 - `keyboard.robot`: ``Keyboard Type``, ``Keyboard Key``, and element ``Press Keys``.
 - `emulation.robot`: viewport and OS window size keywords.
 - `dialogs.robot`: browser dialog handling flows.
-- `assertions.robot`: read-only getters (`Evaluate JavaScript`, `Get Title`, `Count Elements`).
+- `assertions.robot`: read-only getters and AssertionEngine inline asserts (`Get Title`, `Get Text`, `Count Elements`, `Get Element States`).
 - `multi_browser.robot`: two `Open Browser` instances with scoped URL reads (Chrome+Chrome and Chrome+Firefox; Firefox needs `vibium install --engine firefox`).
 - `connect.robot`: ``Open Browser    url=...`` remote BiDi connect (``no-ci``; needs ``VIBIUM_CONNECT_URL``).
 
