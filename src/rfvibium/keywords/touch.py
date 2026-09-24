@@ -14,7 +14,7 @@ class TouchKeywords:
     def __init__(self, library):
         self.library = library
 
-    @keyword("Touch Tap")
+    @keyword("Touch Tap", tags=["Touch", "Action"])
     def touch_tap(
         self,
         x: int | float | str | None = None,
