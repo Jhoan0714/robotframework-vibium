@@ -28,9 +28,15 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from assertionengine import AssertionOperator
 from robot.api import logger
 from robot.api.deco import keyword
 
+from ..assertion_support import (
+    assert_list,
+    assert_value,
+    split_locators_and_assertion,
+)
 from ..errors import LocatorSyntaxError
 from ..locator import (
     format_locators,
@@ -148,107 +154,198 @@ class InteractionKeywords:
 
     @keyword("Get Text")
     def get_text(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ) -> str:
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return ``element.text()`` for a matched element or element handle.
 
+        Optionally asserts with AssertionEngine. Positional ``== expected`` (and
+        other operators) may trail locator tokens; named ``assertion_operator`` /
+        ``assertion_expected`` win over peel. ``scope`` / ``timeout`` / ``message``
+        must be named.
+
         | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator (e.g. ``==``, ``contains``). |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
 
         Returns:
-            str: Element text.
+            Element text (or AssertionEngine result for ``then`` / ``matches`` groups).
 
         Example:
             | ${text}=    Get Text    css:h1
+            | Get Text    css:h1    ==    Welcome
             | ${btn}=     Find Element    css:button
             | ${text}=    Get Text    ${btn}
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
-        logger.info(f"Reading text from element '{format_locators(locators)}'.")
-        return element.text()
+        logger.info(f"Reading text from element '{format_locators(targets)}'.")
+        return assert_value(element.text(), op, expected, "Text", message)
 
     @keyword("Get Inner Text")
     def get_inner_text(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ) -> str:
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return ``element.inner_text()`` for the matched element.
 
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``).
+
         | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
-        logger.info(f"Reading inner text from element '{format_locators(locators)}'.")
-        return element.inner_text()
+        logger.info(f"Reading inner text from element '{format_locators(targets)}'.")
+        return assert_value(element.inner_text(), op, expected, "Inner Text", message)
 
     @keyword("Get Value")
     def get_value(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ) -> str:
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return ``element.value()`` for the matched element.
 
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``).
+
         | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
-        logger.info(f"Reading value from element '{format_locators(locators)}'.")
-        return element.value()
+        logger.info(f"Reading value from element '{format_locators(targets)}'.")
+        return assert_value(element.value(), op, expected, "Value", message)
 
     @keyword("Get Attribute")
     def get_attribute(
-        self, name: str, *locators, scope: object = None, timeout: str | None = None
-    ) -> str | None:
+        self,
+        name: str,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return an attribute value from the matched element.
+
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``).
 
         | =Argument= | =Description= |
         | ``name`` | Attribute name to read. |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
 
         Returns:
-            str | None: Attribute value or ``None`` when attribute is absent.
+            Attribute value or ``None`` when attribute is absent (or AssertionEngine result).
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
         logger.info(
-            f"Reading attribute '{name}' from element '{format_locators(locators)}'."
+            f"Reading attribute '{name}' from element '{format_locators(targets)}'."
         )
-        return element.attr(name)
+        return assert_value(
+            element.attr(name), op, expected, f"Attribute '{name}'", message
+        )
 
     @keyword("Get Bounds")
     def get_bounds(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ) -> object:
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return ``element.bounds()`` for the matched element.
 
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``).
+
         | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
-        logger.info(f"Reading bounds from element '{format_locators(locators)}'.")
-        return element.bounds()
+        logger.info(f"Reading bounds from element '{format_locators(targets)}'.")
+        return assert_value(element.bounds(), op, expected, "Bounds", message)
 
     @keyword("Element Is Visible")
     def element_is_visible(
@@ -344,39 +441,136 @@ class InteractionKeywords:
 
     @keyword("Get Role")
     def get_role(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ) -> str:
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return semantic role for the matched element.
 
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``).
+
         | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
-        logger.info(f"Reading role of element '{format_locators(locators)}'.")
-        return element.role()
+        logger.info(f"Reading role of element '{format_locators(targets)}'.")
+        return assert_value(element.role(), op, expected, "Role", message)
 
     @keyword("Get Label")
     def get_label(
-        self, *locators, scope: object = None, timeout: str | None = None
-    ) -> str:
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
         """Return accessible label for the matched element.
 
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``).
+
         | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected value when asserting. |
+        | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
         """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
-            self.library._session, *locators, scope=scope, timeout=timeout_ms
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
         )
-        logger.info(f"Reading label of element '{format_locators(locators)}'.")
-        return element.label()
+        logger.info(f"Reading label of element '{format_locators(targets)}'.")
+        return assert_value(element.label(), op, expected, "Label", message)
+
+    @keyword("Get Element States")
+    def get_element_states(
+        self,
+        *locators,
+        assertion_operator: AssertionOperator | None = None,
+        assertion_expected: Any = None,
+        message: str | None = None,
+        scope: object = None,
+        timeout: str | None = None,
+    ) -> Any:
+        """Return active states for the matched element as a list of names.
+
+        States are derived from the same Vibium checks as ``Element Is Visible``,
+        ``Element Is Hidden``, ``Element Is Enabled``, ``Element Is Checked``, and
+        ``Element Is Editable``. Those keywords remain available; this getter is
+        additive.
+
+        Optionally asserts with AssertionEngine (same peel / kwargs rules as
+        ``Get Text``). For list operators such as ``contains`` / ``*=``, the
+        expected value may be a single state name or a list.
+
+        | =Argument= | =Description= |
+        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
+        | ``assertion_operator`` | Optional AssertionEngine operator. |
+        | ``assertion_expected`` | Expected state name or list of names. |
+        | ``message`` | Optional custom assertion failure message. |
+        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find``. |
+
+        Example:
+            | @{states}=    Get Element States    css:button
+            | Get Element States    css:button    *=    visible
+        """
+        targets, op, expected = split_locators_and_assertion(
+            *locators,
+            assertion_operator=assertion_operator,
+            assertion_expected=assertion_expected,
+        )
+        timeout_ms = optional_timeout_ms(timeout, library=self.library)
+        element = resolve_element(
+            self.library._session, *targets, scope=scope, timeout=timeout_ms
+        )
+        logger.info(f"Reading states of element '{format_locators(targets)}'.")
+        states: list[str] = []
+        if element.is_visible():
+            states.append("visible")
+        if element.is_hidden():
+            states.append("hidden")
+        if element.is_enabled():
+            states.append("enabled")
+        try:
+            if element.is_checked():
+                states.append("checked")
+        except Exception:
+            # Vibium raises when the element is not a checkbox/radio.
+            pass
+        try:
+            if element.is_editable():
+                states.append("editable")
+        except Exception:
+            pass
+        return assert_list(states, op, expected, "Element states", message)
 
     @keyword("Fill Text")
     def fill_text(

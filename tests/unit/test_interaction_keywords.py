@@ -567,6 +567,46 @@ def test_get_text_with_element_handle_skips_find() -> None:
     assert page.last_args is None
 
 
+def test_get_text_peels_inline_assertion() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    result = kw.get_text("css:#title", "==", "ELEMENT TEXT")
+
+    assert result == "ELEMENT TEXT"
+    assert page.last_args == ("#title",)
+    assert page.last_kwargs == {}
+
+
+def test_get_text_inline_assertion_failure() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    with pytest.raises(AssertionError):
+        kw.get_text("css:#title", "==", "wrong")
+
+
+def test_get_element_states_returns_active_names() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    states = kw.get_element_states("css:button")
+
+    assert states == ["visible", "enabled", "editable"]
+    assert page.last_args == ("button",)
+
+
+def test_get_element_states_equal_assertion() -> None:
+    page = DummyPage()
+    kw = TestableInteraction(page)
+
+    states = kw.get_element_states(
+        "css:button", "==", ["visible", "enabled", "editable"]
+    )
+
+    assert set(states) == {"visible", "enabled", "editable"}
+
+
 def test_double_click_with_element_handle_skips_find() -> None:
     page = DummyPage()
     kw = TestableInteraction(page)

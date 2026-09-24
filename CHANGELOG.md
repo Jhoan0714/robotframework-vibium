@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Inline assertions on getters via ``robotframework-assertion-engine`` (#18):
+  optional ``assertion_operator`` / ``assertion_expected``, peel of trailing
+  ``== expected`` (and other operators) from element ``*locators``, and
+  additive ``Get Element States``. ``Element Is *`` keywords are unchanged.
+  Follow-ups (polling, formatters, viewport/window) tracked in #77.
 - ``Set Browser Timeout`` with ``scope=Global|Suite|Test|Task`` for library-level
   defaults on element locate/actions when ``timeout=`` is omitted (#75).
   Per-call ``timeout=`` still wins.
