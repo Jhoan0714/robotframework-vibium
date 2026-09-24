@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Keyword tags on every ``@keyword`` for Libdoc grouping and ``--include`` /
+  ``--exclude`` (#20): Vibium API domain (``Browser``, ``Page``, ``Element``,
+  ``BrowserContext``, ``Keyboard``, ``Mouse``, ``Touch``, ``Dialog``, ``Config``)
+  plus role (``Getter``, ``Action``, ``Wait``).
 - Inline assertions on getters via ``robotframework-assertion-engine`` (#18):
   optional ``assertion_operator`` / ``assertion_expected``, peel of trailing
   ``== expected`` (and other operators) from element ``*locators``, and
