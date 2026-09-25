@@ -1,1 +1,1 @@
-"""Browser session lifecycle and handle tracking."""
+"""Browser session lifecycle and handle tracking"""
