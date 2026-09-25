@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Document 1.0 readiness via README Compatibility (Vibium floor), ``Open Browser``
+  engine/channel defaults, and Pabot with ``GLOBAL`` / process isolation under
+  Development (#55, #26).
+- Document Shadow DOM pierce combinators (``>>`` / ``>>>``) in Libdoc and
+  README, with Robot examples. (#49)
 - Keyword tags on every ``@keyword`` for Libdoc grouping and ``--include`` /
   ``--exclude`` (#20): Vibium API domain (``Browser``, ``Page``, ``Element``,
   ``BrowserContext``, ``Keyboard``, ``Mouse``, ``Touch``, ``Dialog``, ``Config``)
@@ -72,6 +77,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ``wait_for_function`` / ``wait_for_url`` / ``wait_for_load`` in wait keywords
   and screenshot retry. Element ``wait_until`` for ``Wait For Element`` is
   unchanged. (#48)
+- Align ``docs/architecture.md`` with current package layout, DynamicCore
+  layers, runtime stack (Robot Framework → library → Vibium → browser), and
+  AssertionEngine boundary. (#56)
 
 ## [0.3.0] - 2026-07-26
 ### Changed
