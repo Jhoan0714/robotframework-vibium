@@ -2,17 +2,43 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  changes:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9"]
-        robotframework-version: ["5.*", "6.*", "7.*"]
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      quality: ${{ steps.filter.outputs.quality }}
+      acceptance: ${{ steps.filter.outputs.acceptance }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            quality:
+              - '**/*.py'
+              - 'pyproject.toml'
+            acceptance:
+              - '**/*.py'
+              - 'pyproject.toml'
+              - 'tests/acceptance/**'
+              - '.github/workflows/on-pull.yml'
+
+  quality:
+    needs: changes
+    if: needs.changes.outputs.quality == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,14 +46,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.9"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e .[dev]
-          python -m pip install "robotframework==${{ matrix.robotframework-version }}"
-          python -m pip show vibium
+          python -m pip install -e ".[dev]"
 
       - name: Format
         run: black --check .
@@ -41,5 +65,54 @@ jobs:
       - name: Unit tests
         run: pytest tests/unit --cov=rfvibium --cov-report=term-missing
 
-      # - name: Acceptance tests
-      #   run: robot --pythonpath src -v HEADLESS:True -e no-ci -d reports/acceptance tests/acceptance
+  acceptance:
+    needs: [changes, quality]
+    if: |
+      always() &&
+      needs.changes.result == 'success' &&
+      needs.changes.outputs.acceptance == 'true' &&
+      (needs.quality.result == 'success' || needs.quality.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        robotframework-version: ["5.*", "6.*", "7.*"]
+    name: Acceptance (RF ${{ matrix.robotframework-version }})
+    env:
+      VIBIUM_CHROME_ARGS: "--no-sandbox"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+          python -m pip install "robotframework==${{ matrix.robotframework-version }}" robotframework-pabot
+
+      - name: Cache Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/vibium
+          key: vibium-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            vibium-${{ runner.os }}-
+
+      - name: Install browsers
+        run: |
+          vibium install
+
+      - name: Acceptance tests
+        run: |
+          pabot --processes 4 \
+            --pythonpath src \
+            -v HEADLESS:True \
+            -e no-ci \
+            -d reports/acceptance \
+            tests/acceptance
