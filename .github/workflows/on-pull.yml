@@ -79,6 +79,8 @@ jobs:
       matrix:
         robotframework-version: ["5.*", "6.*", "7.*"]
     name: Acceptance (RF ${{ matrix.robotframework-version }})
+    env:
+      VIBIUM_CHROME_ARGS: "--no-sandbox"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
