@@ -129,6 +129,36 @@ class Vibium(DynamicCore):
     | Click    role:button    text:Continue
     | Fill Text     role:textbox   label:Email    value=user@example.com
 
+    = Shadow DOM pierce =
+
+    To reach elements inside an *open* shadow root, put a pierce combinator in
+    the locator string. The same find-based keywords (``Click``, ``Get Text``,
+    ``Find Element``, …) accept these selectors; there is no separate pierce
+    keyword. Plain CSS without ``>>`` / ``>>>`` does not enter shadow trees.
+
+    | =Combinator= | =Meaning= |
+    | ``>>`` | Cross **one** shadow boundary (the host's own open shadow root). |
+    | ``>>>`` | Cross **any depth** of nested open shadow roots below the host. |
+
+    Prefer ``>>`` when the target is directly under a known host. Prefer
+    ``>>>`` when shadows are nested and you do not want to name every
+    intermediate host. Combinators can be chained (``host >> nested >> target``)
+    or mixed (``outer >>> mid >> button``). Whitespace is optional
+    (``my-card>>p`` equals ``my-card >> p``). CSS child ``>`` is not pierce:
+    ``div > p`` stays ordinary CSS and does not enter a shadow root.
+
+    | Get Text    my-card >> #shadow-text
+    | Click       my-card >> #shadow-btn
+    | Get Text    outer-host >>> #deep
+    | Get Text    outer-host >> inner-host >> #deep
+
+    Closed shadow roots are never entered. Searching under an already-resolved
+    handle uses ``scope=${element}`` instead; that nested find is separate from
+    pierce in the selector string.
+
+    Upstream reference:
+    [https://github.com/VibiumDev/vibium/blob/main/docs/reference/selectors.md|Vibium selectors].
+
     = Practical guidance =
 
     Prefer semantic strategies (``role``, ``label``, ``text``, ``testid``)

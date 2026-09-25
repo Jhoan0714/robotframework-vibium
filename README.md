@@ -1,25 +1,37 @@
 # robotframework-vibium
 
+[![PyPI version](https://img.shields.io/pypi/v/robotframework-vibium.svg?logo=pypi&logoColor=white)](https://pypi.org/project/robotframework-vibium/)
+[![Continuous integration](https://github.com/Jhoan0714/robotframework-vibium/actions/workflows/on-pull.yml/badge.svg)](https://github.com/Jhoan0714/robotframework-vibium/actions/workflows/on-pull.yml)
+
 [Robot Framework](https://robotframework.org) library based on
 [Vibium](https://github.com/VibiumDev/vibium) for AI-native browser automation.
-
-**Status:** early development (PyPI `0.x`, Alpha). The public keyword set may still evolve; pin versions in production suites if you need stability.
 
 ## Vision
 
 `robotframework-vibium` brings Vibium's modern browser interaction model into Robot Framework through clean, composable, and maintainable keywords.
 
-## Documentation
+## Keyword Documentation
 
-Use this README as a quick guide and examples, and Libdoc as the source of truth
-for the complete API.
+See [keyword documentation](https://jhoan0714.github.io/robotframework-vibium/VibiumLibrary.html) for available keywords and more information about the library in general.
 
-See [keyword documentation](https://jhoan0714.github.io/robotframework-vibium/VibiumLibrary.html) for more details.
+This README is a quick guide; Libdoc is the source of truth for the full API.
 
 ## Installation
 
+The recommended installation method is using pip:
+
 ```bash
-pip install robotframework-vibium
+pip install --upgrade robotframework-vibium
+```
+
+The `--upgrade` option can be omitted when installing for the first time.
+This installs the library and its dependencies (including Robot Framework and
+Vibium).
+
+To install from the GitHub repository (latest `main`):
+
+```bash
+pip install git+https://github.com/Jhoan0714/robotframework-vibium.git
 ```
 
 ## Compatibility
@@ -57,11 +69,10 @@ still connect via the ``VIBIUM_CONNECT_URL`` environment variable.
 
 ## Locator Syntax
 
-Targets passed to `Click`, `Fill Text` and `Find Element` use a
-prefix-based contract that maps directly to Vibium's `Page.find(...)` API.
-The `:` separator is preferred over `=` deliberately, following
-SeleniumLibrary's guidance, because `=` collides with Robot Framework's
-named-argument syntax.
+Locators use `strategy:value` (for example `role:button` or `css:#login`) and
+pass through to Vibium's `Page.find(...)`. Use `:` rather than `=`, because `=`
+is Robot Framework's named-argument syntax and would not be treated as part of
+the locator.
 
 ### Single locator
 
@@ -106,33 +117,64 @@ Combined Locators
     Click    .nav           role:link       text:Home
 ```
 
-### Fill Text: value rules
+### Shadow DOM pierce (`>>` / `>>>`)
 
-`Fill Text` supports two modes:
+To reach elements inside an *open* shadow root, use a pierce combinator in the
+locator string (same keywords as usual—no dedicated pierce keyword). Plain CSS
+without `>>` / `>>>` does not enter shadow trees.
 
-1. **Ergonomic** — the last positional is the value.
-2. **Explicit** — use `value=...` as a Robot Framework keyword argument.
+| Combinator | Meaning |
+| --- | --- |
+| `>>` | Cross **one** shadow boundary |
+| `>>>` | Cross **any depth** of nested open shadows |
 
-To prevent silent foot-guns, the ergonomic mode raises an error when the
-last positional *looks like a locator* (starts with a known `strategy:`
-prefix). Use `value=...` to disambiguate.
+Prefer `>>` for one hop under a known host; `>>>` when shadows nest. Combinators
+chain (`host >> nested >> target`). CSS child `>` is not pierce.
 
 ```robot
 *** Test Cases ***
-Fill Examples
-    # Ergonomic: value as last positional
-    Fill Text    input#email                            user@example.com
-    Fill Text    role:textbox    label:E-mail           user@example.com
+Pierce Examples
+    Get Text    my-card >> #shadow-text
+    Click       my-card >> #shadow-btn
+    Get Text    outer-host >>> #deep
+    Get Text    outer-host >> inner-host >> #deep
+```
 
-    # Explicit: value= kwarg
-    Fill Text    role:textbox                           value=user@example.com
-    Fill Text    input#password                         value=secret
+Closed shadow roots are never entered. Nested find with `scope=${element}` is
+separate from pierce. See Libdoc and
+[Vibium selectors](https://github.com/VibiumDev/vibium/blob/main/docs/reference/selectors.md).
+
+### Ergonomic value argument
+
+`Fill Text`, `Type Text`, and `Select Option` accept a trailing value in two
+ways:
+
+1. **Ergonomic** — the last positional is the value / text / option.
+2. **Explicit** — pass it as a named argument (`value=` or `text=` for
+   `Type Text`).
+
+Ergonomic mode raises an error when the last positional *looks like a locator*
+(starts with a known `strategy:` prefix). Use the named form to disambiguate.
+
+```robot
+*** Test Cases ***
+Ergonomic Value Examples
+    # Ergonomic: value as last positional
+    Fill Text       input#email                   user@example.com
+    Fill Text       role:textbox    label:E-mail  user@example.com
+    Type Text       css:#notes                    more text
+    Select Option   css:#country                  US
+
+    # Explicit named args
+    Fill Text       role:textbox                  value=user@example.com
+    Type Text       css:#notes                    text=more text
+    Select Option   css:#country                  value=US
 
     # Required when the value itself looks like a locator
-    Fill Text    input#comment                          value=role:admin
+    Fill Text       input#comment                 value=role:admin
 
     # Clear a field
-    Fill Text    input#search                           value=${EMPTY}
+    Fill Text       input#search                  value=${EMPTY}
 ```
 
 The following is rejected with a clear error (ambiguous last positional):
@@ -164,12 +206,10 @@ robot --pythonpath src -i smoke -d reports/acceptance tests/acceptance
 
 See [tests/acceptance/README.md](tests/acceptance/README.md) for suite coverage and details.
 
-## Project Principles
-
-- Stable and explicit public keyword API
-- High-quality error messages for test users
-- Clean separation between session management and keyword layers
-- Fast feedback loop with unit + acceptance tests
+The library scope is `GLOBAL` (one instance per Robot process).
+[Pabot](https://pabot.org/) works with process isolation—each worker gets its
+own browser session pool. Details:
+[#26](https://github.com/Jhoan0714/robotframework-vibium/issues/26).
 
 ## License
 
