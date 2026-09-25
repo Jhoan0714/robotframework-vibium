@@ -104,18 +104,13 @@ jobs:
           restore-keys: |
             vibium-${{ runner.os }}-
 
-      - name: Show Vibium cache
-        run: |
-          ls -la ~/.cache/vibium/firefox || echo "no firefox"
-          du -sh ~/.cache/vibium/* || true
-
       - name: Install browsers
         run: |
           vibium install
 
       - name: Acceptance tests
         run: |
-          pabot --processes 2 \
+          pabot --processes 4 \
             --pythonpath src \
             -v HEADLESS:True \
             -e no-ci \
