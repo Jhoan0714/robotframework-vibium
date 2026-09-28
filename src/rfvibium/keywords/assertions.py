@@ -41,19 +41,24 @@ class AssertionKeywords:
 
         Optionally asserts with AssertionEngine.
 
-        | =Argument= | =Description= |
-        | ``assertion_operator`` | Optional AssertionEngine operator (e.g. ``==``, ``*=``). |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            assertion_operator: Optional AssertionEngine operator (e.g. ``==``, ``*=``).
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Returns:
-            Current URL, or the [#Assertions|AssertionEngine] result when asserting.
+            Current URL, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${url}=    Get Url
-            | Get Url    *=    /dashboard
-            | ${url}=    Get Url    scope=${page}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${url}=    Get Url
+            Get Url    *=    /dashboard
+            ${url}=    Get Url    scope=${page}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         return assert_value(
@@ -74,19 +79,24 @@ class AssertionKeywords:
         Optionally asserts with AssertionEngine. The underlying Vibium client
         may return an empty string when no title is available.
 
-        | =Argument= | =Description= |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Returns:
-            Document title (may be empty), or the [#Assertions|AssertionEngine] result when asserting.
+            Document title (may be empty), or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${title}=    Get Title
-            | Get Title    ==    Home
-            | ${title}=    Get Title    scope=${page}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${title}=    Get Title
+            Get Title    ==    Home
+            ${title}=    Get Title    scope=${page}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         return assert_value(
@@ -106,19 +116,24 @@ class AssertionKeywords:
 
         Optionally asserts with AssertionEngine.
 
-        | =Argument= | =Description= |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Returns:
-            Visible body text, or the [#Assertions|AssertionEngine] result when asserting.
+            Visible body text, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${text}=    Get Page Text
-            | Get Page Text    contains    Welcome
-            | ${frame_text}=    Get Page Text    scope=${frame}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${text}=    Get Page Text
+            Get Page Text    contains    Welcome
+            ${frame_text}=    Get Page Text    scope=${frame}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         value = page.evaluate("document.body ? document.body.innerText : ''")
@@ -143,28 +158,33 @@ class AssertionKeywords:
         ``operator`` + ``expected`` may be peeled from ``*locators``; named
         assertion kwargs win over peel.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Optional. Element HTML: locator string(s) or a single element handle. When omitted, reads page-level HTML. Optional trailing assertion operator + expected. |
-        | ``outer`` | Controls page-level output when no locators are provided. Default is ``True``. - ``True``: full document HTML via ``page.content()``. - ``False``: body inner HTML via ``document.body.innerHTML``. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string for locating the element (``find``). Ignored for page-level HTML. |
+        Args:
+            *locators: Optional. Element HTML: locator string(s) or a single element handle. When omitted, reads page-level HTML. Optional trailing assertion operator + expected.
+            outer: Controls page-level output when no locators are provided. Default is ``True``. - ``True``: full document HTML via ``page.content()``. - ``False``: body inner HTML via ``document.body.innerHTML``.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string for locating the element (``find``). Ignored for page-level HTML.
 
         Note:
             Raises ``LocatorSyntaxError`` when locators/handle are provided with
             ``outer=False``.
 
         Returns:
-            HTML string, or the [#Assertions|AssertionEngine] result when asserting.
+            HTML string, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${doc}=    Get Html
-            | ${body}=    Get Html    outer=${FALSE}
-            | Get Html    css:.card    contains    <div
-            | ${el}=     Find Element    css:.card
-            | ${html}=   Get Html    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${doc}=    Get Html
+            ${body}=    Get Html    outer=${FALSE}
+            Get Html    css:.card    contains    <div
+            ${el}=     Find Element    css:.card
+            ${html}=   Get Html    ${el}
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -206,11 +226,11 @@ class AssertionKeywords:
         ``element.find`` lookups. For human-readable strings, use
         ``Describe Element`` on each handle.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | One or more locator tokens merged into a single ``find_all(...)`` call on the resolved scope. |
-        | ``limit`` | Optional maximum number of returned elements. Must be ``>= 1`` when provided. |
-        | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``. |
+        Args:
+            *locators: One or more locator tokens merged into a single ``find_all(...)`` call on the resolved scope.
+            limit: Optional maximum number of returned elements. Must be ``>= 1`` when provided.
+            scope: Optional page, frame, or parent element. When omitted, uses the active page/frame.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``.
 
         Note:
             Raises ``LocatorSyntaxError`` if ``limit`` is provided and lower than
@@ -220,10 +240,15 @@ class AssertionKeywords:
             Matching element handles (possibly empty).
 
         Example:
-            | @{rows}=     Find Elements    css:.row
-            | @{first2}=   Find Elements    role:listitem    limit=2
-            | ${card}=     Find Element    css:.card
-            | @{items}=    Find Elements    css:li    scope=${card}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            @{rows}=     Find Elements    css:.row
+            @{first2}=   Find Elements    role:listitem    limit=2
+            ${card}=     Find Element    css:.card
+            @{items}=    Find Elements    css:li    scope=${card}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
@@ -256,21 +281,26 @@ class AssertionKeywords:
         win over peel. Expected counts from Robot (string or int) are coerced
         to ``int`` before compare (compatible with AssertionEngine 3.0.x).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | One or more locator tokens merged into a single ``find_all(...)`` call. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected count when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``. |
+        Args:
+            *locators: One or more locator tokens merged into a single ``find_all(...)`` call. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected count when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent element. When omitted, uses the active page/frame.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``.
 
         Returns:
-            Match count, or the [#Assertions|AssertionEngine] result when asserting.
+            Match count, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${count}=    Count Elements    css:.item
-            | Count Elements    css:p    ==    ${2}
-            | ${n}=        Count Elements    css:li    scope=${card}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${count}=    Count Elements    css:.item
+            Count Elements    css:p    ==    ${2}
+            ${n}=        Count Elements    css:li    scope=${card}
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -292,15 +322,20 @@ class AssertionKeywords:
     def evaluate_javascript(self, expression: str, scope: FindScope = None) -> Any:
         """Evaluate JavaScript in the resolved scope and return its result.
 
-        | =Argument= | =Description= |
-        | ``expression`` | JavaScript expression or function to execute. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            expression: JavaScript expression or function to execute.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Returns:
             Value returned by the browser runtime (deserialized).
 
         Example:
-            | ${ready}=    Evaluate JavaScript    () => document.readyState
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${ready}=    Evaluate JavaScript    () => document.readyState
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         logger.info("Evaluating JavaScript expression.")
@@ -312,16 +347,21 @@ class AssertionKeywords:
     ) -> str:
         """Return the accessibility tree for the resolved scope.
 
-        | =Argument= | =Description= |
-        | ``everything`` | When ``True``, requests all nodes from the accessibility tree. Default is ``False``. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            everything: When ``True``, requests all nodes from the accessibility tree. Default is ``False``.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Returns:
             String representation of the accessibility tree.
 
         Example:
-            | ${tree}=    Get Accessibility Tree
-            | ${full}=    Get Accessibility Tree    everything=${TRUE}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${tree}=    Get Accessibility Tree
+            ${full}=    Get Accessibility Tree    everything=${TRUE}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         logger.info(f"Reading accessibility tree (everything={everything}).")
