@@ -5,7 +5,9 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-09-28
+
+Stable 1.0.0 release of robotframework-vibium.
 
 ### Added
 - Document 1.0 readiness via README Compatibility (Vibium floor), ``Open Browser``
@@ -85,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Align ``docs/architecture.md`` with current package layout, DynamicCore
   layers, runtime stack (Robot Framework → library → Vibium → browser), and
   AssertionEngine boundary. (#56)
+- Promote package to stable 1.0.0 (`Development Status :: 5 - Production/Stable`).
+  (#52)
 
 ## [0.3.0] - 2026-07-26
 ### Changed
@@ -144,6 +148,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assertions, capture, cookies, storage, dialogs and waits.
 - Project scaffolding: packaging, docs and contributing guide.
 
+[1.0.0]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v1.0.0
 [0.3.0]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.2.0
 [0.1.1]: https://github.com/Jhoan0714/robotframework-vibium/releases/tag/v0.1.1

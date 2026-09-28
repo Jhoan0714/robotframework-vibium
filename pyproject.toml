@@ -22,7 +22,7 @@ keywords = [
   "vibium"
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Framework :: Robot Framework :: Library",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: Apache Software License",
