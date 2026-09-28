@@ -19,11 +19,16 @@ class DocumentKeywords:
         This does not navigate to a URL; it sets document content in place
         (Vibium ``page.set_content``).
 
-        | =Argument= | =Description= |
-        | ``html`` | Full HTML document or fragment to inject. |
+        Args:
+            html: Full HTML document or fragment to inject.
 
         Example:
-            | Set Page Content    <html><body><h1>Hello</h1></body></html>
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Set Page Content    <html><body><h1>Hello</h1></body></html>
+        ```
         """
         page = self.library._session.require_page()
         preview = html if len(html) <= 60 else f"{html[:57]}..."
