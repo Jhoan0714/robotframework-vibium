@@ -29,8 +29,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
-          # Pin Libdoc generator for reproducible docs (package still supports RF>=5.0).
-          python -m pip install "robotframework==7.4.2"
+          python -m pip install "robotframework==7.5" "markdown" "Pygments"
 
       - name: Generate Libdoc HTML
         run: python -m robot.libdoc src/Vibium.py docs/VibiumLibrary.html

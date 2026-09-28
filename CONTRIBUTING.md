@@ -67,6 +67,19 @@ Smoke-only acceptance run:
 robot --pythonpath src -v HEADLESS:True -i smoke -d reports/acceptance tests/acceptance
 ```
 
+## Regenerating Libdoc
+
+Keyword docs use Markdown (`doc_format=MARKDOWN`). The published package still
+supports Robot Framework `>=5.0` at runtime; generating Libdoc HTML locally
+needs RF **>= 7.5** plus Markdown/highlight deps:
+
+```bash
+python -m pip install "robotframework>=7.5" markdown Pygments
+PYTHONPATH=src python -m robot.libdoc rfvibium.Vibium docs/VibiumLibrary.html
+```
+
+(The release workflow pins the same stack in `.github/workflows/on-release.yml`.)
+
 ## Submitting Changes
 
 - **Team members**: push directly to `Jhoan0714/robotframework-vibium` using a feature branch (do not push directly to `main`).

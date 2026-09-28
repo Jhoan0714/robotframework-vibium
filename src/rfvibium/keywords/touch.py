@@ -27,16 +27,21 @@ class TouchKeywords:
         Distinct from ``Mouse Click`` (mouse path) and from element ``Tap``
         (locator/handle target).
 
-        | =Argument= | =Description= |
-        | ``x`` | Horizontal viewport coordinate (number or numeric string). |
-        | ``y`` | Vertical viewport coordinate (number or numeric string). |
+        Args:
+            x: Horizontal viewport coordinate (number or numeric string).
+            y: Vertical viewport coordinate (number or numeric string).
 
         Note:
             Raises ``VibiumLibraryError`` if coordinates are missing or invalid.
 
         Example:
-            | Touch Tap    120    340
-            | Touch Tap    10.5    20
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Touch Tap    120    340
+            Touch Tap    10.5    20
+        ```
         """
         page = self.library._session.require_page()
         xf = coerce_viewport_axis("x", x, kind="Touch")

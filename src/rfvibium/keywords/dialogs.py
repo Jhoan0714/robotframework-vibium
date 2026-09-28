@@ -16,12 +16,17 @@ class DialogKeywords:
     def dialog_accept(self, text: str = "") -> None:
         """Configure the next browser dialog to be accepted.
 
-        | =Argument= | =Description= |
-        | ``text`` | Optional prompt text used for ``prompt`` dialogs. Default is empty (accept without text). |
+        Args:
+            text: Optional prompt text used for ``prompt`` dialogs. Default is empty (accept without text).
 
         Example:
-            | Dialog Accept
-            | Dialog Accept    my value
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Dialog Accept
+            Dialog Accept    my value
+        ```
         """
         page = self.library._session.require_page()
         prompt_text = text if text != "" else None
@@ -43,7 +48,12 @@ class DialogKeywords:
         """Configure the next browser dialog to be dismissed.
 
         Example:
-            | Dialog Dismiss
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Dialog Dismiss
+        ```
         """
         page = self.library._session.require_page()
         logger.info("Configuring dialog handler: dismiss.")

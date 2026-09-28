@@ -33,12 +33,17 @@ class EmulationKeywords:
     ) -> None:
         """Set the active page viewport size in CSS pixels.
 
-        | =Argument= | =Description= |
-        | ``width`` | Viewport width in pixels. |
-        | ``height`` | Viewport height in pixels. |
+        Args:
+            width: Viewport width in pixels.
+            height: Viewport height in pixels.
 
         Example:
-            | Set Viewport Size    1280    720
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Set Viewport Size    1280    720
+        ```
         """
         page = self.library._session.require_page()
         w = EmulationKeywords._as_int("width", width)
@@ -55,8 +60,13 @@ class EmulationKeywords:
             Mapping with ``width`` and ``height`` integers (CSS pixels).
 
         Example:
-            | ${size}=    Get Viewport Size
-            | Log    ${size}[width] x ${size}[height]
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${size}=    Get Viewport Size
+            Log    ${size}[width] x ${size}[height]
+        ```
         """
         page = self.library._session.require_page()
         size = page.viewport()
@@ -77,20 +87,25 @@ class EmulationKeywords:
         Unlike ``Set Viewport Size``, this changes the window frame, not the
         CSS viewport.
 
-        | =Argument= | =Description= |
-        | ``width`` | Optional window width in pixels. |
-        | ``height`` | Optional window height in pixels. |
-        | ``x`` | Optional window X position on screen. |
-        | ``y`` | Optional window Y position on screen. |
-        | ``state`` | Optional window state (for example ``normal``, ``maximized``, ``minimized``, ``fullscreen``). Passed through to Vibium. |
+        Args:
+            width: Optional window width in pixels.
+            height: Optional window height in pixels.
+            x: Optional window X position on screen.
+            y: Optional window Y position on screen.
+            state: Optional window state (for example ``normal``, ``maximized``, ``minimized``, ``fullscreen``). Passed through to Vibium.
 
         At least one argument is required.
 
         Example:
-            | Set Window    width=1280    height=800
-            | Set Window    x=100    y=50
-            | Set Window    state=maximized
-            | Set Window    width=1280    height=800    x=0    y=0
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Set Window    width=1280    height=800
+            Set Window    x=100    y=50
+            Set Window    state=maximized
+            Set Window    width=1280    height=800    x=0    y=0
+        ```
         """
         page = self.library._session.require_page()
         options: dict[str, Any] = {}
@@ -119,8 +134,13 @@ class EmulationKeywords:
             Window info as returned by Vibium ``page.window()``.
 
         Example:
-            | ${info}=    Get Window Info
-            | Log    ${info}[width] x ${info}[height]
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${info}=    Get Window Info
+            Log    ${info}[width] x ${info}[height]
+        ```
         """
         page = self.library._session.require_page()
         info = page.window()

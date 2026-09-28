@@ -66,10 +66,10 @@ class MouseKeywords:
     ) -> None:
         """Click at ``(x, y)`` viewport coordinates.
 
-        | =Argument= | =Description= |
-        | ``x`` | Horizontal viewport coordinate (number or numeric string). |
-        | ``y`` | Vertical viewport coordinate (number or numeric string). |
-        | ``button`` | Mouse button id. Default is ``0`` (left). |
+        Args:
+            x: Horizontal viewport coordinate (number or numeric string).
+            y: Vertical viewport coordinate (number or numeric string).
+            button: Mouse button id. Default is ``0`` (left).
 
         Note:
             Current Vibium sync mouse API only supports left button behavior for
@@ -79,8 +79,13 @@ class MouseKeywords:
             button is not supported.
 
         Example:
-            | Mouse Click    120    340
-            | Mouse Click    10    20    button=0
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Mouse Click    120    340
+            Mouse Click    10    20    button=0
+        ```
         """
         page = self.library._session.require_page()
         btn = MouseKeywords._normalize_button(button)
@@ -95,15 +100,20 @@ class MouseKeywords:
     def mouse_move(self, x: Union[int, float, str], y: Union[int, float, str]) -> None:
         """Move mouse pointer to ``(x, y)`` viewport coordinates.
 
-        | =Argument= | =Description= |
-        | ``x`` | Horizontal viewport coordinate (number or numeric string). |
-        | ``y`` | Vertical viewport coordinate (number or numeric string). |
+        Args:
+            x: Horizontal viewport coordinate (number or numeric string).
+            y: Vertical viewport coordinate (number or numeric string).
 
         Note:
             Raises ``VibiumLibraryError`` if coordinate values are invalid.
 
         Example:
-            | Mouse Move    100    200
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Mouse Move    100    200
+        ```
         """
         page = self.library._session.require_page()
         xf = coerce_viewport_axis("x", x, kind="Mouse")
@@ -115,8 +125,8 @@ class MouseKeywords:
     def mouse_down(self, button: Union[int, str] = 0) -> None:
         """Press mouse button down.
 
-        | =Argument= | =Description= |
-        | ``button`` | Mouse button id. Default is ``0`` (left). |
+        Args:
+            button: Mouse button id. Default is ``0`` (left).
 
         Note:
             Current Vibium sync mouse API only supports left button behavior for
@@ -125,8 +135,13 @@ class MouseKeywords:
             Raises ``VibiumLibraryError`` if button is invalid or unsupported.
 
         Example:
-            | Mouse Down
-            | Mouse Down    button=0
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Mouse Down
+            Mouse Down    button=0
+        ```
         """
         page = self.library._session.require_page()
         btn = MouseKeywords._normalize_button(button)
@@ -138,8 +153,8 @@ class MouseKeywords:
     def mouse_up(self, button: Union[int, str] = 0) -> None:
         """Release mouse button.
 
-        | =Argument= | =Description= |
-        | ``button`` | Mouse button id. Default is ``0`` (left). |
+        Args:
+            button: Mouse button id. Default is ``0`` (left).
 
         Note:
             Current Vibium sync mouse API only supports left button behavior for
@@ -148,8 +163,13 @@ class MouseKeywords:
             Raises ``VibiumLibraryError`` if button is invalid or unsupported.
 
         Example:
-            | Mouse Up
-            | Mouse Up    button=0
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Mouse Up
+            Mouse Up    button=0
+        ```
         """
         page = self.library._session.require_page()
         btn = MouseKeywords._normalize_button(button)
@@ -165,13 +185,18 @@ class MouseKeywords:
     ) -> None:
         """Scroll the page using the mouse wheel at the current pointer position.
 
-        | =Argument= | =Description= |
-        | ``delta_x`` | Horizontal scroll delta in pixels. Default is ``0``. |
-        | ``delta_y`` | Vertical scroll delta in pixels. Default is ``0``. |
+        Args:
+            delta_x: Horizontal scroll delta in pixels. Default is ``0``.
+            delta_y: Vertical scroll delta in pixels. Default is ``0``.
 
         Example:
-            | Mouse Wheel    delta_y=400
-            | Mouse Wheel    100    -200
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Mouse Wheel    delta_y=400
+            Mouse Wheel    100    -200
+        ```
         """
         page = self.library._session.require_page()
         dx = coerce_viewport_axis("delta_x", delta_x, kind="Mouse")

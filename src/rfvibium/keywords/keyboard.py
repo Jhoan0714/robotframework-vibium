@@ -40,12 +40,17 @@ class KeyboardKeywords:
         specific element locator. For a single key or combo, use
         ``Keyboard Key``.
 
-        | =Argument= | =Description= |
-        | ``text`` | Text to type. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            text: Text to type.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Example:
-            | Keyboard Type    hello world
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Keyboard Type    hello world
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         display = text if len(text) <= 40 else f"{text[:37]}..."
@@ -59,17 +64,22 @@ class KeyboardKeywords:
         ``press`` sends a full keystroke (or combo such as ``Control+a``).
         ``down`` / ``up`` hold or release a key without the matching event.
 
-        | =Argument= | =Description= |
-        | ``action`` | ``down``, ``up``, or ``press`` (case-insensitive). |
-        | ``key`` | Keyboard key or combo supported by Vibium (for example ``Shift``, ``Enter``, ``Control+a``). |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            action: ``down``, ``up``, or ``press`` (case-insensitive).
+            key: Keyboard key or combo supported by Vibium (for example ``Shift``, ``Enter``, ``Control+a``).
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Example:
-            | Keyboard Key    press    Enter
-            | Keyboard Key    press    Control+a
-            | Keyboard Key    down    Shift
-            | Keyboard Key    press    ArrowDown
-            | Keyboard Key    up    Shift
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Keyboard Key    press    Enter
+            Keyboard Key    press    Control+a
+            Keyboard Key    down    Shift
+            Keyboard Key    press    ArrowDown
+            Keyboard Key    up    Shift
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         action_name = KeyboardKeywords._normalize_action(action)

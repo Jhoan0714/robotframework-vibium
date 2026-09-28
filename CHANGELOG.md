@@ -62,6 +62,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ``tests/acceptance/multi_browser.robot``. (#53)
 
 ### Changed
+- Migrate library and keyword Libdoc to Markdown with Google Style ``Args:`` /
+  ``Returns:`` documentation; pin the release Libdoc generator to Robot
+  Framework 7.5 with ``markdown`` and ``Pygments``. Override
+  ``AssertionOperator`` Enum docs to Markdown so Data Types tables render
+  correctly. Document local Libdoc regeneration in ``CONTRIBUTING.md``. (#87)
 - **Breaking:** bare timeout numbers are seconds (Robot Framework /
   ``timestr_to_secs``), not milliseconds. ``timeout=300`` is 5 minutes;
   use ``300ms`` or ``5s`` when that is the intent. Parsing now delegates
