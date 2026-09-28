@@ -78,15 +78,15 @@ class CaptureKeywords:
     ) -> str:
         """Capture a PNG screenshot of the page or a matched element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Optional. Element to capture: locator string(s) or a single element handle. When omitted, captures the page. |
-        | ``output_path`` | Optional output file path. When omitted, an auto-numbered file is created under ``media/``. |
-        | ``embed`` | When ``True`` (default), embeds an image preview in Robot logs. |
-        | ``width`` | Render width used in embedded HTML preview. Default is ``800px``. |
-        | ``full_page`` | Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. Ignored when locators/handle are provided. |
-        | ``clip`` | Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. Ignored when locators/handle are provided. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string for locating the element (``find``). Ignored for page screenshots. |
+        Args:
+            *locators: Optional. Element to capture: locator string(s) or a single element handle. When omitted, captures the page.
+            output_path: Optional output file path. When omitted, an auto-numbered file is created under ``media/``.
+            embed: When ``True`` (default), embeds an image preview in Robot logs.
+            width: Render width used in embedded HTML preview. Default is ``800px``.
+            full_page: Optional flag forwarded to Vibium ``page.screenshot``. ``True`` attempts to capture the full scrollable page. Ignored when locators/handle are provided.
+            clip: Optional clipping rectangle. Accepts a dict or JSON object string with keys ``x``, ``y``, ``width``, ``height``. Ignored when locators/handle are provided.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string for locating the element (``find``). Ignored for page screenshots.
 
         Note:
             Raises ``ScreenshotError`` when clip parsing fails or screenshot
@@ -102,13 +102,18 @@ class CaptureKeywords:
             Absolute path of the generated PNG file.
 
         Example:
-            | ${path}=    Take Screenshot
-            | ${path}=    Take Screenshot    full_page=${TRUE}
-            | ${path}=    Take Screenshot    output_path=home.png    clip={"x": 0, "y": 0, "width": 800, "height": 600}
-            | ${path}=    Take Screenshot    css:.chart-card    output_path=chart.png
-            | ${path}=    Take Screenshot    role:img    alt:Logo
-            | ${el}=      Find Element    css:.chart
-            | ${path}=    Take Screenshot    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${path}=    Take Screenshot
+            ${path}=    Take Screenshot    full_page=${TRUE}
+            ${path}=    Take Screenshot    output_path=home.png    clip={"x": 0, "y": 0, "width": 800, "height": 600}
+            ${path}=    Take Screenshot    css:.chart-card    output_path=chart.png
+            ${path}=    Take Screenshot    role:img    alt:Logo
+            ${el}=      Find Element    css:.chart
+            ${path}=    Take Screenshot    ${el}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         if locators:
@@ -185,10 +190,10 @@ class CaptureKeywords:
     ) -> str:
         """Save the resolved page scope as PDF.
 
-        | =Argument= | =Description= |
-        | ``output_path`` | Optional output file path. When omitted, an auto-numbered file is created under ``media/``. |
-        | ``embed`` | When ``True`` (default), logs an HTML link to the PDF artifact. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            output_path: Optional output file path. When omitted, an auto-numbered file is created under ``media/``.
+            embed: When ``True`` (default), logs an HTML link to the PDF artifact.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Note:
             Like ``Take Screenshot``, PDF generation is expected to work on the
@@ -199,8 +204,13 @@ class CaptureKeywords:
             Absolute path of the generated PDF file.
 
         Example:
-            | ${pdf}=    Save Page As Pdf
-            | ${pdf}=    Save Page As Pdf    output_path=report.pdf    embed=${FALSE}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${pdf}=    Save Page As Pdf
+            ${pdf}=    Save Page As Pdf    output_path=report.pdf    embed=${FALSE}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         path = (
