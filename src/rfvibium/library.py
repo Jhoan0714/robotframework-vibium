@@ -2,13 +2,23 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Optional
 
+from assertionengine import AssertionOperator
 from robot.api import logger
 from robot.api.deco import keyword, library
 from robotlibcore import DynamicCore
+from vibium import Element
+from vibium.sync_api import Browser, BrowserContext, Page
 
 from .config.settings import SettingLayers
+from .converters import (
+    convert_assertion_operator,
+    convert_browser,
+    convert_browser_context,
+    convert_element,
+    convert_page,
+)
 from .keywords.assertions import AssertionKeywords
 from .keywords.capture import CaptureKeywords
 from .keywords.config import ConfigKeywords
@@ -26,7 +36,18 @@ from .session.browser_session import SessionPool
 from .version import __version__
 
 
-@library(scope="GLOBAL", version=__version__, doc_format="ROBOT")
+@library(
+    scope="GLOBAL",
+    version=__version__,
+    doc_format="ROBOT",
+    converters={
+        AssertionOperator: convert_assertion_operator,
+        Browser: convert_browser,
+        BrowserContext: convert_browser_context,
+        Page: convert_page,
+        Element: convert_element,
+    },
+)
 class Vibium(DynamicCore):
     """Vibium library is a browser automation library for Robot Framework.
 
@@ -185,12 +206,23 @@ class Vibium(DynamicCore):
     | Get Title    ==    Home
     | Count Elements    css:p    ==    ${2}
 
-    Without an operator the getter only returns the value (previous behavior).
+    Without an operator the getter only returns the value.
     For element getters, a trailing operator + expected may follow locator
     tokens; named ``assertion_operator`` / ``assertion_expected`` override peel.
     ``scope=``, ``timeout=``, and ``message=`` are always named arguments.
     ``Element Is Visible`` and related keywords remain available; use
     ``Get Element States`` for a combined state list.
+
+    == What getters return when asserting ==
+
+    - *No operator:* the value read from the page or element.
+    - *Most operators* (``==``, ``contains``, ``*=``, …): the same value if the
+      assertion passes; the keyword fails if it does not.
+    - *``then`` / ``evaluate``:* not an assertion. Returns the result of a Python
+      expression over ``value`` (any type). Example:
+      ``Get Text    css:.price    then    int(value.replace('$', ''))``
+
+    Supported operators are listed under the ``AssertionOperator`` data type.
 
     See also: [https://github.com/MarketSquare/AssertionEngine|AssertionEngine].
 
@@ -246,15 +278,30 @@ class Vibium(DynamicCore):
     Per-call ``timeout=`` on action/getter keywords still overrides the library
     default for that call.
 
+    = Environment Variables =
+
+    These environment variables are read by Vibium when launching or connecting
+    a browser. Keyword arguments on ``Open Browser`` (for example ``engine=``,
+    ``url=``, ``channel=``) take precedence when provided.
+
+    | =Variable= | =Description= |
+    | ``VIBIUM_ENGINE`` | Default browser engine when ``Open Browser`` omits ``engine=``: ``chrome`` (default) or ``firefox``. |
+    | ``VIBIUM_ENGINE_CHANNEL`` | Default release channel when ``channel=`` is omitted (for example ``release`` or ``beta`` for Firefox). |
+    | ``VIBIUM_CONNECT_URL`` | Remote BiDi WebSocket URL used when ``Open Browser`` omits ``url=``. |
+    | ``VIBIUM_CHROME_ARGS`` | Extra Chrome launch flags as a space-separated list (for example ``--no-sandbox`` in CI containers). |
+
+    Upstream Vibium may honor additional variables (session isolation, binary
+    paths, connect credentials). See
+    [https://vibium.com/docs|Vibium documentation] for the full set.
+
     = Typical usage =
 
-    | *** Test Cases ***
-    | Basic Flow
-    |     Open Browser
-    |     Go To    https://example.com
-    |     Fill Text    role:textbox    user@example.com
-    |     Click   role:button    text:Submit
-    |     Close Browser
+    Example:
+        | Open Browser
+        | Go To    https://example.com
+        | Fill Text    role:textbox    user@example.com
+        | Click    role:button    text:Submit
+        | Close Browser
 
     """
 
@@ -303,12 +350,12 @@ class Vibium(DynamicCore):
     @keyword("Open Browser", tags=["Browser", "Action"])
     def open_browser(
         self,
-        url: str | None = None,
-        engine: str | None = None,
-        channel: str | None = None,
-        headless: bool | None = None,
-        headers: dict[str, str] | None = None,
-    ) -> Any:
+        url: Optional[str] = None,
+        engine: Optional[str] = None,
+        channel: Optional[str] = None,
+        headless: Optional[bool] = None,
+        headers: Optional[dict[str, str]] = None,
+    ) -> Browser:
         """Open a new Browser session and return its handle.
 
         Mirrors Vibium ``browser.start(url, engine=..., channel=..., headless=..., headers=...)``.
@@ -326,17 +373,15 @@ class Vibium(DynamicCore):
         | ``headless`` | Optional headless mode for this browser. Defaults to the library ``headless`` import setting. Local launch only. |
         | ``headers`` | Optional HTTP headers for the remote WebSocket connection (for example auth tokens). Used with ``url=``. |
 
-        | *** Test Cases ***
-        | Chrome Default
-        |     Open Browser
-        |     Go To    https://example.com
-        | Firefox
-        |     Open Browser    engine=firefox
-        |     Go To    https://example.com
-        | Headed second browser
-        |     Open Browser    headless=${FALSE}
-        | Remote
-        |     Open Browser    url=${REMOTE_BIDI_URL}    headers=&{AUTH_HEADERS}
+        Returns:
+            Browser session handle for use with ``browser=`` on other keywords.
+
+        Example:
+            | Open Browser
+            | Go To    https://example.com
+            | Open Browser    engine=firefox
+            | Open Browser    headless=${FALSE}
+            | Open Browser    url=${REMOTE_BIDI_URL}    headers=&{AUTH_HEADERS}
         """
         engine = engine.lower() if engine else engine
         channel = channel.lower() if channel else channel
@@ -351,13 +396,28 @@ class Vibium(DynamicCore):
         return browser
 
     @keyword("Close Browser", tags=["Browser", "Action"])
-    def close_browser(self, browser=None) -> None:
-        """Close one Browser session (active browser by default)."""
+    def close_browser(self, browser: Optional[Browser] = None) -> None:
+        """Close one Browser session (active browser by default).
+
+        | =Argument= | =Description= |
+        | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, closes the active browser. |
+
+        Example:
+            | Close Browser
+            | ${b}=    Open Browser
+            | Close Browser    browser=${b}
+        """
         self._session.close(browser=browser)
         logger.info("Browser session closed.")
 
     @keyword("Close All Browsers", tags=["Browser", "Action"])
     def close_all_browsers(self) -> None:
-        """Close all Browser sessions created by this library instance."""
+        """Close all Browser sessions created by this library instance.
+
+        Example:
+            | Open Browser
+            | Open Browser    engine=firefox
+            | Close All Browsers
+        """
         self._session.close_all()
         logger.info("All Browser sessions closed.")
