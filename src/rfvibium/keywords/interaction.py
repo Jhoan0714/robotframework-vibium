@@ -59,15 +59,20 @@ class InteractionKeywords:
     def map_elements(self, scope: PageScope = None) -> str:
         """Return accessibility tree information for the resolved scope.
 
-        | =Argument= | =Description= |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Returns:
             Accessibility tree as a string.
 
         Example:
-            | ${tree}=    Map Elements
-            | ${tree}=    Map Elements    scope=${frame}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${tree}=    Map Elements
+            ${tree}=    Map Elements    scope=${frame}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         return str(page.a11y_tree())
@@ -78,17 +83,22 @@ class InteractionKeywords:
     ) -> None:
         """Click an element resolved from locator token(s) or an element handle.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Click    role:button    text:Log in
-            | Click    css:.submit
-            | ${btn}=    Find Element    css:#save
-            | Click    ${btn}
-            | Click    css:button    scope=${card}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Click    role:button    text:Log in
+            Click    css:.submit
+            ${btn}=    Find Element    css:#save
+            Click    ${btn}
+            Click    css:button    scope=${card}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -109,21 +119,26 @@ class InteractionKeywords:
         on action/getter keywords. For a human-readable string, use
         ``Describe Element``.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Locator tokens merged into one ``find(...)`` call on the resolved scope. |
-        | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find``. |
+        Args:
+            *locators: Locator tokens merged into one ``find(...)`` call on the resolved scope.
+            scope: Optional page, frame, or parent element. When omitted, uses the active page/frame.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find``.
 
         Returns:
             Element handle for the first match.
 
         Example:
-            | ${el}=      Find Element    role:textbox    label:E-mail
-            | ${card}=    Find Element    css:.card
-            | ${btn}=     Find Element    css:button    scope=${card}
-            | ${fast}=    Find Element    css:#x    timeout=500ms
-            | Click    ${btn}
-            | Click    css:button    scope=${card}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${el}=      Find Element    role:textbox    label:E-mail
+            ${card}=    Find Element    css:.card
+            ${btn}=     Find Element    css:button    scope=${card}
+            ${fast}=    Find Element    css:#x    timeout=500ms
+            Click    ${btn}
+            Click    css:button    scope=${card}
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         args, kwargs = resolve_required_locators(locators)
@@ -140,16 +155,21 @@ class InteractionKeywords:
         Use after ``Find Element`` / ``Find Elements`` when you need a string
         for logging or text assertions. Does not call the browser.
 
-        | =Argument= | =Description= |
-        | ``element`` | Element handle returned by ``Find Element`` (or an item from ``Find Elements``). |
+        Args:
+            element: Element handle returned by ``Find Element`` (or an item from ``Find Elements``).
 
         Returns:
             ``repr(element)`` (typically ``Element(tag='...', text='...')``).
 
         Example:
-            | ${el}=      Find Element    css:button
-            | ${desc}=    Describe Element    ${el}
-            | Should Contain    ${desc}    button
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${el}=      Find Element    css:button
+            ${desc}=    Describe Element    ${el}
+            Should Contain    ${desc}    button
+        ```
         """
         return repr(element)
 
@@ -170,22 +190,27 @@ class InteractionKeywords:
         ``assertion_expected`` win over peel. ``scope`` / ``timeout`` / ``message``
         must be named.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator (e.g. ``==``, ``contains``). |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator (e.g. ``==``, ``contains``).
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Element text, or the [#Assertions|AssertionEngine] result when asserting.
+            Element text, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${text}=    Get Text    css:h1
-            | Get Text    css:h1    ==    Welcome
-            | ${btn}=     Find Element    css:button
-            | ${text}=    Get Text    ${btn}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${text}=    Get Text    css:h1
+            Get Text    css:h1    ==    Welcome
+            ${btn}=     Find Element    css:button
+            ${text}=    Get Text    ${btn}
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -214,20 +239,25 @@ class InteractionKeywords:
         Optionally asserts with AssertionEngine (same peel / kwargs rules as
         ``Get Text``).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Inner text, or the [#Assertions|AssertionEngine] result when asserting.
+            Inner text, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${text}=    Get Inner Text    css:div.content
-            | Get Inner Text    css:div.content    ==    Hello
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${text}=    Get Inner Text    css:div.content
+            Get Inner Text    css:div.content    ==    Hello
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -256,20 +286,25 @@ class InteractionKeywords:
         Optionally asserts with AssertionEngine (same peel / kwargs rules as
         ``Get Text``).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Form control value, or the [#Assertions|AssertionEngine] result when asserting.
+            Form control value, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${value}=    Get Value    css:#email
-            | Get Value    css:#email    ==    user@example.com
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${value}=    Get Value    css:#email
+            Get Value    css:#email    ==    user@example.com
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -299,21 +334,26 @@ class InteractionKeywords:
         Optionally asserts with AssertionEngine (same peel / kwargs rules as
         ``Get Text``). Absent attributes yield ``None``.
 
-        | =Argument= | =Description= |
-        | ``name`` | Attribute name to read. |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            name: Attribute name to read.
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Attribute value, ``None`` if absent, or the [#Assertions|AssertionEngine] result when asserting.
+            Attribute value, ``None`` if absent, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${href}=    Get Attribute    href    css:a.nav
-            | Get Attribute    data-id    css:button    ==    42
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${href}=    Get Attribute    href    css:a.nav
+            Get Attribute    data-id    css:button    ==    42
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -346,19 +386,24 @@ class InteractionKeywords:
         Optionally asserts with AssertionEngine (same peel / kwargs rules as
         ``Get Text``).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Bounding box data, or the [#Assertions|AssertionEngine] result when asserting.
+            Bounding box data, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${box}=    Get Bounds    css:#banner
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${box}=    Get Bounds    css:#banner
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -378,17 +423,22 @@ class InteractionKeywords:
     ) -> bool:
         """Check whether the matched element is visible.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
             ``True`` if the element is visible, otherwise ``False``.
 
         Example:
-            | ${ok}=    Element Is Visible    css:.modal
-            | Should Be True    ${ok}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${ok}=    Element Is Visible    css:.modal
+            Should Be True    ${ok}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -403,17 +453,22 @@ class InteractionKeywords:
     ) -> bool:
         """Check whether the matched element is hidden.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
             ``True`` if the element is hidden, otherwise ``False``.
 
         Example:
-            | ${ok}=    Element Is Hidden    css:.spinner
-            | Should Be True    ${ok}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${ok}=    Element Is Hidden    css:.spinner
+            Should Be True    ${ok}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -428,17 +483,22 @@ class InteractionKeywords:
     ) -> bool:
         """Check whether the matched element is enabled.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
             ``True`` if the element is enabled, otherwise ``False``.
 
         Example:
-            | ${ok}=    Element Is Enabled    css:button[type=submit]
-            | Should Be True    ${ok}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${ok}=    Element Is Enabled    css:button[type=submit]
+            Should Be True    ${ok}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -453,17 +513,22 @@ class InteractionKeywords:
     ) -> bool:
         """Check whether the matched element is checked.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
             ``True`` if the element is checked, otherwise ``False``.
 
         Example:
-            | ${ok}=    Element Is Checked    css:#agree
-            | Should Be True    ${ok}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${ok}=    Element Is Checked    css:#agree
+            Should Be True    ${ok}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -478,17 +543,22 @@ class InteractionKeywords:
     ) -> bool:
         """Check whether the matched element is editable.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
             ``True`` if the element is editable, otherwise ``False``.
 
         Example:
-            | ${ok}=    Element Is Editable    css:#name
-            | Should Be True    ${ok}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${ok}=    Element Is Editable    css:#name
+            Should Be True    ${ok}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -514,20 +584,25 @@ class InteractionKeywords:
         Optionally asserts with AssertionEngine (same peel / kwargs rules as
         ``Get Text``).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Semantic role, or the [#Assertions|AssertionEngine] result when asserting.
+            Semantic role, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${role}=    Get Role    css:button
-            | Get Role    css:button    ==    button
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${role}=    Get Role    css:button
+            Get Role    css:button    ==    button
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -556,20 +631,25 @@ class InteractionKeywords:
         Optionally asserts with AssertionEngine (same peel / kwargs rules as
         ``Get Text``).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected value when asserting. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected value when asserting.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find`` when resolving locators. Has no effect when the target is a sole element handle.
 
         Returns:
-            Accessible label, or the [#Assertions|AssertionEngine] result when asserting.
+            Accessible label, or the [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | ${label}=    Get Label    css:#email
-            | Get Label    css:#email    ==    E-mail
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${label}=    Get Label    css:#email
+            Get Label    css:#email    ==    E-mail
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -604,21 +684,26 @@ class InteractionKeywords:
         ``Get Text``). For list operators such as ``contains`` / ``*=``, the
         expected value may be a single state name or a list.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected. |
-        | ``assertion_operator`` | Optional AssertionEngine operator. |
-        | ``assertion_expected`` | Expected state name or list of names. |
-        | ``message`` | Optional custom assertion failure message. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find``. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle. Optional trailing assertion operator + expected.
+            assertion_operator: Optional AssertionEngine operator.
+            assertion_expected: Expected state name or list of names.
+            message: Optional custom assertion failure message.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find``.
 
         Returns:
             Active state names (e.g. ``visible``, ``enabled``), or the
-            [#Assertions|AssertionEngine] result when asserting.
+            [AssertionEngine](#assertions) result when asserting.
 
         Example:
-            | @{states}=    Get Element States    css:button
-            | Get Element States    css:button    *=    visible
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            @{states}=    Get Element States    css:button
+            Get Element States    css:button    *=    visible
+        ```
         """
         targets, op, expected = split_locators_and_assertion(
             *locators,
@@ -661,20 +746,25 @@ class InteractionKeywords:
     ) -> None:
         """Fill the matched element, replacing existing content.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``value`` | Explicit value to type. When provided, all positional arguments are treated as locators. |
-        | ``secret`` | When ``True``, masks typed value in logs as ``***``. Default is ``False``. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            value: Explicit value to type. When provided, all positional arguments are treated as locators.
+            secret: When ``True``, masks typed value in logs as ``***``. Default is ``False``.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Note:
             The ergonomic form requires at least one locator and one trailing value.
             If the trailing value looks like a locator token, pass it with ``value=``.
 
         Example:
-            | Fill Text    role:textbox    label:E-mail    user@example.com
-            | Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Fill Text    role:textbox    label:E-mail    user@example.com
+            Fill Text    role:textbox    label:Password    value=s3cret    secret=${TRUE}
+        ```
         """
         locator_tokens, final_value = self._resolve_fill_arguments(locators, value)
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
@@ -700,15 +790,20 @@ class InteractionKeywords:
 
         Page-level keystrokes (no locator) use ``Keyboard Key    press``.
 
-        | =Argument= | =Description= |
-        | ``key`` | Keyboard key or combo supported by Vibium (for example ``Enter``, ``Control+a``). |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            key: Keyboard key or combo supported by Vibium (for example ``Enter``, ``Control+a``).
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Press Keys    Enter    role:textbox    label:Search
-            | Press Keys    Control+a    css:#editor
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Press Keys    Enter    role:textbox    label:Search
+            Press Keys    Control+a    css:#editor
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -723,15 +818,20 @@ class InteractionKeywords:
     ) -> None:
         """Double-click the matched element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Double Click    css:tr.row
-            | ${el}=    Find Element    css:tr.row
-            | Double Click    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Double Click    css:tr.row
+            ${el}=    Find Element    css:tr.row
+            Double Click    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -746,15 +846,20 @@ class InteractionKeywords:
     ) -> None:
         """Hover the mouse pointer over the matched element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Hover    css:.menu-item
-            | ${el}=    Find Element    css:.menu-item
-            | Hover    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Hover    css:.menu-item
+            ${el}=    Find Element    css:.menu-item
+            Hover    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -769,15 +874,20 @@ class InteractionKeywords:
     ) -> None:
         """Tap the matched element (touch input; distinct from ``Click``).
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Tap    css:#btn
-            | ${el}=    Find Element    css:#btn
-            | Tap    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Tap    css:#btn
+            ${el}=    Find Element    css:#btn
+            Tap    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -792,15 +902,20 @@ class InteractionKeywords:
     ) -> None:
         """Briefly outline the matched element so a watcher can see it.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Highlight    css:.error
-            | ${el}=    Find Element    css:.error
-            | Highlight    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Highlight    css:.error
+            ${el}=    Find Element    css:.error
+            Highlight    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -815,15 +930,20 @@ class InteractionKeywords:
     ) -> None:
         """Set focus on the matched element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Focus    css:#search
-            | ${el}=    Find Element    css:#search
-            | Focus    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Focus    css:#search
+            ${el}=    Find Element    css:#search
+            Focus    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -838,15 +958,20 @@ class InteractionKeywords:
     ) -> None:
         """Clear the value of the matched element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Clear Text    css:#email
-            | ${el}=    Find Element    css:#email
-            | Clear Text    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Clear Text    css:#email
+            ${el}=    Find Element    css:#email
+            Clear Text    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -866,16 +991,21 @@ class InteractionKeywords:
     ) -> None:
         """Type text into the matched element in append mode.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``text`` | Explicit text to type. When provided, all positional arguments are treated as locators. |
-        | ``secret`` | When ``True``, masks typed text in logs as ``***``. Default is ``False``. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            text: Explicit text to type. When provided, all positional arguments are treated as locators.
+            secret: When ``True``, masks typed text in logs as ``***``. Default is ``False``.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Type Text    css:#notes    more text
-            | Type Text    css:#notes    text=more text
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Type Text    css:#notes    more text
+            Type Text    css:#notes    text=more text
+        ```
         """
         locator_tokens, final_text = self._resolve_tail_value_arguments(
             keyword_name="Type Text",
@@ -904,15 +1034,20 @@ class InteractionKeywords:
     ) -> None:
         """Select an option value in a matched ``<select>`` element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``value`` | Explicit option value to select. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            value: Explicit option value to select.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Select Option    css:#country    us
-            | Select Option    css:#country    value=us
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Select Option    css:#country    us
+            Select Option    css:#country    value=us
+        ```
         """
         locator_tokens, option_value = self._resolve_tail_value_arguments(
             keyword_name="Select Option",
@@ -936,15 +1071,20 @@ class InteractionKeywords:
     ) -> None:
         """Check a matched checkbox or radio control.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Check    css:#agree
-            | ${el}=    Find Element    css:#agree
-            | Check    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Check    css:#agree
+            ${el}=    Find Element    css:#agree
+            Check    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -959,15 +1099,20 @@ class InteractionKeywords:
     ) -> None:
         """Uncheck a matched checkbox control.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Uncheck    css:#newsletter
-            | ${el}=    Find Element    css:#newsletter
-            | Uncheck    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Uncheck    css:#newsletter
+            ${el}=    Find Element    css:#newsletter
+            Uncheck    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -982,15 +1127,20 @@ class InteractionKeywords:
     ) -> None:
         """Scroll until the matched element is in view.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Example:
-            | Scroll Into View    css:#footer
-            | ${el}=    Find Element    css:#footer
-            | Scroll Into View    ${el}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Scroll Into View    css:#footer
+            ${el}=    Find Element    css:#footer
+            Scroll Into View    ${el}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -1009,20 +1159,25 @@ class InteractionKeywords:
     ) -> None:
         """Scroll the page or a CSS container selector.
 
-        | =Argument= | =Description= |
-        | ``direction`` | Scroll direction accepted by Vibium. Default is ``down``. |
-        | ``amount`` | Scroll amount/steps. Default is ``3``. |
-        | ``*locators`` | Optional single CSS selector limiting scroll container. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            direction: Scroll direction accepted by Vibium. Default is ``down``.
+            amount: Scroll amount/steps. Default is ``3``.
+            *locators: Optional single CSS selector limiting scroll container.
+            scope: Optional page/frame object. When omitted, uses the active scope.
 
         Note:
             Raises ``LocatorSyntaxError`` if non-CSS locator axes are used for
             scoped scroll.
 
         Example:
-            | Scroll
-            | Scroll    up    2
-            | Scroll    down    3    .panel
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Scroll
+            Scroll    up    2
+            Scroll    down    3    .panel
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         selector = self._resolve_scroll_selector(locators)
@@ -1046,20 +1201,25 @@ class InteractionKeywords:
     ) -> None:
         """Dispatch a DOM event on the matched element.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``event`` | Event name to dispatch (for example ``click`` or ``change``). |
-        | ``event_init`` | Optional event init payload as dict or JSON object string. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            event: Event name to dispatch (for example ``click`` or ``change``).
+            event_init: Optional event init payload as dict or JSON object string.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Note:
             Raises ``LocatorSyntaxError`` if ``event_init`` is invalid JSON/object
             shape.
 
         Example:
-            | Dispatch Event    css:#field    event=change
-            | Dispatch Event    css:#field    event=custom    event_init={"detail": 1}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Dispatch Event    css:#field    event=change
+            Dispatch Event    css:#field    event=custom    event_init={"detail": 1}
+        ```
         """
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
         element = resolve_element(
@@ -1081,18 +1241,23 @@ class InteractionKeywords:
     ) -> None:
         """Upload one or more files into a matched file input.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``files`` | File path string or list/tuple of path strings. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            files: File path string or list/tuple of path strings.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` when resolving locators and to the element action. With a sole element handle, only the action uses it.
 
         Note:
             Raises ``LocatorSyntaxError`` if file paths are empty/invalid.
 
         Example:
-            | Upload Files    css:input[type='file']    files=/tmp/a.pdf
-            | Upload Files    css:input[type='file']    files=@{LIST}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Upload Files    css:input[type='file']    files=/tmp/a.pdf
+            Upload Files    css:input[type='file']    files=@{LIST}
+        ```
         """
         file_paths = InteractionKeywords._coerce_upload_files(files)
         timeout_ms = optional_timeout_ms(timeout, library=self.library)
@@ -1115,18 +1280,24 @@ class InteractionKeywords:
     ) -> None:
         """Drag one resolved element to another.
 
-        | =Argument= | =Description= |
-        | ``source`` | Source locator token string or list/tuple of locator tokens. |
-        | ``target`` | Target locator token string or list/tuple of locator tokens. |
-        | ``timeout`` | Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` for source/target and to ``drag_to``. |
-        | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+        Args:
+            source: Source locator token string or list/tuple of locator tokens.
+            target: Target locator token string or list/tuple of locator tokens.
+            timeout: Optional Robot timeout string (e.g. ``5s``). Forwarded to Vibium ``find`` for source/target and to ``drag_to``.
+            scope: Optional page/frame object. When omitted, uses the active scope.
+
         Note:
             Raises ``LocatorSyntaxError`` if source/target locator shapes are
             invalid.
 
         Example:
-            | Drag And Drop    css:#src    css:#tgt
-            | Drag And Drop    source=@{SRC}    target=@{TGT}    timeout=10s
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Drag And Drop    css:#src    css:#tgt
+            Drag And Drop    source=@{SRC}    target=@{TGT}    timeout=10s
+        ```
         """
         page = self.library._session.resolve_scope(scope)
         src_tokens = InteractionKeywords._coerce_locator_token_group("source", source)
