@@ -81,6 +81,8 @@ target-version = "py39"
 select = ["E", "F", "I", "UP", "B"]
 ignore = [
   "E501",  # line length: handled by black / long Robot docs
+  "UP045",  # Optional[X]: X | None breaks get_type_hints on 3.9 / Libdoc
+  "UP007",  # Union → X | Y  (Same risk in get_type_hints on 3.9 / Libdoc)
 ]
 
 [tool.ruff.lint.isort]

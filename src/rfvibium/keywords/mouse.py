@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional, Union
+
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -58,9 +60,9 @@ class MouseKeywords:
     @keyword("Mouse Click", tags=["Mouse", "Action"])
     def mouse_click(
         self,
-        x: int | float | str | None = None,
-        y: int | float | str | None = None,
-        button: int | str = 0,
+        x: Optional[Union[int, float, str]] = None,
+        y: Optional[Union[int, float, str]] = None,
+        button: Union[int, str] = 0,
     ) -> None:
         """Click at ``(x, y)`` viewport coordinates.
 
@@ -73,9 +75,8 @@ class MouseKeywords:
             Current Vibium sync mouse API only supports left button behavior for
             this keyword.
 
-        Raises:
-            VibiumLibraryError: If coordinates are missing/invalid or button is not
-            supported.
+            Raises ``VibiumLibraryError`` if coordinates are missing/invalid or
+            button is not supported.
 
         Example:
             | Mouse Click    120    340
@@ -91,15 +92,15 @@ class MouseKeywords:
         page.mouse.click(xf, yf)
 
     @keyword("Mouse Move", tags=["Mouse", "Action"])
-    def mouse_move(self, x: int | float | str, y: int | float | str) -> None:
+    def mouse_move(self, x: Union[int, float, str], y: Union[int, float, str]) -> None:
         """Move mouse pointer to ``(x, y)`` viewport coordinates.
 
         | =Argument= | =Description= |
         | ``x`` | Horizontal viewport coordinate (number or numeric string). |
         | ``y`` | Vertical viewport coordinate (number or numeric string). |
 
-        Raises:
-            VibiumLibraryError: If coordinate values are invalid.
+        Note:
+            Raises ``VibiumLibraryError`` if coordinate values are invalid.
 
         Example:
             | Mouse Move    100    200
@@ -111,7 +112,7 @@ class MouseKeywords:
         page.mouse.move(xf, yf)
 
     @keyword("Mouse Down", tags=["Mouse", "Action"])
-    def mouse_down(self, button: int | str = 0) -> None:
+    def mouse_down(self, button: Union[int, str] = 0) -> None:
         """Press mouse button down.
 
         | =Argument= | =Description= |
@@ -121,8 +122,7 @@ class MouseKeywords:
             Current Vibium sync mouse API only supports left button behavior for
             this keyword.
 
-        Raises:
-            VibiumLibraryError: If button is invalid or unsupported.
+            Raises ``VibiumLibraryError`` if button is invalid or unsupported.
 
         Example:
             | Mouse Down
@@ -135,7 +135,7 @@ class MouseKeywords:
         page.mouse.down()
 
     @keyword("Mouse Up", tags=["Mouse", "Action"])
-    def mouse_up(self, button: int | str = 0) -> None:
+    def mouse_up(self, button: Union[int, str] = 0) -> None:
         """Release mouse button.
 
         | =Argument= | =Description= |
@@ -145,8 +145,7 @@ class MouseKeywords:
             Current Vibium sync mouse API only supports left button behavior for
             this keyword.
 
-        Raises:
-            VibiumLibraryError: If button is invalid or unsupported.
+            Raises ``VibiumLibraryError`` if button is invalid or unsupported.
 
         Example:
             | Mouse Up
@@ -161,8 +160,8 @@ class MouseKeywords:
     @keyword("Mouse Wheel", tags=["Mouse", "Action"])
     def mouse_wheel(
         self,
-        delta_x: int | float | str = 0,
-        delta_y: int | float | str = 0,
+        delta_x: Union[int, float, str] = 0,
+        delta_y: Union[int, float, str] = 0,
     ) -> None:
         """Scroll the page using the mouse wheel at the current pointer position.
 

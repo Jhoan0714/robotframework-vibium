@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from robot.api import logger
 from robot.api.deco import keyword
@@ -23,7 +23,7 @@ class CookieKeywords:
 
     @keyword("List Cookies", tags=["BrowserContext", "Getter"])
     def list_cookies(
-        self, context: BrowserContext | None = None
+        self, context: Optional[BrowserContext] = None
     ) -> list[dict[str, Any]]:
         """Return all cookies from the active browser context.
 
@@ -31,7 +31,7 @@ class CookieKeywords:
         | ``context`` | Optional context handle. When omitted, uses active context. |
 
         Returns:
-            list[dict]: Cookie entries as returned by Vibium context API.
+            Cookie entries from the Vibium context API.
 
         Example:
             | @{cookies}=    List Cookies
@@ -52,8 +52,8 @@ class CookieKeywords:
         http_only: bool = False,
         secure: bool = False,
         same_site: str = "",
-        expiry: int | None = None,
-        context: BrowserContext | None = None,
+        expiry: Optional[int] = None,
+        context: Optional[BrowserContext] = None,
     ) -> None:
         """Create or update a cookie in the active browser context.
 
@@ -98,7 +98,7 @@ class CookieKeywords:
         ctx.set_cookies([cookie])
 
     @keyword("Clear Cookies", tags=["BrowserContext", "Action"])
-    def clear_cookies(self, context: BrowserContext | None = None) -> None:
+    def clear_cookies(self, context: Optional[BrowserContext] = None) -> None:
         """Remove all cookies from the active browser context.
 
         | =Argument= | =Description= |
@@ -121,9 +121,9 @@ class StorageKeywords:
     @keyword("Export Storage State", tags=["BrowserContext", "Getter"])
     def export_storage_state(
         self,
-        output_path: str | None = None,
+        output_path: Optional[str] = None,
         embed: bool = True,
-        context: BrowserContext | None = None,
+        context: Optional[BrowserContext] = None,
     ) -> str:
         """Export cookies and storage data to a JSON file.
 
@@ -133,7 +133,7 @@ class StorageKeywords:
         | ``context`` | Optional context handle. When omitted, uses active context. |
 
         Returns:
-            str: Absolute path of the generated JSON file.
+            Absolute path of the generated JSON file.
 
         Example:
             | ${state}=    Export Storage State
@@ -157,7 +157,7 @@ class StorageKeywords:
 
     @keyword("Restore Storage State", tags=["BrowserContext", "Action"])
     def restore_storage_state(
-        self, path: str, context: BrowserContext | None = None
+        self, path: str, context: Optional[BrowserContext] = None
     ) -> None:
         """Restore cookies and storage data from a JSON state file.
 
@@ -177,7 +177,7 @@ class StorageKeywords:
         ctx.set_storage(state)
 
     @keyword("Clear Storage", tags=["BrowserContext", "Action"])
-    def clear_storage(self, context: BrowserContext | None = None) -> None:
+    def clear_storage(self, context: Optional[BrowserContext] = None) -> None:
         """Clear cookies and origin storage for the active browser context.
 
         | =Argument= | =Description= |

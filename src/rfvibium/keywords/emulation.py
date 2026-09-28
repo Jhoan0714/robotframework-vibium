@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional, Union
 
 from robot.api import logger
 from robot.api.deco import keyword
@@ -17,7 +17,7 @@ class EmulationKeywords:
         self.library = library
 
     @staticmethod
-    def _as_int(name: str, value: int | str) -> int:
+    def _as_int(name: str, value: Union[int, str]) -> int:
         try:
             return int(value)
         except (TypeError, ValueError) as exc:
@@ -28,8 +28,8 @@ class EmulationKeywords:
     @keyword("Set Viewport Size", tags=["Page", "Action"])
     def set_viewport_size(
         self,
-        width: int | str,
-        height: int | str,
+        width: Union[int, str],
+        height: Union[int, str],
     ) -> None:
         """Set the active page viewport size in CSS pixels.
 
@@ -52,7 +52,7 @@ class EmulationKeywords:
         """Return the active page viewport size.
 
         Returns:
-            dict: Mapping with ``width`` and ``height`` integers (CSS pixels).
+            Mapping with ``width`` and ``height`` integers (CSS pixels).
 
         Example:
             | ${size}=    Get Viewport Size
@@ -66,11 +66,11 @@ class EmulationKeywords:
     @keyword("Set Window", tags=["Page", "Action"])
     def set_window(
         self,
-        width: int | str | None = None,
-        height: int | str | None = None,
-        x: int | str | None = None,
-        y: int | str | None = None,
-        state: str | None = None,
+        width: Optional[Union[int, str]] = None,
+        height: Optional[Union[int, str]] = None,
+        x: Optional[Union[int, str]] = None,
+        y: Optional[Union[int, str]] = None,
+        state: Optional[str] = None,
     ) -> None:
         """Set the OS browser window size, position, and/or state.
 
@@ -116,7 +116,7 @@ class EmulationKeywords:
         """Return the OS browser window size, position, and state.
 
         Returns:
-            dict: Window info as returned by Vibium ``page.window()``.
+            Window info as returned by Vibium ``page.window()``.
 
         Example:
             | ${info}=    Get Window Info

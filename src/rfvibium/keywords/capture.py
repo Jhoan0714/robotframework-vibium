@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from robot.api import logger
 from robot.api.deco import keyword
@@ -38,7 +38,7 @@ def _is_stale_context_error(exc: BaseException) -> bool:
 _CLIP_RECT_KEYS = ("x", "y", "width", "height")
 
 
-def _normalize_screenshot_clip(clip: object) -> dict[str, Any] | None:
+def _normalize_screenshot_clip(clip: object) -> Optional[dict[str, Any]]:
     """Return a clip dict for ``page.screenshot`` or ``None``."""
     if clip is None:
         return None
@@ -68,13 +68,13 @@ class CaptureKeywords:
     def take_screenshot(
         self,
         *locators: Locator,
-        output_path: str | None = None,
+        output_path: Optional[str] = None,
         embed: bool = True,
         width: str = "800px",
-        full_page: bool | None = None,
+        full_page: Optional[bool] = None,
         clip: object = None,
         scope: FindScope = None,
-        timeout: str | None = None,
+        timeout: Optional[str] = None,
     ) -> str:
         """Capture a PNG screenshot of the page or a matched element.
 
@@ -88,18 +88,18 @@ class CaptureKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string for locating the element (``find``). Ignored for page screenshots. |
 
-        Returns:
-            str: Absolute path of the generated PNG file.
-
-        Raises:
-            ScreenshotError: When clip parsing fails or screenshot capture fails.
-
         Note:
+            Raises ``ScreenshotError`` when clip parsing fails or screenshot
+            capture fails.
+
             Page screenshots are only supported on the **top-level** browsing
             context (the tab's root page). Using ``scope`` with a frame object
             from ``Get Frame`` typically fails for page captures. Prefer
             locators (element screenshot) or ``scope`` on the main page
             (optionally with ``clip``).
+
+        Returns:
+            Absolute path of the generated PNG file.
 
         Example:
             | ${path}=    Take Screenshot
@@ -156,7 +156,7 @@ class CaptureKeywords:
         width: str,
         take_bytes: Callable[[], bytes],
     ) -> str:
-        last_exc: BaseException | None = None
+        last_exc: Optional[BaseException] = None
         for attempt in range(2):
             try:
                 png_bytes = take_bytes()
@@ -179,7 +179,7 @@ class CaptureKeywords:
     @keyword("Save Page As Pdf", tags=["Page", "Action"])
     def save_page_as_pdf(
         self,
-        output_path: str | None = None,
+        output_path: Optional[str] = None,
         embed: bool = True,
         scope: FindScope = None,
     ) -> str:
@@ -190,13 +190,13 @@ class CaptureKeywords:
         | ``embed`` | When ``True`` (default), logs an HTML link to the PDF artifact. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
-        Returns:
-            str: Absolute path of the generated PDF file.
-
         Note:
             Like ``Take Screenshot``, PDF generation is expected to work on the
             **top-level** page context. A frame ``scope`` from ``Get Frame`` may
             be unsupported by Vibium for this operation.
+
+        Returns:
+            Absolute path of the generated PDF file.
 
         Example:
             | ${pdf}=    Save Page As Pdf
@@ -234,7 +234,7 @@ class CaptureKeywords:
         logger.info(html, html=True)
 
 
-def _robot_output_dir() -> str | None:
+def _robot_output_dir() -> Optional[str]:
     """Return Robot Framework's ``${OUTPUT DIR}`` or ``None`` outside RF."""
     try:
         from robot.libraries.BuiltIn import BuiltIn, RobotNotRunningError

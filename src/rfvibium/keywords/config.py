@@ -25,8 +25,9 @@ class ConfigKeywords:
         | ``timeout`` | Robot time string (e.g. ``5s``, ``500ms``). Use ``None`` or empty to clear the override (Vibium default). |
         | ``scope`` | ``Global``, ``Suite`` (default), or ``Test`` / ``Task``. See Scope Setting. |
 
-        Returns the previous timeout as a Robot time string, or ``None`` when
-        there was no library override (Vibium default).
+        Returns:
+            Previous timeout as a Robot time string, or ``None`` when there was
+            no library override (Vibium default).
 
         Example:
             | ${old}=    Set Browser Timeout    2s

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional, Union
+
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -17,8 +19,8 @@ class TouchKeywords:
     @keyword("Touch Tap", tags=["Touch", "Action"])
     def touch_tap(
         self,
-        x: int | float | str | None = None,
-        y: int | float | str | None = None,
+        x: Optional[Union[int, float, str]] = None,
+        y: Optional[Union[int, float, str]] = None,
     ) -> None:
         """Tap at ``(x, y)`` viewport coordinates via touch input.
 
@@ -29,8 +31,8 @@ class TouchKeywords:
         | ``x`` | Horizontal viewport coordinate (number or numeric string). |
         | ``y`` | Vertical viewport coordinate (number or numeric string). |
 
-        Raises:
-            VibiumLibraryError: If coordinates are missing or invalid.
+        Note:
+            Raises ``VibiumLibraryError`` if coordinates are missing or invalid.
 
         Example:
             | Touch Tap    120    340

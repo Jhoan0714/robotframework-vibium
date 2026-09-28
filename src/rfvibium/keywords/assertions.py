@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from assertionengine import AssertionOperator
 from robot.api import logger
@@ -31,9 +31,9 @@ class AssertionKeywords:
     @keyword("Get Url", tags=["Page", "Getter"])
     def get_url(
         self,
-        assertion_operator: AssertionOperator | None = None,
+        assertion_operator: Optional[AssertionOperator] = None,
         assertion_expected: Any = None,
-        message: str | None = None,
+        message: Optional[str] = None,
         *,
         scope: FindScope = None,
     ) -> Any:
@@ -46,6 +46,9 @@ class AssertionKeywords:
         | ``assertion_expected`` | Expected value when asserting. |
         | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+
+        Returns:
+            Current URL, or the [#Assertions|AssertionEngine] result when asserting.
 
         Example:
             | ${url}=    Get Url
@@ -60,15 +63,16 @@ class AssertionKeywords:
     @keyword("Get Title", tags=["Page", "Getter"])
     def get_title(
         self,
-        assertion_operator: AssertionOperator | None = None,
+        assertion_operator: Optional[AssertionOperator] = None,
         assertion_expected: Any = None,
-        message: str | None = None,
+        message: Optional[str] = None,
         *,
         scope: FindScope = None,
     ) -> Any:
         """Return the document title from the resolved scope.
 
-        Optionally asserts with AssertionEngine.
+        Optionally asserts with AssertionEngine. The underlying Vibium client
+        may return an empty string when no title is available.
 
         | =Argument= | =Description= |
         | ``assertion_operator`` | Optional AssertionEngine operator. |
@@ -77,8 +81,7 @@ class AssertionKeywords:
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
         Returns:
-            The page title (or AssertionEngine result). The underlying Vibium
-            client may return an empty string when no title is available.
+            Document title (may be empty), or the [#Assertions|AssertionEngine] result when asserting.
 
         Example:
             | ${title}=    Get Title
@@ -93,9 +96,9 @@ class AssertionKeywords:
     @keyword("Get Page Text", tags=["Page", "Getter"])
     def get_page_text(
         self,
-        assertion_operator: AssertionOperator | None = None,
+        assertion_operator: Optional[AssertionOperator] = None,
         assertion_expected: Any = None,
-        message: str | None = None,
+        message: Optional[str] = None,
         *,
         scope: FindScope = None,
     ) -> Any:
@@ -108,6 +111,9 @@ class AssertionKeywords:
         | ``assertion_expected`` | Expected value when asserting. |
         | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+
+        Returns:
+            Visible body text, or the [#Assertions|AssertionEngine] result when asserting.
 
         Example:
             | ${text}=    Get Page Text
@@ -125,11 +131,11 @@ class AssertionKeywords:
         self,
         *locators: Locator,
         outer: bool = True,
-        assertion_operator: AssertionOperator | None = None,
+        assertion_operator: Optional[AssertionOperator] = None,
         assertion_expected: Any = None,
-        message: str | None = None,
+        message: Optional[str] = None,
         scope: FindScope = None,
-        timeout: str | None = None,
+        timeout: Optional[str] = None,
     ) -> Any:
         """Return HTML from the resolved scope or a resolved element.
 
@@ -146,8 +152,12 @@ class AssertionKeywords:
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
         | ``timeout`` | Optional Robot timeout string for locating the element (``find``). Ignored for page-level HTML. |
 
-        Raises:
-            LocatorSyntaxError: When locators/handle are provided with ``outer=False``.
+        Note:
+            Raises ``LocatorSyntaxError`` when locators/handle are provided with
+            ``outer=False``.
+
+        Returns:
+            HTML string, or the [#Assertions|AssertionEngine] result when asserting.
 
         Example:
             | ${doc}=    Get Html
@@ -186,9 +196,9 @@ class AssertionKeywords:
     def find_elements(
         self,
         *locators: Locator,
-        limit: int | None = None,
+        limit: Optional[int] = None,
         scope: FindScope = None,
-        timeout: str | None = None,
+        timeout: Optional[str] = None,
     ) -> list[Element]:
         """Return Vibium ``Element`` handles for all matches.
 
@@ -202,11 +212,12 @@ class AssertionKeywords:
         | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``. |
 
-        Returns:
-            list: Vibium ``Element`` handles (possibly empty).
+        Note:
+            Raises ``LocatorSyntaxError`` if ``limit`` is provided and lower than
+            ``1``.
 
-        Raises:
-            LocatorSyntaxError: If ``limit`` is provided and lower than ``1``.
+        Returns:
+            Matching element handles (possibly empty).
 
         Example:
             | @{rows}=     Find Elements    css:.row
@@ -232,11 +243,11 @@ class AssertionKeywords:
     def count_elements(
         self,
         *locators: Locator,
-        assertion_operator: AssertionOperator | None = None,
+        assertion_operator: Optional[AssertionOperator] = None,
         assertion_expected: Any = None,
-        message: str | None = None,
+        message: Optional[str] = None,
         scope: FindScope = None,
-        timeout: str | None = None,
+        timeout: Optional[str] = None,
     ) -> Any:
         """Return how many elements match the locator(s).
 
@@ -252,6 +263,9 @@ class AssertionKeywords:
         | ``message`` | Optional custom assertion failure message. |
         | ``scope`` | Optional page, frame, or parent element. When omitted, uses the active page/frame. |
         | ``timeout`` | Optional Robot timeout string (e.g. ``5s``) forwarded to Vibium ``find_all``. |
+
+        Returns:
+            Match count, or the [#Assertions|AssertionEngine] result when asserting.
 
         Example:
             | ${count}=    Count Elements    css:.item
@@ -275,7 +289,7 @@ class AssertionKeywords:
         return assert_value(count, op, coerce_int(expected), "Element count", message)
 
     @keyword("Evaluate JavaScript", tags=["Page", "Action"])
-    def evaluate_javascript(self, expression: str, scope: FindScope = None):
+    def evaluate_javascript(self, expression: str, scope: FindScope = None) -> Any:
         """Evaluate JavaScript in the resolved scope and return its result.
 
         | =Argument= | =Description= |
@@ -283,7 +297,7 @@ class AssertionKeywords:
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
         Returns:
-            Any: Deserialized value returned by the browser runtime.
+            Value returned by the browser runtime (deserialized).
 
         Example:
             | ${ready}=    Evaluate JavaScript    () => document.readyState
@@ -303,7 +317,7 @@ class AssertionKeywords:
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
 
         Returns:
-            str: String representation of the accessibility tree.
+            String representation of the accessibility tree.
 
         Example:
             | ${tree}=    Get Accessibility Tree

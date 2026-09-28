@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 from robot.api import logger
 from robot.api.deco import keyword
 
@@ -35,6 +37,10 @@ class NavigationKeywords:
 
         | =Argument= | =Description= |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+
+        Example:
+            | Go Back
+            | Go Back    scope=${page}
         """
         page = self.library._session.resolve_scope(scope)
         logger.info("Navigating one entry back in history.")
@@ -46,6 +52,10 @@ class NavigationKeywords:
 
         | =Argument= | =Description= |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+
+        Example:
+            | Go Forward
+            | Go Forward    scope=${page}
         """
         page = self.library._session.resolve_scope(scope)
         logger.info("Navigating one entry forward in history.")
@@ -57,23 +67,29 @@ class NavigationKeywords:
 
         | =Argument= | =Description= |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
+
+        Example:
+            | Reload
+            | Reload    scope=${page}
         """
         page = self.library._session.resolve_scope(scope)
         logger.info("Reloading page.")
         page.reload()
 
     @keyword("List Pages", tags=["Browser", "Getter"])
-    def list_pages(self, browser: Browser | None = None) -> list[str]:
+    def list_pages(self, browser: Optional[Browser] = None) -> list[str]:
         """List open browser pages as ``index: url`` strings.
+
+        The active page is prefixed with ``*``.
 
         | =Argument= | =Description= |
         | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
 
-        Returns:
-            list[str]: All open pages. The active page is prefixed with ``*``.
+        Note:
+            Raises ``BrowserSessionError`` if no browser is open.
 
-        Raises:
-            BrowserSessionError: If no browser is open.
+        Returns:
+            Open pages as ``index: url`` strings. The active page is prefixed with ``*``.
 
         Example:
             | @{pages}=    List Pages
@@ -92,8 +108,8 @@ class NavigationKeywords:
     def new_page(
         self,
         url: str = "",
-        context: BrowserContext | None = None,
-        browser: Browser | None = None,
+        context: Optional[BrowserContext] = None,
+        browser: Optional[Browser] = None,
     ) -> str:
         """Create a new page/tab and set it as active.
 
@@ -102,11 +118,11 @@ class NavigationKeywords:
         | ``context`` | Optional context handle. When provided, page is opened inside that context. |
         | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
 
-        Returns:
-            str: Current URL of the new page.
+        Note:
+            Raises ``BrowserSessionError`` if no browser is open.
 
-        Raises:
-            BrowserSessionError: If no browser is open.
+        Returns:
+            Current URL of the new page.
 
         Example:
             | ${url}=    New Page
@@ -121,7 +137,7 @@ class NavigationKeywords:
         return page.url()
 
     @keyword("Switch Page", tags=["Page", "Action"])
-    def switch_page(self, page: Page | None = None) -> None:
+    def switch_page(self, page: Optional[Page] = None) -> None:
         """Bring the given page to the foreground.
 
         This keyword maps directly to Vibium ``page.bring_to_front()`` and updates
@@ -159,14 +175,14 @@ class NavigationKeywords:
         logger.info(f"Closed page '{url}'.")
 
     @keyword("Get Active Page", tags=["Browser", "Getter"])
-    def get_active_page(self, browser: Browser | None = None) -> Page:
+    def get_active_page(self, browser: Optional[Browser] = None) -> Page:
         """Return the current active page scope object.
 
         | =Argument= | =Description= |
         | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
 
         Returns:
-            object: Active page object from session.
+            Active page object for the selected browser.
 
         Example:
             | ${page}=    Get Active Page
@@ -177,20 +193,23 @@ class NavigationKeywords:
 
     @keyword("Get Frame", tags=["Page", "Getter"])
     def get_frame(self, name_or_url: str, scope: PageScope = None) -> Page:
-        """Return a child frame from the resolved scope by name or URL fragment.
+        """Return a child frame handle from the resolved scope by name or URL fragment.
+
+        The handle can be passed as ``scope=`` to other keywords.
 
         | =Argument= | =Description= |
         | ``name_or_url`` | Frame name or URL fragment accepted by Vibium ``frame(...)``. |
         | ``scope`` | Optional page/frame object where the frame lookup starts. When omitted, uses the active scope. |
 
-        Returns:
-            object: Frame object returned by Vibium.
+        Note:
+            Raises ``BrowserSessionError`` if no frame matches ``name_or_url``.
 
-        Raises:
-            BrowserSessionError: If no frame matches ``name_or_url``.
+        Returns:
+            Child frame handle usable as ``scope=`` in other keywords.
 
         Example:
             | ${frame}=    Get Frame    checkout-frame    scope=${page}
+            | ${text}=    Get Text    css:h1    scope=${frame}
         """
         frame = self.library._session.resolve_scope(scope).frame(name_or_url)
         if frame is None:
@@ -209,14 +228,16 @@ class NavigationKeywords:
     ) -> list[dict]:
         """List frames available from the resolved scope.
 
+        Each entry has ``index``, ``url``, and ``title``. Title/url values come
+        from Vibium and may be empty strings when not requested or unavailable.
+
         | =Argument= | =Description= |
         | ``scope`` | Optional page/frame object. When omitted, uses the active scope. |
         | ``include_url`` | When ``True``, resolves ``frame.url()`` for each frame. Default ``False`` for better performance. |
         | ``include_title`` | When ``True``, resolves ``frame.title()`` for each frame. Default ``False`` for better performance. |
 
         Returns:
-            list[dict]: Frame metadata with ``index``, ``url`` and ``title``.
-            Title/url values come from Vibium and may be empty strings.
+            Frame metadata dicts with ``index``, ``url``, and ``title`` (url/title may be empty).
 
         Example:
             | @{frames}=    List Frames
@@ -235,30 +256,61 @@ class NavigationKeywords:
         logger.info(f"Listed {len(result)} frame(s).")
         return result
 
-    def _require_browser(self, browser: Browser | None = None):
+    def _require_browser(self, browser: Optional[Browser] = None):
         return self.library._session.resolve_browser(browser)
 
     @keyword("New Context", tags=["BrowserContext", "Action"])
-    def new_context(self, browser: Browser | None = None) -> BrowserContext:
+    def new_context(self, browser: Optional[Browser] = None) -> BrowserContext:
         """Create a new browser context and make it active.
 
         | =Argument= | =Description= |
         | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
+
+        Returns:
+            Newly created browser context handle.
+
+        Example:
+            | ${ctx}=    New Context
+            | ${ctx}=    New Context    browser=${browser}
         """
         context = self.library._session.new_context(browser=browser)
         logger.info("Created new browser context.")
         return context
 
     @keyword("Get Active Context", tags=["BrowserContext", "Getter"])
-    def get_active_context(self, browser: Browser | None = None) -> BrowserContext:
-        """Return the active context for selected browser."""
+    def get_active_context(self, browser: Optional[Browser] = None) -> BrowserContext:
+        """Return the active context for the selected browser.
+
+        | =Argument= | =Description= |
+        | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
+
+        Returns:
+            Active context handle for the selected browser.
+
+        Example:
+            | ${ctx}=    Get Active Context
+            | ${ctx}=    Get Active Context    browser=${browser}
+        """
         context = self.library._session.get_active_context(browser=browser)
         logger.info("Returning active context object.")
         return context
 
     @keyword("List Contexts", tags=["BrowserContext", "Getter"])
-    def list_contexts(self, browser: Browser | None = None) -> list[str]:
-        """List known contexts for selected browser."""
+    def list_contexts(self, browser: Optional[Browser] = None) -> list[str]:
+        """List known contexts for the selected browser as ``index: id`` strings.
+
+        The active context is prefixed with ``*``.
+
+        | =Argument= | =Description= |
+        | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
+
+        Returns:
+            Contexts as ``index: id`` strings. The active context is prefixed with ``*``.
+
+        Example:
+            | @{contexts}=    List Contexts
+            | @{contexts}=    List Contexts    browser=${browser}
+        """
         contexts = self.library._session.contexts(browser=browser)
         active = self.library._session.get_active_context(browser=browser)
         result: list[str] = []
@@ -272,16 +324,37 @@ class NavigationKeywords:
 
     @keyword("Switch Context", tags=["BrowserContext", "Action"])
     def switch_context(
-        self, context: BrowserContext, browser: Browser | None = None
+        self, context: BrowserContext, browser: Optional[Browser] = None
     ) -> None:
-        """Set context as active for selected browser."""
+        """Set the given context as active for the selected browser.
+
+        | =Argument= | =Description= |
+        | ``context`` | Context handle to activate (for example from ``New Context`` or ``Get Active Context``). |
+        | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
+
+        Example:
+            | ${ctx}=    New Context
+            | Switch Context    ${ctx}
+        """
         self.library._session.switch_context(context=context, browser=browser)
         logger.info("Switched active context.")
 
     @keyword("Close Context", tags=["BrowserContext", "Action"])
     def close_context(
-        self, context: BrowserContext | None = None, browser: Browser | None = None
+        self,
+        context: Optional[BrowserContext] = None,
+        browser: Optional[Browser] = None,
     ) -> None:
-        """Close one context and clear active page when needed."""
+        """Close one context and clear the active page when needed.
+
+        | =Argument= | =Description= |
+        | ``context`` | Optional context handle to close. When omitted, closes the active context. |
+        | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, uses the active browser. |
+
+        Example:
+            | Close Context
+            | ${ctx}=    New Context
+            | Close Context    context=${ctx}
+        """
         self.library._session.close_context(context=context, browser=browser)
         logger.info("Closed browser context.")
