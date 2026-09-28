@@ -21,19 +21,24 @@ class ConfigKeywords:
 
         Used when a keyword omits ``timeout=``. Per-call ``timeout=`` still wins.
 
-        | =Argument= | =Description= |
-        | ``timeout`` | Robot time string (e.g. ``5s``, ``500ms``). Use ``None`` or empty to clear the override (Vibium default). |
-        | ``scope`` | ``Global``, ``Suite`` (default), or ``Test`` / ``Task``. See Scope Setting. |
+        Args:
+            timeout: Robot time string (e.g. ``5s``, ``500ms``). Use ``None`` or empty to clear the override (Vibium default).
+            scope: ``Global``, ``Suite`` (default), or ``Test`` / ``Task``. See Scope Setting.
 
         Returns:
             Previous timeout as a Robot time string, or ``None`` when there was
             no library override (Vibium default).
 
         Example:
-            | ${old}=    Set Browser Timeout    2s
-            | Click    css:#save
-            | Set Browser Timeout    ${old}
-            | Set Browser Timeout    500ms    scope=Test
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            ${old}=    Set Browser Timeout    2s
+            Click    css:#save
+            Set Browser Timeout    ${old}
+            Set Browser Timeout    500ms    scope=Test
+        ```
         """
         old_ms = self.library.timeout_settings.get()
         old_str = timeout_ms_to_timestr(old_ms)
