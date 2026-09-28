@@ -110,8 +110,8 @@ class WaitKeywords:
         | ``timeout`` | Robot Framework timeout string. Default is ``10s``. Applied to ``find`` and to ``wait_until``. |
         | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
 
-        Raises:
-            LocatorSyntaxError: If ``state`` is not supported.
+        Note:
+            Raises ``LocatorSyntaxError`` if ``state`` is not supported.
 
         Example:
             | Wait For Element    css:#modal    state=visible    timeout=5s
@@ -158,8 +158,8 @@ class WaitKeywords:
         | ``expression`` | JavaScript function/expression string evaluated in the page context. |
         | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
 
-        Raises:
-            LocatorSyntaxError: If ``expression`` is empty.
+        Note:
+            Raises ``LocatorSyntaxError`` if ``expression`` is empty.
 
         Example:
             | Wait For Function    () => document.querySelector('.done') !== null
@@ -179,8 +179,8 @@ class WaitKeywords:
         | =Argument= | =Description= |
         | ``milliseconds`` | Number or numeric string in milliseconds. Must be between ``0`` and ``30000``. |
 
-        Raises:
-            VibiumLibraryError: If value is invalid, negative, or above 30000.
+        Note:
+            Raises ``VibiumLibraryError`` if value is invalid, negative, or above 30000.
 
         Example:
             | Page Wait    500
@@ -202,6 +202,9 @@ class WaitKeywords:
 
         | =Argument= | =Description= |
         | ``milliseconds`` | Number or numeric string in milliseconds. Same behavior as ``Page Wait``. |
+
+        Example:
+            | Sleep Milliseconds    250
         """
         self.page_wait(milliseconds)
 
