@@ -39,7 +39,7 @@ from .version import __version__
 @library(
     scope="GLOBAL",
     version=__version__,
-    doc_format="ROBOT",
+    doc_format="MARKDOWN",
     converters={
         AssertionOperator: convert_assertion_operator,
         Browser: convert_browser,
@@ -56,38 +56,41 @@ class Vibium(DynamicCore):
     and practical defaults for UI testing.
 
     Repository and docs:
-    - Project: [https://github.com/Jhoan0714/robotframework-vibium|robotframework-vibium]
-    - Vibium: [https://github.com/VibiumDev/vibium|VibiumDev/vibium]
-    - Robot Framework: [https://robotframework.org|robotframework.org]
 
-    *Table of contents*
+    - Project: [robotframework-vibium](https://github.com/Jhoan0714/robotframework-vibium)
+    - Vibium: [VibiumDev/vibium](https://github.com/VibiumDev/vibium)
+    - Robot Framework: [robotframework.org](https://robotframework.org)
+
+    **Table of contents**
 
     %TOC%
 
-    = Importing =
+    # Importing
 
     Import the library in Robot Framework:
 
-    | *** Settings ***
-    | Library    Vibium
+    ```robotframework
+    *** Settings ***
+    Library    Vibium
+    ```
 
     The default scope is ``GLOBAL`` (one library instance for the full run).
 
-    = Browser Lifecycle =
+    # Browser Lifecycle
 
-    == Browser ==
+    ## Browser
 
     ``Open Browser`` starts a browser instance and returns its handle.
     When multiple browsers are open, some navigation/context keywords accept
     ``browser=`` so you can target a specific browser handle.
 
-    == Context ==
+    ## Context
 
     A context is an isolated browser profile inside a browser (cookies/storage scope).
     New pages are opened inside a context, and context keywords let you inspect,
     switch, and close that isolation boundary.
 
-    == Page ==
+    ## Page
 
     The library tracks an *active* page used by defaulted keywords.
     Keywords that accept ``scope`` use that active page when ``scope`` is omitted,
@@ -105,16 +108,17 @@ class Vibium(DynamicCore):
     Page-only keywords (for example ``Get Url``, ``Go To``, ``Map Elements``)
     expect a page or frame ``scope``, not an element handle.
 
-    = Locating Elements =
+    # Locating Elements
 
     Most interaction/getter keywords accept one or more locator tokens.
     Tokens are merged into a single ``page.find(...)`` call, so you can combine
     multiple constraints (for example role + text) to target one element with
     better precision.
 
-    = Supported locator strategies =
+    # Supported locator strategies
 
-    | =Strategy= | =Description= | =Example= |
+    | Strategy | Description | Example |
+    | -------- | ----------- | ------- |
     | ``css`` | CSS selector (default when no prefix is provided). | ``css:button.primary`` |
     | ``role`` | Accessible role. | ``role:button`` |
     | ``text`` | Visible text content. | ``text:Save`` |
@@ -126,38 +130,51 @@ class Vibium(DynamicCore):
     | ``xpath`` | XPath expression. | ``xpath://button[@type='submit']`` |
     | ``near`` | Element near another text/selector hint. | ``near:Password`` |
 
-    = Explicit strategy syntax =
+    # Explicit strategy syntax
 
     Use ``strategy:value`` to force a specific strategy:
 
-    | Click    text:Sign in
-    | Fill Text     label:Email    user@example.com
-    | Click    xpath://button[@id='submit']
+    ```robotframework
+    *** Keywords ***
+    Example
+        Click    text:Sign in
+        Fill Text     label:Email    user@example.com
+        Click    xpath://button[@id='submit']
+    ```
 
-    = Implicit strategy (default) =
+    # Implicit strategy (default)
 
     If a token does not include a known ``strategy:`` prefix, it is treated as
     a CSS selector.
 
-    | Click    button.primary
-    | Find Element     #login-form input[name='email']
+    ```robotframework
+    *** Keywords ***
+    Example
+        Click    button.primary
+        Find Element     input[name='email']
+    ```
 
-    = Combining locator tokens =
+    # Combining locator tokens
 
     Passing multiple tokens narrows the match. This is useful when one strategy
     alone is ambiguous.
 
-    | Click    role:button    text:Continue
-    | Fill Text     role:textbox   label:Email    value=user@example.com
+    ```robotframework
+    *** Keywords ***
+    Example
+        Click    role:button    text:Continue
+        Fill Text     role:textbox   label:Email    value=user@example.com
+    ```
 
-    = Shadow DOM pierce =
+    # Shadow DOM pierce
 
     To reach elements inside an *open* shadow root, put a pierce combinator in
     the locator string. The same find-based keywords (``Click``, ``Get Text``,
     ``Find Element``, …) accept these selectors; there is no separate pierce
     keyword. Plain CSS without ``>>`` / ``>>>`` does not enter shadow trees.
 
-    | =Combinator= | =Meaning= |
+    | Combinator | Meaning |
+    | ---------- | ------- |
     | ``>>`` | Cross **one** shadow boundary (the host's own open shadow root). |
     | ``>>>`` | Cross **any depth** of nested open shadow roots below the host. |
 
@@ -168,43 +185,51 @@ class Vibium(DynamicCore):
     (``my-card>>p`` equals ``my-card >> p``). CSS child ``>`` is not pierce:
     ``div > p`` stays ordinary CSS and does not enter a shadow root.
 
-    | Get Text    my-card >> #shadow-text
-    | Click       my-card >> #shadow-btn
-    | Get Text    outer-host >>> #deep
-    | Get Text    outer-host >> inner-host >> #deep
+    ```robotframework
+    *** Keywords ***
+    Example
+        Get Text    my-card >> #shadow-text
+        Click       my-card >> #shadow-btn
+        Get Text    outer-host >>> #deep
+        Get Text    outer-host >> inner-host >> #deep
+    ```
 
     Closed shadow roots are never entered. Searching under an already-resolved
     handle uses ``scope=${element}`` instead; that nested find is separate from
     pierce in the selector string.
 
     Upstream reference:
-    [https://github.com/VibiumDev/vibium/blob/main/docs/reference/selectors.md|Vibium selectors].
+    [Vibium selectors](https://github.com/VibiumDev/vibium/blob/main/docs/reference/selectors.md).
 
-    = Practical guidance =
+    # Practical guidance
 
     Prefer semantic strategies (``role``, ``label``, ``text``, ``testid``)
     before deep CSS/XPath selectors when possible. Semantic locators are usually
     more stable and easier to understand in test logs.
 
-    = Interaction and Getters =
+    # Interaction and Getters
 
     Element actions (click, fill, type, select, drag, upload, key press) and
     getter keywords (text, html, value, attributes, bounds, state) are provided
     by the interaction keyword set.
 
-    = Assertions =
+    # Assertions
 
     Read/assertion-oriented keywords provide page and element state retrieval,
     such as URL, title, page HTML, element counting, and JavaScript evaluation.
 
-    == Inline assertions (AssertionEngine) ==
+    ## Inline assertions (AssertionEngine)
 
     Getter keywords optionally accept AssertionEngine operators so you can
     read and validate in one step:
 
-    | Get Text     css:h1    ==    Welcome
-    | Get Title    ==    Home
-    | Count Elements    css:p    ==    ${2}
+    ```robotframework
+    *** Keywords ***
+    Example
+        Get Text     css:h1    ==    Welcome
+        Get Title    ==    Home
+        Count Elements    css:p    ==    ${2}
+    ```
 
     Without an operator the getter only returns the value.
     For element getters, a trailing operator + expected may follow locator
@@ -213,7 +238,7 @@ class Vibium(DynamicCore):
     ``Element Is Visible`` and related keywords remain available; use
     ``Get Element States`` for a combined state list.
 
-    == What getters return when asserting ==
+    ## What getters return when asserting
 
     - *No operator:* the value read from the page or element.
     - *Most operators* (``==``, ``contains``, ``*=``, …): the same value if the
@@ -224,12 +249,12 @@ class Vibium(DynamicCore):
 
     Supported operators are listed under the ``AssertionOperator`` data type.
 
-    See also: [https://github.com/MarketSquare/AssertionEngine|AssertionEngine].
+    See also: [AssertionEngine](https://github.com/MarketSquare/AssertionEngine).
 
-    = Keyword Tags =
+    # Keyword Tags
 
     Each keyword carries two tags aligned with the
-    [https://github.com/VibiumDev/vibium/blob/main/docs/reference/api.md|Vibium API]:
+    [Vibium API](https://github.com/VibiumDev/vibium/blob/main/docs/reference/api.md):
 
     - *Domain:* ``Browser``, ``Page``, ``Element``, ``BrowserContext``,
       ``Keyboard``, ``Mouse``, ``Touch``, ``Dialog``, ``Config``
@@ -239,17 +264,25 @@ class Vibium(DynamicCore):
     ``Element`` + ``Getter``. Use Robot ``--include`` / ``--exclude`` on these
     tags, and Libdoc groups keywords by tag.
 
-    = Timeouts, Waits and Delays =
+    # Timeouts, Waits and Delays
 
     Wait keywords provide explicit synchronization:
-    - wait for text
-    - wait for load state
-    - wait for element state
-    - page sleep/wait utilities
 
-    = Artifacts: Screenshots, PDF, Storage =
+    - ``Wait For Text``
+    - ``Wait For Load State``
+    - ``Wait For Element``
+    - ``Wait For Url``
+    - ``Wait For Function``
+    - ``Page Wait`` / ``Sleep Milliseconds``
+
+    Library-level defaults use ``Set Browser Timeout`` (see [Scope Setting](#scope-setting)).
+    Per-call ``timeout=`` on actions, getters, and finds overrides that default for
+    one keyword.
+
+    # Artifacts: Screenshots, PDF, Storage
 
     Vibium can capture runtime artifacts:
+
     - page screenshot
     - element screenshot
     - page PDF
@@ -258,12 +291,12 @@ class Vibium(DynamicCore):
     Relative artifact paths are resolved under Robot ``${OUTPUT DIR}/media/``
     when running inside Robot Framework.
 
-    = Cookies and Storage =
+    # Cookies and Storage
 
     Cookie and storage keywords allow tests to inspect, set, clear, export, and
     restore browser state for setup/teardown and stateful flows.
 
-    = Scope Setting =
+    # Scope Setting
 
     ``ROBOT_LIBRARY_SCOPE`` is ``GLOBAL``. The same Vibium instance is reused
     across suites and tests in a single execution.
@@ -278,13 +311,14 @@ class Vibium(DynamicCore):
     Per-call ``timeout=`` on action/getter keywords still overrides the library
     default for that call.
 
-    = Environment Variables =
+    # Environment Variables
 
     These environment variables are read by Vibium when launching or connecting
     a browser. Keyword arguments on ``Open Browser`` (for example ``engine=``,
     ``url=``, ``channel=``) take precedence when provided.
 
-    | =Variable= | =Description= |
+    | Variable | Description |
+    | -------- | ----------- |
     | ``VIBIUM_ENGINE`` | Default browser engine when ``Open Browser`` omits ``engine=``: ``chrome`` (default) or ``firefox``. |
     | ``VIBIUM_ENGINE_CHANNEL`` | Default release channel when ``channel=`` is omitted (for example ``release`` or ``beta`` for Firefox). |
     | ``VIBIUM_CONNECT_URL`` | Remote BiDi WebSocket URL used when ``Open Browser`` omits ``url=``. |
@@ -292,16 +326,24 @@ class Vibium(DynamicCore):
 
     Upstream Vibium may honor additional variables (session isolation, binary
     paths, connect credentials). See
-    [https://vibium.com/docs|Vibium documentation] for the full set.
+    [Vibium documentation](https://vibium.com/docs) for the full set.
 
-    = Typical usage =
+    # Typical usage
 
     Example:
-        | Open Browser
-        | Go To    https://example.com
-        | Fill Text    role:textbox    user@example.com
-        | Click    role:button    text:Submit
-        | Close Browser
+
+    ```robotframework
+    *** Settings ***
+    Library    Vibium
+
+    *** Test Cases ***
+    Example
+        Open Browser
+        Go To    https://example.com
+        Fill Text    role:textbox    user@example.com
+        Click    role:button    text:Submit
+        Close Browser
+    ```
 
     """
 
@@ -366,22 +408,27 @@ class Vibium(DynamicCore):
         When ``engine`` is omitted, Vibium uses Chrome by default or the engine
         set via the ``VIBIUM_ENGINE`` environment variable.
 
-        | =Argument= | =Description= |
-        | ``url`` | Optional remote BiDi WebSocket URL. When set, connects instead of local launch. |
-        | ``engine`` | Optional browser engine: ``chrome`` (default) or ``firefox``. Local launch only. |
-        | ``channel`` | Optional Firefox release channel: ``release`` (default) or ``beta``. Firefox only. Local launch only. |
-        | ``headless`` | Optional headless mode for this browser. Defaults to the library ``headless`` import setting. Local launch only. |
-        | ``headers`` | Optional HTTP headers for the remote WebSocket connection (for example auth tokens). Used with ``url=``. |
+        Args:
+            url: Optional remote BiDi WebSocket URL. When set, connects instead of local launch.
+            engine: Optional browser engine: ``chrome`` (default) or ``firefox``. Local launch only.
+            channel: Optional Firefox release channel: ``release`` (default) or ``beta``. Firefox only. Local launch only.
+            headless: Optional headless mode for this browser. Defaults to the library ``headless`` import setting. Local launch only.
+            headers: Optional HTTP headers for the remote WebSocket connection (for example auth tokens). Used with ``url=``.
 
         Returns:
             Browser session handle for use with ``browser=`` on other keywords.
 
         Example:
-            | Open Browser
-            | Go To    https://example.com
-            | Open Browser    engine=firefox
-            | Open Browser    headless=${FALSE}
-            | Open Browser    url=${REMOTE_BIDI_URL}    headers=&{AUTH_HEADERS}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Open Browser
+            Go To    https://example.com
+            Open Browser    engine=firefox
+            Open Browser    headless=${FALSE}
+            Open Browser    url=${REMOTE_BIDI_URL}    headers=&{AUTH_HEADERS}
+        ```
         """
         engine = engine.lower() if engine else engine
         channel = channel.lower() if channel else channel
@@ -399,13 +446,18 @@ class Vibium(DynamicCore):
     def close_browser(self, browser: Optional[Browser] = None) -> None:
         """Close one Browser session (active browser by default).
 
-        | =Argument= | =Description= |
-        | ``browser`` | Optional browser handle returned by ``Open Browser``. When omitted, closes the active browser. |
+        Args:
+            browser: Optional browser handle returned by ``Open Browser``. When omitted, closes the active browser.
 
         Example:
-            | Close Browser
-            | ${b}=    Open Browser
-            | Close Browser    browser=${b}
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Close Browser
+            ${b}=    Open Browser
+            Close Browser    browser=${b}
+        ```
         """
         self._session.close(browser=browser)
         logger.info("Browser session closed.")
@@ -415,9 +467,14 @@ class Vibium(DynamicCore):
         """Close all Browser sessions created by this library instance.
 
         Example:
-            | Open Browser
-            | Open Browser    engine=firefox
-            | Close All Browsers
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Open Browser
+            Open Browser    engine=firefox
+            Close All Browsers
+        ```
         """
         self._session.close_all()
         logger.info("All Browser sessions closed.")
