@@ -56,15 +56,20 @@ class WaitKeywords:
     def wait_for_text(self, text: str, timeout: str = "10s") -> None:
         """Wait until text appears in the visible page body.
 
-        | =Argument= | =Description= |
-        | ``text`` | Text fragment to wait for in ``document.body.innerText``. |
-        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
+        Args:
+            text: Text fragment to wait for in ``document.body.innerText``.
+            timeout: Robot Framework timeout string. Default is ``10s``.
 
         Note:
             Uses page-level ``wait_for_function(...)`` (waitForFunction).
 
         Example:
-            | Wait For Text    Welcome back    timeout=5s
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Wait For Text    Welcome back    timeout=5s
+        ```
         """
         page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
@@ -82,12 +87,17 @@ class WaitKeywords:
         without rewriting; refer to Vibium's ``waitForLoad`` / page API for valid
         values and semantics.
 
-        | =Argument= | =Description= |
-        | ``state`` | Load-state token understood by Vibium. Default is ``loading``. |
-        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
+        Args:
+            state: Load-state token understood by Vibium. Default is ``loading``.
+            timeout: Robot Framework timeout string. Default is ``10s``.
 
         Example:
-            | Wait For Load State    complete    timeout=15s
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Wait For Load State    complete    timeout=15s
+        ```
         """
         page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
@@ -104,19 +114,24 @@ class WaitKeywords:
     ) -> None:
         """Wait until a matched element reaches a target state.
 
-        | =Argument= | =Description= |
-        | ``*locators`` | Element to act on: locator string(s) or a single element handle. |
-        | ``state`` | Target element state: ``visible``, ``hidden``, ``attached``, or ``detached``. Default is ``visible``. |
-        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. Applied to ``find`` and to ``wait_until``. |
-        | ``scope`` | Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle. |
+        Args:
+            *locators: Element to act on: locator string(s) or a single element handle.
+            state: Target element state: ``visible``, ``hidden``, ``attached``, or ``detached``. Default is ``visible``.
+            timeout: Robot Framework timeout string. Default is ``10s``. Applied to ``find`` and to ``wait_until``.
+            scope: Optional page, frame, or parent. Defaults to the active scope. Omit with an element handle.
 
         Note:
             Raises ``LocatorSyntaxError`` if ``state`` is not supported.
 
         Example:
-            | Wait For Element    css:#modal    state=visible    timeout=5s
-            | ${el}=    Find Element    css:#modal
-            | Wait For Element    ${el}    state=visible
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Wait For Element    css:#modal    state=visible    timeout=5s
+            ${el}=    Find Element    css:#modal
+            Wait For Element    ${el}    state=visible
+        ```
         """
         normalized = state.strip().lower()
         if normalized not in _ELEMENT_WAIT_STATES:
@@ -138,12 +153,17 @@ class WaitKeywords:
     def wait_for_url(self, pattern: str, timeout: str = "10s") -> None:
         """Wait until page URL matches the provided pattern fragment.
 
-        | =Argument= | =Description= |
-        | ``pattern`` | URL fragment/pattern accepted by Vibium ``wait_for_url(...)``. |
-        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
+        Args:
+            pattern: URL fragment/pattern accepted by Vibium ``wait_for_url(...)``.
+            timeout: Robot Framework timeout string. Default is ``10s``.
 
         Example:
-            | Wait For Url    /dashboard    timeout=15s
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Wait For Url    /dashboard    timeout=15s
+        ```
         """
         page = self.library._session.require_page()
         timeout_ms = parse_timeout_ms(timeout)
@@ -154,15 +174,20 @@ class WaitKeywords:
     def wait_for_function(self, expression: str, timeout: str = "10s") -> None:
         """Wait until a JavaScript expression evaluates to truthy.
 
-        | =Argument= | =Description= |
-        | ``expression`` | JavaScript function/expression string evaluated in the page context. |
-        | ``timeout`` | Robot Framework timeout string. Default is ``10s``. |
+        Args:
+            expression: JavaScript function/expression string evaluated in the page context.
+            timeout: Robot Framework timeout string. Default is ``10s``.
 
         Note:
             Raises ``LocatorSyntaxError`` if ``expression`` is empty.
 
         Example:
-            | Wait For Function    () => document.querySelector('.done') !== null
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Wait For Function    () => document.querySelector('.done') !== null
+        ```
         """
         page = self.library._session.require_page()
         stripped = expression.strip()
@@ -176,14 +201,19 @@ class WaitKeywords:
     def page_wait(self, milliseconds: object) -> None:
         """Sleep for a fixed number of milliseconds on the active page.
 
-        | =Argument= | =Description= |
-        | ``milliseconds`` | Number or numeric string in milliseconds. Must be between ``0`` and ``30000``. |
+        Args:
+            milliseconds: Number or numeric string in milliseconds. Must be between ``0`` and ``30000``.
 
         Note:
             Raises ``VibiumLibraryError`` if value is invalid, negative, or above 30000.
 
         Example:
-            | Page Wait    500
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Page Wait    500
+        ```
         """
         page = self.library._session.require_page()
         ms = WaitKeywords._coerce_sleep_ms(milliseconds)
@@ -200,11 +230,16 @@ class WaitKeywords:
     def sleep_milliseconds(self, milliseconds: object) -> None:
         """Alias of ``Page Wait``.
 
-        | =Argument= | =Description= |
-        | ``milliseconds`` | Number or numeric string in milliseconds. Same behavior as ``Page Wait``. |
+        Args:
+            milliseconds: Number or numeric string in milliseconds. Same behavior as ``Page Wait``.
 
         Example:
-            | Sleep Milliseconds    250
+
+        ```robotframework
+        *** Keywords ***
+        Example
+            Sleep Milliseconds    250
+        ```
         """
         self.page_wait(milliseconds)
 
